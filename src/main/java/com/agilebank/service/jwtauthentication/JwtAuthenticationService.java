@@ -1,4 +1,4 @@
-package com.agilebank.service;
+package com.agilebank.service.jwtauthentication;
 
 import com.agilebank.util.exceptions.BadPasswordLengthException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,8 @@ public class JwtAuthenticationService {
 
   public void authenticate(String username, String password) throws Exception {
     try {
+      // Another check in addition to the check in registration here, just in case somebody
+      // injected my DB with a weak password and wants to authenticate with it.
       if (password.length() < 8 || password.length() > 30) {
         throw new BadPasswordLengthException(8, 30);
       }

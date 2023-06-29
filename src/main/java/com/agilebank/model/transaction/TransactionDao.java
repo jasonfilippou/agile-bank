@@ -36,4 +36,12 @@ public class TransactionDao {
 
     @Column(name = "submitted_at")
     private Date submittedAt;
+
+    public TransactionDao(String sourceAccountId, String targetAccountId, Long amount, Currency currency, Date submittedAt){
+        this.sourceAccountId = sourceAccountId;
+        this.targetAccountId = targetAccountId;
+        this.amount = amount;
+        this.currency = currency;
+        this.submittedAt = submittedAt;
+    }
 }

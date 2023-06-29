@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import com.agilebank.service.JwtAuthenticationService;
+import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.util.exceptions.BadPasswordLengthException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;

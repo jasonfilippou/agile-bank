@@ -1,4 +1,4 @@
-package com.agilebank.service;
+package com.agilebank.service.jwtauthentication;
 
 import com.agilebank.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;

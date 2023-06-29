@@ -1,7 +1,7 @@
 package com.agilebank.unit.service;
 
-import com.agilebank.service.JwtRequestFilter;
-import com.agilebank.service.JwtUserDetailsService;
+import com.agilebank.service.jwtauthentication.JwtRequestFilter;
+import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

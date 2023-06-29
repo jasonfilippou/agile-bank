@@ -1,11 +1,19 @@
 package com.agilebank.model.user;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
 public class UserDto {
-    private  String username;
-    private  String password;
+    
+    @NonNull
+    private String username;
+    @JsonProperty(access = WRITE_ONLY)
+    @NonNull
+    private String password;
 }

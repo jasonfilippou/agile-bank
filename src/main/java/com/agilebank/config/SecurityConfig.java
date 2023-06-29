@@ -1,6 +1,6 @@
 package com.agilebank.config;
 
-import com.agilebank.service.JwtRequestFilter;
+import com.agilebank.service.jwtauthentication.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +25,7 @@ public class SecurityConfig {
   private final JwtRequestFilter jwtRequestFilter;
   private final PasswordEncoder passwordEncoder;
 
+  @Autowired
   public SecurityConfig(
       JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
       UserDetailsService jwtUserDetailsService,
@@ -55,7 +56,7 @@ public class SecurityConfig {
     http.cors()
             .and()
             .csrf().disable()
-            .authorizeRequests().requestMatchers("/api/register", "/api/authenticate").permitAll()
+            .authorizeRequests().requestMatchers("/bankapi/register", "/bankapi/authenticate").permitAll() // TODO: Add swagger/openapiv3.0 entrypoint
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)

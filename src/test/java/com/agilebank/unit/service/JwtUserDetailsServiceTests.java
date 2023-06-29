@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import com.agilebank.model.user.UserDao;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
-import com.agilebank.service.JwtUserDetailsService;
+import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;

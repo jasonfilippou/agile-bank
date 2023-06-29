@@ -1,8 +1,9 @@
-package com.agilebank.service;
+package com.agilebank.service.jwtauthentication;
 
 import com.agilebank.model.user.UserDao;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
+import com.agilebank.util.exceptions.BadPasswordLengthException;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,12 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
     }
     
-    public UserDto save(UserDto newUser){
-        UserDao newUserDao = new UserDao(newUser.getUsername(), encoder.encode(newUser.getPassword()));
-        newUserDao = userRepository.save(newUserDao);
-        return new UserDto(newUserDao.getUsername(), newUserDao.getPassword());
+    public UserDto save(UserDto newUser) throws BadPasswordLengthException{
+        String newUserPassword = newUser.getPassword();
+        if(newUserPassword.length() < 8 || newUserPassword.length() > 30){
+            throw new BadPasswordLengthException(8, 30);
+        }
+        UserDao savedUserDao = userRepository.save(new UserDao(newUser.getUsername(), encoder.encode(newUserPassword)));
+        return new UserDto(savedUserDao.getUsername(), savedUserDao.getPassword());
     }
 }
