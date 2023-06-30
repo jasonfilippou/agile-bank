@@ -1,13 +1,12 @@
 package com.agilebank.model.transaction;
 
-import com.agilebank.model.Currency;
+import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.util.Date;
-
 
 @Entity
 @Getter
@@ -17,32 +16,37 @@ import java.util.Date;
 @Table(name = "TRANSACTION")
 public class TransactionDao {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "source_account_id")
-    private String sourceAccountId;
+  @Column(name = "source_account_id")
+  private String sourceAccountId;
 
-    @Column(name = "target_account_id")
-    private String targetAccountId;
+  @Column(name = "target_account_id")
+  private String targetAccountId;
 
-    @Column(name = "amount")
-    private Long amount;
+  @Column(name = "amount")
+  private Long amount;
 
-    @Column(name = "currency")
-    @Enumerated(EnumType.STRING)
-    private Currency currency;
+  @Column(name = "currency")
+  @Enumerated(EnumType.STRING)
+  private Currency currency;
 
-    @Column(name = "submitted_at")
-    private Date submittedAt;
+  @Column(name = "submitted_at")
+  private Date submittedAt;
 
-    public TransactionDao(String sourceAccountId, String targetAccountId, Long amount, Currency currency, Date submittedAt){
-        this.sourceAccountId = sourceAccountId;
-        this.targetAccountId = targetAccountId;
-        this.amount = amount;
-        this.currency = currency;
-        this.submittedAt = submittedAt;
-    }
+  public TransactionDao(
+      String sourceAccountId,
+      String targetAccountId,
+      Long amount,
+      Currency currency,
+      Date submittedAt) {
+    this.sourceAccountId = sourceAccountId;
+    this.targetAccountId = targetAccountId;
+    this.amount = amount;
+    this.currency = currency;
+    this.submittedAt = submittedAt;
+  }
 }

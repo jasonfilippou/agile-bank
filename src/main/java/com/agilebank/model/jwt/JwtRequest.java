@@ -10,11 +10,8 @@ import lombok.*;
 @EqualsAndHashCode
 public class JwtRequest implements Serializable {
 
-    private static final long serialVersionId = 5926468583005150707L;
+  private static final long serialVersionId = 5926468583005150707L;
 
-    @NonNull
-    private String username;
-    @NonNull
-    private String password;
-
+  @NonNull private String username;
+  @NonNull private String password;
 }

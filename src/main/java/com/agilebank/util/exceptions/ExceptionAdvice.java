@@ -56,21 +56,12 @@ public class ExceptionAdvice {
   }
 
   @ResponseBody
-  @ExceptionHandler(DifferentCurrenciesException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> differentCurrenciesBetweenSourceAndTargetAccounts(
-      DifferentCurrenciesException ex) {
-    return new ResponseEntity<>(
-        "Transaction between different currencies; source account has currency "
-            + ex.getSourceAccountCurrency() + " and target account has currency " + ex.getTargetAccountCurrency()
-            + ".",  HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseBody
   @ExceptionHandler(InvalidTransactionCurrencyException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> transactionInABadCurrency(InvalidTransactionCurrencyException ex){
-    return new ResponseEntity<>("Transactions in a currency different from involved accounts: "
-            + ex.getTransactionCurrency() + ".", HttpStatus.BAD_REQUEST);
+  public ResponseEntity<String> transactionCurrencyDifferentFromTargetAccountCurrency
+          (InvalidTransactionCurrencyException ex) {
+    return new ResponseEntity<>(
+        "Transaction in currency " + ex.getTransactionCurrency() + " but target account in currency "  + ex.getTargetAccountCurrency() + ".",
+        HttpStatus.BAD_REQUEST);
   }
 }

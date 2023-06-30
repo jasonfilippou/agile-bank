@@ -1,7 +1,6 @@
 package com.agilebank.model.account;
 
-
-import com.agilebank.model.Currency;
+import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Objects;
@@ -14,36 +13,42 @@ import org.hibernate.proxy.HibernateProxy;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="ACCOUNT")
+@Table(name = "ACCOUNT")
 public class AccountDao {
 
-    @Id
-    @Column(name = "id", nullable = false)
-    private String id;
+  @Id
+  @Column(name = "id", nullable = false)
+  private String id;
 
-    @Column(name = "balance")
-    private Long balance;
+  @Column(name = "balance")
+  private Long balance;
 
-    @Column(name = "currency")
-    @Enumerated(EnumType.STRING)
-    private Currency currency;
+  @Column(name = "currency")
+  @Enumerated(EnumType.STRING)
+  private Currency currency;
 
-    @Column(name = "created_at")
-    private Date createdAt;
+  @Column(name = "created_at")
+  private Date createdAt;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        AccountDao that = (AccountDao) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
-    }
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) return false;
+    AccountDao that = (AccountDao) o;
+    return getId() != null && Objects.equals(getId(), that.getId());
+  }
 
-    @Override
-    public final int hashCode() {
-        return getClass().hashCode();
-    }
+  @Override
+  public final int hashCode() {
+    return getClass().hashCode();
+  }
 }

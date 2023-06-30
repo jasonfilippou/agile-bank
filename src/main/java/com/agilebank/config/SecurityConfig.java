@@ -39,9 +39,7 @@ public class SecurityConfig {
 
   @Bean
   public AuthenticationManager authenticationManager(
-      HttpSecurity httpSecurity,
-      UserDetailsService userDetailsService)
-      throws Exception {
+      HttpSecurity httpSecurity, UserDetailsService userDetailsService) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder
@@ -54,14 +52,20 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors()
-            .and()
-            .csrf().disable()
-            .authorizeRequests().requestMatchers("/bankapi/register", "/bankapi/authenticate").permitAll() // TODO: Add swagger/openapiv3.0 entrypoint
-            .anyRequest().authenticated()
-            .and()
-            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .and()
+        .csrf()
+        .disable()
+        .authorizeRequests()
+        .requestMatchers("/bankapi/register", "/bankapi/authenticate")
+        .permitAll() // TODO: Add swagger/openapiv3.0 entrypoint
+        .anyRequest()
+        .authenticated()
+        .and()
+        .exceptionHandling()
+        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
@@ -72,5 +76,4 @@ public class SecurityConfig {
     // user for matching credentials
     auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
   }
-
 }

@@ -10,10 +10,10 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 public class UserDto {
-    
-    @NonNull
-    private String username;
-    @JsonProperty(access = WRITE_ONLY)
-    @NonNull
-    private String password;
+
+  @NonNull private String username;
+
+  @JsonProperty(access = WRITE_ONLY)
+  @NonNull
+  private String password;
 }
