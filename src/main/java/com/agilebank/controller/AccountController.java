@@ -30,8 +30,7 @@ public class AccountController {
 
   @PostMapping("/newaccount")
   public ResponseEntity<EntityModel<AccountDto>> postNewAccount(@RequestBody AccountDto accountDto) {
-    accountService.storeAccount(accountDto);
-    return ResponseEntity.ok(accountModelAssembler.toModel(accountDto));
+    return ResponseEntity.ok(accountModelAssembler.toModel(accountService.storeAccount(accountDto)));
   }
 
   @GetMapping("/allaccounts")

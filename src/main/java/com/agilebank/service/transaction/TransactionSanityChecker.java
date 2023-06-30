@@ -5,6 +5,8 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import com.agilebank.model.account.AccountDao;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.util.exceptions.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -16,14 +18,14 @@ public class TransactionSanityChecker {
       TransactionDto transactionDto,
       Optional<AccountDao> sourceAccount,
       Optional<AccountDao> targetAccount,
-      Map<CurrencyPair, Double> currencyExchangeRates) {
+      Map<CurrencyPair, BigDecimal> currencyExchangeRates) {
     if (sourceAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getSourceAccountId().strip());
     }
     if (targetAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getTargetAccountId().strip());
     }
-    if (transactionDto.getAmount() <= 0) {
+    if (transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
       throw new InvalidAmountException(transactionDto.getAmount());
     }
     // A transaction in a currency different from the target account's is considered invalid.
@@ -32,12 +34,11 @@ public class TransactionSanityChecker {
           transactionDto.getCurrency(), targetAccount.get().getCurrency());
     }
     // If you try to send an amount of currency that you can't sustain, throw an exception.
-    Double sourceToTransactionCurrencyExchangeRate =
+    BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
-    if (transactionDto.getAmount()
-        > sourceAccount.get().getBalance()
-            / (double) sourceToTransactionCurrencyExchangeRate) {
+    if (transactionDto.getAmount().compareTo(sourceAccount.get().getBalance().divide(sourceToTransactionCurrencyExchangeRate, 
+            RoundingMode.HALF_EVEN)) < 0) {
       throw new InsufficientBalanceException(
           transactionDto.getSourceAccountId().strip(),
           sourceAccount.get().getBalance(),

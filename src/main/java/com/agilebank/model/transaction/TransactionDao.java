@@ -2,6 +2,7 @@ package com.agilebank.model.transaction;
 
 import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class TransactionDao {
   private String targetAccountId;
 
   @Column(name = "amount", scale = 2)
-  private Double amount;
+  private BigDecimal amount;
 
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)
@@ -40,7 +41,7 @@ public class TransactionDao {
   public TransactionDao(
       String sourceAccountId,
       String targetAccountId,
-      Double amount,
+      BigDecimal amount,
       Currency currency,
       Date submittedAt) {
     this.sourceAccountId = sourceAccountId;

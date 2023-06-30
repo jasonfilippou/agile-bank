@@ -22,12 +22,13 @@ public class AccountService {
     this.accountRepository = accountRepository;
   }
 
-  public void storeAccount(AccountDto accountDto) throws AccountAlreadyExistsException{
+  public AccountDto storeAccount(AccountDto accountDto) throws AccountAlreadyExistsException{
     Optional<AccountDao> accountDao = accountRepository.findById(accountDto.getId());
     if (accountDao.isEmpty()) {
-      accountRepository.save(
+      AccountDao savedAccountDao = accountRepository.save(
           new AccountDao(
               accountDto.getId(), accountDto.getBalance(), accountDto.getCurrency(), new Date()));
+      return new AccountDto(savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
     } else {
       throw new AccountAlreadyExistsException(accountDto.getId());
     }

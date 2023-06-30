@@ -12,6 +12,7 @@ import com.agilebank.util.exceptions.InsufficientBalanceException;
 import com.agilebank.util.exceptions.InvalidAmountException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,20 +48,20 @@ public class TransactionService {
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
     Optional<AccountDao> targetAccount =
         accountRepository.findById(transactionDto.getTargetAccountId().strip());
-    Map<CurrencyPair, Double> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
+    Map<CurrencyPair, BigDecimal> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
     transactionSanityChecker.checkTransaction(
         transactionDto, sourceAccount, targetAccount, currencyExchangeRates);
-    Double sourceToTransactionCurrencyExchangeRate =
+    BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
     // Debit the source account in its own currency
     sourceAccount
         .get()
         .setBalance(
-            sourceAccount.get().getBalance()
-                - transactionDto.getAmount() * sourceToTransactionCurrencyExchangeRate);
+            sourceAccount.get().getBalance().subtract(
+                transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate)));
     // Credit the target account in its own currency
-    targetAccount.get().setBalance(targetAccount.get().getBalance() + transactionDto.getAmount());
+    targetAccount.get().setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
     transactionRepository.save(

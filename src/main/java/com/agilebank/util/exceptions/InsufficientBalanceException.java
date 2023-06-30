@@ -3,14 +3,16 @@ package com.agilebank.util.exceptions;
 import lombok.Getter;
 import com.agilebank.model.currency.Currency;
 
+import java.math.BigDecimal;
+
 @Getter
 public class InsufficientBalanceException extends RuntimeException {
 
   private final String accountId;
-  private final Double accountBalanceInCurrency;
+  private final BigDecimal accountBalanceInCurrency;
   private final Currency currency;
 
-  public InsufficientBalanceException(String accountId, Double accountBalanceInCurrency, Currency currency, Double amountRequested) {
+  public InsufficientBalanceException(String accountId, BigDecimal accountBalanceInCurrency, Currency currency, BigDecimal amountRequested) {
     super(
         "Account "
             + accountId

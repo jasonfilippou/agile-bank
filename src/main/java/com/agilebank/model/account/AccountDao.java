@@ -2,6 +2,7 @@ package com.agilebank.model.account;
 
 import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 import lombok.*;
@@ -21,7 +22,7 @@ public class AccountDao {
   private String id;
 
   @Column(name = "balance", scale = 2)
-  private Double balance;
+  private BigDecimal balance;
 
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)

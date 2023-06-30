@@ -4,6 +4,7 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.currency.CurrencyLedger;
+import java.math.BigDecimal;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,12 @@ public class CurrencyLedgerController {
   }
 
   @GetMapping("/currencyledger")
-  public ResponseEntity<Map<CurrencyPair, Double>> getAllCurrencyExchangeRates() {
+  public ResponseEntity<Map<CurrencyPair, BigDecimal>> getAllCurrencyExchangeRates() {
     return ResponseEntity.ok(currencyLedger.getCurrencyExchangeRates());
   }
 
   @GetMapping("/exchangerate")
-  public ResponseEntity<Double> getCurrencyExchangeRate(
+  public ResponseEntity<BigDecimal> getCurrencyExchangeRate(
       @RequestParam(name = "currencyOne") Currency currencyOne,
       @RequestParam(name = "currencyTwo") Currency currencyTwo) {
     return ResponseEntity.ok(

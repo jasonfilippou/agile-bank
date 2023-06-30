@@ -18,6 +18,15 @@ public class ExceptionAdvice {
   }
 
   @ResponseBody
+  @ExceptionHandler(NonExistentAccountException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<String> nonExistentAccountException(NonExistentAccountException exc) {
+    return new ResponseEntity<>(
+            "Account with id: " + exc.getAccountId() + " is non-existent.",
+            HttpStatus.BAD_REQUEST);
+  }
+
+  @ResponseBody
   @ExceptionHandler(InsufficientBalanceException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> insufficientBalanceInSourceAccount(
