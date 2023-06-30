@@ -1,13 +1,11 @@
-package com.agilebank.util.logger.service;
+package com.agilebank.util.logger.controller;
 
-import static com.agilebank.util.logger.MethodLoggingMessage.msg;
+import static com.agilebank.util.logger.MethodLoggingMessages.msg;
 
 import com.agilebank.util.logger.Loc;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,14 +13,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AccountServiceLogger {
 
-  /* POST */
+  /* Store account */
   @Before("execution(* com.agilebank.service.account.AccountService.storeAccount(..))")
-  public void beforePostRequests(JoinPoint jp) {
-    log.info(msg("store account", Loc.BEGIN, jp));
+  public void beforeStoringAccount(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
   }
 
-  @After("execution(* com.agilebank.service.account.AccountService.storeAccount(..))")
-  public void afterPostRequests(JoinPoint jp) {
-    log.info(msg("store account", Loc.END, jp));
+  @AfterReturning("execution(* com.agilebank.service.account.AccountService.storeAccount(..))")
+  public void afterSuccessfullyStoringAccount(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
   }
+
+  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.storeAccount(..))", throwing = "ex")
+  public void afterThrowing(JoinPoint jp, Throwable ex){
+    log.warn(msg(jp, ex.getClass()));
+  }
+
+
 }
