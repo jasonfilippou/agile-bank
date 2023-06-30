@@ -2,15 +2,11 @@ package com.agilebank.model.account;
 
 
 import com.agilebank.model.Currency;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Objects;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter
@@ -29,6 +25,7 @@ public class AccountDao {
     private Long balance;
 
     @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
     private Currency currency;
 
     @Column(name = "created_at")

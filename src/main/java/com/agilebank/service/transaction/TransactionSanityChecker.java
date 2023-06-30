@@ -2,9 +2,7 @@ package com.agilebank.service.transaction;
 
 import com.agilebank.model.account.AccountDao;
 import com.agilebank.model.transaction.TransactionDto;
-import com.agilebank.util.exceptions.InsufficientBalanceException;
-import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,6 +22,12 @@ public class TransactionSanityChecker {
         if (transactionDto.getAmount() > sourceAccount.get().getBalance()){
             throw new InsufficientBalanceException(transactionDto.getSourceAccountId().strip(), sourceAccount.get().getBalance(),
                     transactionDto.getAmount());
+        }
+        if(sourceAccount.get().getCurrency() != targetAccount.get().getCurrency()){
+            throw new DifferentCurrenciesException(sourceAccount.get().getCurrency(), targetAccount.get().getCurrency());
+        }
+        if(transactionDto.getCurrency() != sourceAccount.get().getCurrency()){
+            throw new InvalidTransactionCurrencyException(transactionDto.getCurrency());
         }
     }
 }

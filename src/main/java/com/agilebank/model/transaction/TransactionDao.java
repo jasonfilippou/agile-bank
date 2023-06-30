@@ -32,6 +32,7 @@ public class TransactionDao {
     private Long amount;
 
     @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
     private Currency currency;
 
     @Column(name = "submitted_at")

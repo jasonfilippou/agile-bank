@@ -19,12 +19,13 @@ public class TransactionService {
 
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
-  
   private final TransactionSanityChecker transactionSanityChecker;
-  
+
   @Autowired
   public TransactionService(
-      AccountRepository accountRepository, TransactionRepository transactionRepository, TransactionSanityChecker transactionSanityChecker) {
+      AccountRepository accountRepository,
+      TransactionRepository transactionRepository,
+      TransactionSanityChecker transactionSanityChecker) {
     this.accountRepository = accountRepository;
     this.transactionRepository = transactionRepository;
     this.transactionSanityChecker = transactionSanityChecker;
@@ -35,14 +36,19 @@ public class TransactionService {
       throws NonExistentAccountException, InvalidAmountException, InsufficientBalanceException {
     Optional<AccountDao> sourceAccount =
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
-    Optional<AccountDao> targetAccount = accountRepository.findById(transactionDto.getTargetAccountId().strip());
+    Optional<AccountDao> targetAccount =
+        accountRepository.findById(transactionDto.getTargetAccountId().strip());
     transactionSanityChecker.checkTransaction(transactionDto, sourceAccount, targetAccount);
-      transactionRepository.save(
-          new TransactionDao(
-              transactionDto.getSourceAccountId(),
-              transactionDto.getTargetAccountId(),
-              transactionDto.getAmount(),
-              transactionDto.getCurrency(),
-              new Date()));
+    sourceAccount.get().setBalance(sourceAccount.get().getBalance() - transactionDto.getAmount());
+    targetAccount.get().setBalance(targetAccount.get().getBalance() + transactionDto.getAmount());
+    accountRepository.save(sourceAccount.get());
+    accountRepository.save(targetAccount.get());
+    transactionRepository.save(
+        new TransactionDao(
+            transactionDto.getSourceAccountId(),
+            transactionDto.getTargetAccountId(),
+            transactionDto.getAmount(),
+            transactionDto.getCurrency(),
+            new Date()));
   }
 }
