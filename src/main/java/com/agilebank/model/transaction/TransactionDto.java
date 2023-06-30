@@ -10,6 +10,6 @@ import lombok.NonNull;
 public class TransactionDto {
   @NonNull private String sourceAccountId;
   @NonNull private String targetAccountId;
-  @NonNull private Long amount;
+  @NonNull private Double amount;
   @NonNull private Currency currency;
 }

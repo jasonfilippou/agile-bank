@@ -9,6 +9,6 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class AccountDto {
   @NonNull private String id;
-  @NonNull private Long balance;
+  @NonNull private Double balance;
   @NonNull private Currency currency;
 }

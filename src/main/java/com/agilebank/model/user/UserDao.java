@@ -14,7 +14,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "`USER`")
+@Table(name = "`USER`") // Need backticks because "USER" is a reserved table in H2 and tests are affected.
 public class UserDao {
 
   @Id

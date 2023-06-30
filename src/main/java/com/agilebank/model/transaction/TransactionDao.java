@@ -27,8 +27,8 @@ public class TransactionDao {
   @Column(name = "target_account_id")
   private String targetAccountId;
 
-  @Column(name = "amount")
-  private Long amount;
+  @Column(name = "amount", scale = 2)
+  private Double amount;
 
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)
@@ -40,7 +40,7 @@ public class TransactionDao {
   public TransactionDao(
       String sourceAccountId,
       String targetAccountId,
-      Long amount,
+      Double amount,
       Currency currency,
       Date submittedAt) {
     this.sourceAccountId = sourceAccountId;

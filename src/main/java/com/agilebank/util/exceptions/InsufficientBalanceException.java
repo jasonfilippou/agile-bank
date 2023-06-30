@@ -1,23 +1,27 @@
 package com.agilebank.util.exceptions;
 
 import lombok.Getter;
+import com.agilebank.model.currency.Currency;
 
 @Getter
 public class InsufficientBalanceException extends RuntimeException {
 
   private final String accountId;
-  private final Long accountBalance;
+  private final Double accountBalanceInCurrency;
+  private final Currency currency;
 
-  public InsufficientBalanceException(String accountId, Long accountBalance, Long amountRequested) {
+  public InsufficientBalanceException(String accountId, Double accountBalanceInCurrency, Currency currency, Double amountRequested) {
     super(
         "Account "
             + accountId
             + " has a balance of "
-            + accountBalance
+            + accountBalanceInCurrency
+            + " in currency " + currency
             + ", but "
             + amountRequested
             + " was requested.");
     this.accountId = accountId;
-    this.accountBalance = accountBalance;
+    this.accountBalanceInCurrency = accountBalanceInCurrency;
+    this.currency = currency;
   }
 }

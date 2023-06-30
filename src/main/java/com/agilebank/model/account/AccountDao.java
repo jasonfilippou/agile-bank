@@ -20,8 +20,8 @@ public class AccountDao {
   @Column(name = "id", nullable = false)
   private String id;
 
-  @Column(name = "balance")
-  private Long balance;
+  @Column(name = "balance", scale = 2)
+  private Double balance;
 
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)

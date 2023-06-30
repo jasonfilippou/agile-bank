@@ -4,35 +4,44 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CurrencyLedger {
-  private static final Random random = new Random();
-  private static Map<CurrencyPair, Double> currencyLedger;
+  private final Random random = new Random(47); // Keep the "randomness" consistent across runs of the app
+  private static Map<CurrencyPair, Double> currencyExchangeRates;
 
-  public static Map<CurrencyPair, Double> getCurrencyLedger() {
-    if (currencyLedger == null) {
-      currencyLedger = createCurrencyLedger();
+  public Map<CurrencyPair, Double> getCurrencyExchangeRates() {
+    if (currencyExchangeRates == null) {
+      currencyExchangeRates = createCurrencyExchangeRates();
     }
-    return currencyLedger;
+    return currencyExchangeRates;
   }
 
-  private static Map<CurrencyPair, Double> createCurrencyLedger() {
-    Map<CurrencyPair, Double> retVal = new HashMap<>();
+  private Map<CurrencyPair, Double> createCurrencyExchangeRates() {
+    Map<CurrencyPair, Double> currencyExchangeRates = new HashMap<>();
     for (Currency currencyOne : Currency.values()) {
       for (Currency currencyTwo : Currency.values()) {
-        retVal.put(
-            new CurrencyPair(currencyOne, currencyTwo),
-            currencyOne == currencyTwo ? 1.0 : 100 * random.nextDouble());
+        currencyExchangeRates.put(
+                new CurrencyPair(currencyOne, currencyTwo),
+            currencyOne == currencyTwo ? 1.0 :  Double.parseDouble(String.format("%.2f", 100 * random.nextDouble())));
       }
     }
-    return retVal;
+    return currencyExchangeRates;
   }
 
   @AllArgsConstructor
-  private static class CurrencyPair {
+  @EqualsAndHashCode
+  @Getter
+  public static class CurrencyPair {
     private Currency currencyOne;
     private Currency currencyTwo;
+    
+    @Override
+    public String toString(){
+      return "<" + currencyOne + ", " + currencyTwo + ">"; 
+    }
   }
 }

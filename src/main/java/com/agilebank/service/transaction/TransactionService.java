@@ -1,6 +1,9 @@
 package com.agilebank.service.transaction;
 
+import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
+
 import com.agilebank.model.account.AccountDao;
+import com.agilebank.model.currency.CurrencyLedger;
 import com.agilebank.model.transaction.TransactionDao;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
@@ -11,6 +14,7 @@ import com.agilebank.util.exceptions.NonExistentAccountException;
 import jakarta.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,27 +26,40 @@ public class TransactionService {
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
   private final TransactionSanityChecker transactionSanityChecker;
+  private final CurrencyLedger currencyLedger;
 
   @Autowired
   public TransactionService(
       AccountRepository accountRepository,
       TransactionRepository transactionRepository,
-      TransactionSanityChecker transactionSanityChecker) {
+      TransactionSanityChecker transactionSanityChecker,
+      CurrencyLedger currencyLedger) {
     this.accountRepository = accountRepository;
     this.transactionRepository = transactionRepository;
     this.transactionSanityChecker = transactionSanityChecker;
+    this.currencyLedger = currencyLedger;
   }
 
-  @Transactional
+  @Transactional // Since there's a bunch of persistence calls
   public void storeTransaction(TransactionDto transactionDto)
       throws NonExistentAccountException, InvalidAmountException, InsufficientBalanceException {
     Optional<AccountDao> sourceAccount =
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
     Optional<AccountDao> targetAccount =
         accountRepository.findById(transactionDto.getTargetAccountId().strip());
-    transactionSanityChecker.checkTransaction(transactionDto, sourceAccount, targetAccount);
-    // TODO: Fix with currency conversion logic
-    sourceAccount.get().setBalance(sourceAccount.get().getBalance() - transactionDto.getAmount());
+    Map<CurrencyPair, Double> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
+    transactionSanityChecker.checkTransaction(
+        transactionDto, sourceAccount, targetAccount, currencyExchangeRates);
+    Double sourceToTransactionCurrencyExchangeRate =
+        currencyExchangeRates.get(
+            new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
+    // Debit the source account in its own currency
+    sourceAccount
+        .get()
+        .setBalance(
+            sourceAccount.get().getBalance()
+                - transactionDto.getAmount() * sourceToTransactionCurrencyExchangeRate);
+    // Credit the target account in its own currency
     targetAccount.get().setBalance(targetAccount.get().getBalance() + transactionDto.getAmount());
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());

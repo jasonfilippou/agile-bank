@@ -1,33 +1,22 @@
 package com.agilebank.util;
 
-import org.assertj.core.util.Lists;
+import java.util.Collection;
+import java.util.Collections;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-
+@AllArgsConstructor
+@Getter
 public class TestUserDetailsImpl implements UserDetails {
 
-    private String username;
-    private String password;
-
-    public TestUserDetailsImpl(String username, String password){
-        this.username = username;
-        this.password = password;
-    }
+    private final String username;
+    private final String password;
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Lists.emptyList();
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
+        return Collections.emptyList();
     }
 
     @Override

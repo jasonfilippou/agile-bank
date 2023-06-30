@@ -10,11 +10,11 @@ public class ExceptionAdvice {
 
   @ResponseBody
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> messageNotReadableException() {
     return new ResponseEntity<>(
         "Bad message format; please check your fields' values and types.",
-        HttpStatus.NOT_ACCEPTABLE);
+        HttpStatus.BAD_REQUEST);
   }
 
   @ResponseBody
@@ -26,7 +26,7 @@ public class ExceptionAdvice {
         "Insufficient balance in source account "
             + ex.getAccountId()
             + " equal to "
-            + ex.getAccountBalance(),
+            + ex.getAccountBalanceInCurrency() + " in currency " + ex.getCurrency() + ".",
         HttpStatus.BAD_REQUEST);
   }
 
