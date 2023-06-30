@@ -10,7 +10,7 @@ public class MethodLoggingMessages {
     return ((pointInMethod == Loc.BEGIN) ? "Making" : "Completed")
         + " the call " + jp.getSignature().toShortString()
         + " with arguments: "
-        + ((args.length() == 0) ? "()" : args.substring(1, args.length() - 1));
+        + ((args.length() == 2) ? "()" : args.substring(1, args.length() - 1)); // args.length == 2 means that args = "[]", i.e no args
   }
   
   public static String msg(JoinPoint jp, Class<? extends Throwable> throwable){

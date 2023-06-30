@@ -33,7 +33,7 @@ public class AccountService {
     }
   }
 
-  public List<AccountDto> findAll() {
+  public List<AccountDto> getAllAccounts() {
     return accountRepository.findAll().stream()
         .map(
             accountDao ->

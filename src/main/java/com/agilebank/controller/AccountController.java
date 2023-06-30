@@ -37,7 +37,7 @@ public class AccountController {
   @GetMapping("/allaccounts")
   public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts() {
     return ResponseEntity.ok(CollectionModel.of(
-            accountService.findAll().stream()
+            accountService.getAllAccounts().stream()
                     .map(accountModelAssembler::toModel)
                     .collect(Collectors.toList()), linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel()));
   }

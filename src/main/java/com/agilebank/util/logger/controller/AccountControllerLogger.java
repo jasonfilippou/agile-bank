@@ -18,28 +18,28 @@ public class AccountControllerLogger {
 
   /* POST */
   @Before("execution(* com.agilebank.controller.AccountController.postNewAccount(..))")
-  public void beforePostRequests(JoinPoint jp) {
+  public void beforePostAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
   }
 
   @AfterReturning("execution(* com.agilebank.controller.AccountController.postNewAccount(..))")
-  public void afterPostRequests(JoinPoint jp) {
+  public void afterPostAccount(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
 
   @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.postNewAccount(..))", throwing = "ex")
-  public void afterThrowing(JoinPoint jp, Throwable ex){
+  public void afterPostAccountThrows(JoinPoint jp, Throwable ex){
     log.warn(msg(jp, ex.getClass()));
   }
   
   /* GET account */
   @Before("execution(* com.agilebank.controller.AccountController.getAccount(..))")
-  public void beforeGetAccountRequests(JoinPoint jp) {
+  public void beforeGetAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
   }
 
   @AfterReturning("execution(* com.agilebank.controller.AccountController.getAccount(..))")
-  public void afterGetAccountRequests(JoinPoint jp) {
+  public void afterGetAccount(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
   
@@ -49,13 +49,14 @@ public class AccountControllerLogger {
   }
   
   /* GET ALL accounts */
+  
   @Before("execution(* com.agilebank.controller.AccountController.getAllAccounts(..))")
-  public void beforeGetAllAccountsRequests(JoinPoint jp) {
+  public void beforeGetAllAccounts(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
   }
 
   @AfterReturning("execution(* com.agilebank.controller.AccountController.getAllAccounts(..))")
-  public void afterGetAllAccountsRequests(JoinPoint jp) {
+  public void afterGetAllAccounts(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
   
