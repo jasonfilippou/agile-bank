@@ -1,4 +1,4 @@
-package com.agilebank.unit.service;
+package com.agilebank.unit.service.jwtauthentication;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

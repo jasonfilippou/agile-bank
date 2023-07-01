@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bankapi")
 public class TransactionController {
 
-  private static final String SOURCE_ACCOUNT_ID = "sourceAccountId";
-  private static final String TARGET_ACCOUNT_ID = "targetAccountId";
+  public static final String SOURCE_ACCOUNT_ID = "sourceAccountId";
+  public static final String TARGET_ACCOUNT_ID = "targetAccountId";
 
   private final TransactionService transactionService;
   private final TransactionModelAssembler transactionModelAssembler;
@@ -31,8 +31,7 @@ public class TransactionController {
   @PostMapping("/newtransaction")
   public ResponseEntity<EntityModel<TransactionDto>> postNewTransaction(
       @RequestBody TransactionDto transactionDto) {
-    transactionService.storeTransaction(transactionDto);
-    return ResponseEntity.ok(transactionModelAssembler.toModel(transactionDto));
+    return ResponseEntity.ok(transactionModelAssembler.toModel(transactionService.storeTransaction(transactionDto)));
   }
 
   @GetMapping("/alltransactions")

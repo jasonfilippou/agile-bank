@@ -7,10 +7,12 @@ import static org.mockito.Mockito.*;
 import com.agilebank.controller.JwtAuthenticationController;
 import com.agilebank.model.jwt.JwtRequest;
 import com.agilebank.model.jwt.JwtResponse;
+import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
 import com.agilebank.util.TestUserDetailsImpl;
+import com.agilebank.util.exceptions.BadPasswordLengthException;
 import java.util.Objects;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,8 @@ public class JwtAuthenticationControllerUnitTests {
   private static final TestUserDetailsImpl TEST_USER_DETAILS = new TestUserDetailsImpl("username", "password");
   private static final JwtRequest TEST_JWT_REQUEST = new JwtRequest("username", "password");
 
+  private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
+
   @Test
   public void whenUserIsAuthenticatedInDB_thenReturnNewToken() throws Exception {
     doNothing().when(jwtAuthenticationService).authenticate(anyString(), anyString());
@@ -43,15 +47,21 @@ public class JwtAuthenticationControllerUnitTests {
   }
   
   @Test(expected = Exception.class)
-  public void whenAuthenticationServiceThrowsException_thenExceptionBubblesUp() throws Exception {
+  public void whenAuthenticatingUser_andAuthenticationServiceThrowsException_thenExceptionBubblesUp() throws Exception {
     doThrow(new Exception("some message")).when(jwtAuthenticationService).authenticate(anyString(), anyString());
     jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
   }
   
   @Test(expected = UsernameNotFoundException.class)
-  public void wheUserDetailsServiceThrowsException_thenExceptionBubblesUp() throws Exception {
+  public void whenAuthenticatingUser_andDetailsServiceThrowsUsernameNotFoundException_thenExceptionBubblesUp() throws Exception {
     doNothing().when(jwtAuthenticationService).authenticate(anyString(), anyString());
     doThrow(new UsernameNotFoundException("some message")).when(userDetailsService).loadUserByUsername(anyString());
     jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
+  }
+  
+  @Test(expected = BadPasswordLengthException.class)
+  public void whenUserDetailsServiceThrowsBadPasswordLengthException_thenExceptionBubblesUp(){
+    doThrow(new BadPasswordLengthException(8, 30)).when(userDetailsService).save(TEST_USER_DTO);
+    jwtAuthenticationController.registerUser(TEST_USER_DTO);
   }
 }

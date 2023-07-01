@@ -13,6 +13,7 @@ import com.agilebank.util.exceptions.InvalidAmountException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class TransactionService {
   }
 
   @Transactional // Since there's a bunch of persistence calls
-  public void storeTransaction(TransactionDto transactionDto)
+  public TransactionDto storeTransaction(TransactionDto transactionDto)
       throws NonExistentAccountException, InvalidAmountException, InsufficientBalanceException {
     Optional<AccountDao> sourceAccount =
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
@@ -64,13 +65,15 @@ public class TransactionService {
     targetAccount.get().setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
-    transactionRepository.save(
+    TransactionDao storedTransactionDao = transactionRepository.save(
         new TransactionDao(
             transactionDto.getSourceAccountId().strip(),
             transactionDto.getTargetAccountId().strip(),
             transactionDto.getAmount(),
             transactionDto.getCurrency(),
             new Date()));
+    return new TransactionDto(storedTransactionDao.getSourceAccountId(), storedTransactionDao.getTargetAccountId(),
+            storedTransactionDao.getAmount().setScale(2, RoundingMode.HALF_EVEN), storedTransactionDao.getCurrency());
   }
 
   public List<TransactionDto> getAllTransactions() {

@@ -1,4 +1,4 @@
-package com.agilebank.unit.service;
+package com.agilebank.unit.service.jwtauthentication;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;

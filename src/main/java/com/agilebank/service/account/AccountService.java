@@ -5,6 +5,7 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.util.exceptions.AccountAlreadyExistsException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public class AccountService {
     if (accountDao.isEmpty()) {
       AccountDao savedAccountDao = accountRepository.save(
           new AccountDao(
-              accountDto.getId(), accountDto.getBalance(), accountDto.getCurrency(), new Date()));
+              accountDto.getId(), accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN), accountDto.getCurrency(), new Date()));
       return new AccountDto(savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
     } else {
       throw new AccountAlreadyExistsException(accountDto.getId());
@@ -43,7 +44,7 @@ public class AccountService {
         .collect(Collectors.toList());
   }
 
-  public AccountDto getAccount(String id) {
+  public AccountDto getAccount(String id) throws NonExistentAccountException{
     return accountRepository
         .findById(id)
         .map(

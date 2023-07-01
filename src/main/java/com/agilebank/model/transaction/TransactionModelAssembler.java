@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.agilebank.controller.TransactionController;
+import java.util.Collections;
 import java.util.Map;
 import lombok.NonNull;
 import org.springframework.hateoas.EntityModel;
@@ -27,6 +28,7 @@ public class TransactionModelAssembler
                             "targetAccountId",
                             transactionDto.getTargetAccountId())))
             .withRel("all_transactions_between"),
-            linkTo(methodOn(TransactionController.class).getAllTransactions(Map.of())).withRel("all_transactions"));
+        linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
+            .withRel("all_transactions"));
   }
 }
