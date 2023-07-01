@@ -18,13 +18,15 @@ public class TransactionSanityChecker {
       TransactionDto transactionDto,
       Optional<AccountDao> sourceAccount,
       Optional<AccountDao> targetAccount,
-      Map<CurrencyPair, BigDecimal> currencyExchangeRates) {
+      Map<CurrencyPair, BigDecimal> currencyExchangeRates) throws NonExistentAccountException, InvalidAmountException, InvalidTransactionCurrencyException {
+    // If either account could not be found, throw an exception.
     if (sourceAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getSourceAccountId().strip());
     }
     if (targetAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getTargetAccountId().strip());
     }
+    // If the amount of the transaction was non-positive, throw an exception.
     if (transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
       throw new InvalidAmountException(transactionDto.getAmount());
     }
@@ -37,6 +39,7 @@ public class TransactionSanityChecker {
     BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
+    // Have to divide to find out how many units of the transaction's currency we hold.
     if (transactionDto.getAmount().compareTo(sourceAccount.get().getBalance().divide(sourceToTransactionCurrencyExchangeRate, 
             RoundingMode.HALF_EVEN)) < 0) {
       throw new InsufficientBalanceException(

@@ -13,13 +13,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-@SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationServiceUnitTests {
   @InjectMocks private JwtAuthenticationService jwtAuthenticationService;

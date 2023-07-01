@@ -2,6 +2,7 @@ package com.agilebank.unit.service.jwtauthentication;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.agilebank.model.user.UserDao;
@@ -15,12 +16,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class JwtUserDetailsServiceTests {
 
@@ -43,7 +42,7 @@ public class JwtUserDetailsServiceTests {
 
   @Test(expected = UsernameNotFoundException.class)
   public void whenUserIsNotInDB_thenUsernameNotFoundExceptionIsThrown() {
-    when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
+    when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
     jwtUserDetailsService.loadUserByUsername(RandomStringUtils.randomAlphanumeric(10));
   }
 

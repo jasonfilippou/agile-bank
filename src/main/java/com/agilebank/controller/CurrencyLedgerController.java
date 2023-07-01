@@ -31,7 +31,7 @@ public class CurrencyLedgerController {
   @GetMapping("/exchangerate")
   public ResponseEntity<BigDecimal> getCurrencyExchangeRate(
       @RequestParam(name = "currencyOne") Currency currencyOne,
-      @RequestParam(name = "currencyTwo") Currency currencyTwo) {
+      @RequestParam(name = "currencyTwo") Currency currencyTwo) throws MethodArgumentTypeMismatchException{
     return ResponseEntity.ok(
         currencyLedger.getCurrencyExchangeRates().get(new CurrencyPair(currencyOne, currencyTwo)));
   }
@@ -39,7 +39,7 @@ public class CurrencyLedgerController {
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  public ResponseEntity<String> badCurrencyProvided() {
+  private ResponseEntity<String> badCurrencyProvided() {
     return new ResponseEntity<>(
         "Provided an invalid or non-existent currency as per ISO 4217; please check parameters.", HttpStatus.BAD_REQUEST);
   }

@@ -50,21 +50,24 @@ public class TransactionService {
     Optional<AccountDao> targetAccount =
         accountRepository.findById(transactionDto.getTargetAccountId().strip());
     Map<CurrencyPair, BigDecimal> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
+    // Check the transaction for various inconsistencies.
     transactionSanityChecker.checkTransaction(
         transactionDto, sourceAccount, targetAccount, currencyExchangeRates);
     BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
-    // Debit the source account in its own currency
+    // Debit the source account in its own currency.
     sourceAccount
         .get()
         .setBalance(
             sourceAccount.get().getBalance().subtract(
                 transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate)));
-    // Credit the target account in its own currency
+    // Credit the target account in its own currency.
     targetAccount.get().setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
+    // Save the updated accounts.
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
+    // Finally, save and return the transaction.
     TransactionDao storedTransactionDao = transactionRepository.save(
         new TransactionDao(
             transactionDto.getSourceAccountId().strip(),

@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CurrencyLedger {
-  private final Random random = new Random(47); // Keep the "randomness" consistent across runs of the app
+  private final Random random =
+      new Random(47); // Keep the "randomness" consistent across runs of the app
   private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
 
   public Map<CurrencyPair, BigDecimal> getCurrencyExchangeRates() {
@@ -26,8 +27,11 @@ public class CurrencyLedger {
     for (Currency currencyOne : Currency.values()) {
       for (Currency currencyTwo : Currency.values()) {
         currencyExchangeRates.put(
-                new CurrencyPair(currencyOne, currencyTwo),
-            currencyOne == currencyTwo ? BigDecimal.ONE : BigDecimal.valueOf(Double.parseDouble(String.format("%.2f", 100 * random.nextDouble()))));
+            new CurrencyPair(currencyOne, currencyTwo),
+            currencyOne == currencyTwo
+                ? BigDecimal.ONE
+                : BigDecimal.valueOf(
+                    Double.parseDouble(String.format("%.2f", random.nextDouble(0.01, 100)))));
       }
     }
     return currencyExchangeRates;
@@ -39,10 +43,10 @@ public class CurrencyLedger {
   public static class CurrencyPair {
     private Currency currencyOne;
     private Currency currencyTwo;
-    
+
     @Override
-    public String toString(){
-      return "<" + currencyOne + ", " + currencyTwo + ">"; 
+    public String toString() {
+      return "<" + currencyOne + ", " + currencyTwo + ">";
     }
   }
 }
