@@ -1,12 +1,10 @@
 package com.agilebank.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -35,10 +33,9 @@ public class AccountController {
 
   @GetMapping("/allaccounts")
   public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts() {
-    return ResponseEntity.ok(CollectionModel.of(
-            accountService.getAllAccounts().stream()
-                    .map(accountModelAssembler::toModel)
-                    .collect(Collectors.toList()), linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel()));
+    return ResponseEntity.ok(accountModelAssembler.toCollectionModel(
+            accountService.getAllAccounts()
+    ));
   }
 
   @GetMapping("/account/{id}")

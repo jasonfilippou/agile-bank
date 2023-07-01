@@ -37,10 +37,6 @@ public class AccountControllerUnitTests {
   public void setUp() {
     when(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_ONE))
         .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE);
-    when(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_TWO))
-            .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODEL_TWO);
-    when(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_THREE))
-            .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODEL_THREE);
   }
 
   @Test
@@ -67,6 +63,8 @@ public class AccountControllerUnitTests {
   @Test
   public void whenGettingAllAccounts_thenResponseEntityOverCollectionModelReturned(){
     when(accountService.getAllAccounts()).thenReturn(List.of(TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE));
+    when(accountModelAssembler.toCollectionModel(List.of(TEST_ACCOUNT_DTO_ONE,
+            TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE))).thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL);
     assertEquals(ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL), accountController.getAllAccounts());
   }
   

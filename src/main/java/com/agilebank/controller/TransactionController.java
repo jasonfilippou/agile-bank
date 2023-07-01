@@ -4,7 +4,6 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -38,32 +37,17 @@ public class TransactionController {
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
       @RequestParam Map<String, String> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          CollectionModel.of(
-              transactionService
-                  .getAllTransactionsBetween(
-                      params.get(SOURCE_ACCOUNT_ID), params.get(TARGET_ACCOUNT_ID))
-                  .stream()
-                  .map(transactionModelAssembler::toModel)
-                  .collect(Collectors.toList())));
+      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsBetween(params.get(SOURCE_ACCOUNT_ID), params.get(TARGET_ACCOUNT_ID)), params));
     } else if (params.containsKey(SOURCE_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          CollectionModel.of(
-              transactionService.getAllTransactionsFrom(params.get(SOURCE_ACCOUNT_ID)).stream()
-                  .map(transactionModelAssembler::toModel)
-                  .collect(Collectors.toList())));
+      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsFrom(params.get(SOURCE_ACCOUNT_ID)), params));
     } else if (params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          CollectionModel.of(
-              transactionService.getAllTransactionsTo(params.get(TARGET_ACCOUNT_ID)).stream()
-                  .map(transactionModelAssembler::toModel)
-                  .collect(Collectors.toList())));
+      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsTo(params.get(TARGET_ACCOUNT_ID)), params));
     } else { // params is null, empty, or contains irrelevant keys; just return all transactions
-      return ResponseEntity.ok(
-          CollectionModel.of(
-              transactionService.getAllTransactions().stream()
-                  .map(transactionModelAssembler::toModel)
-                  .collect(Collectors.toList())));
+      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactions(), params));
     }
   }
 }
