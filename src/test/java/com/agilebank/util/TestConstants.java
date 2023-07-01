@@ -2,6 +2,7 @@ package com.agilebank.util;
 
 import static com.agilebank.controller.TransactionController.SOURCE_ACCOUNT_ID;
 import static com.agilebank.controller.TransactionController.TARGET_ACCOUNT_ID;
+import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -10,7 +11,6 @@ import com.agilebank.controller.TransactionController;
 import com.agilebank.model.account.AccountDao;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.currency.Currency;
-import com.agilebank.model.currency.CurrencyLedger;
 import com.agilebank.model.transaction.TransactionDao;
 import com.agilebank.model.transaction.TransactionDto;
 import java.math.BigDecimal;
@@ -37,8 +37,8 @@ public class TestConstants {
       new AccountDto(ACCOUNT_TWO_ID, new BigDecimal("801.01"), Currency.IDR);
 
   public static final AccountDto TEST_ACCOUNT_DTO_THREE =
-      new AccountDto(ACCOUNT_THREE_ID, new BigDecimal("-51.00"), Currency.USD); // Invalid valuem put here for testing.
-
+      new AccountDto(ACCOUNT_THREE_ID, new BigDecimal("-51.00"), Currency.USD); // Invalid value put here for testing.
+  
   /* Account DAOs */
 
   public static final AccountDao TEST_ACCOUNT_DAO_ONE =
@@ -105,7 +105,7 @@ public class TestConstants {
       new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("20.01"), Currency.IDR);
 
   public static final TransactionDto TEST_TRANSACTION_DTO_TWO =
-      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("1900.80"), Currency.IDR);
+      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("19000.80"), Currency.IDR);
 
   public static final TransactionDto TEST_TRANSACTION_DTO_THREE =
       new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_THREE_ID, BigDecimal.ZERO, Currency.USD);
@@ -119,6 +119,10 @@ public class TestConstants {
               .AFA); // Currency different from target account's on purpose, to test for a relevant
                      // Exception being thrown.
 
+  public static final TransactionDto TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF =
+          new TransactionDto(
+                  ACCOUNT_TWO_ID, ACCOUNT_TWO_ID, BigDecimal.TEN, Currency.IDR); // Again, an instance only for testing.
+  
   /* Transaction DAOs */
 
   public static final TransactionDao TEST_TRANSACTION_DAO_ONE =
@@ -252,9 +256,12 @@ public class TestConstants {
 
   /* Exchange rate Map for mocked CurrencyLedger calls */
 
-  public static final Map<CurrencyLedger.CurrencyPair, BigDecimal> TEST_EXCHANGE_RATES =
+  public static final Map<CurrencyPair, BigDecimal> TEST_EXCHANGE_RATES =
       Map.of(
-          new CurrencyLedger.CurrencyPair(Currency.GBP, Currency.IDR), BigDecimal.TEN,
-          new CurrencyLedger.CurrencyPair(Currency.GBP, Currency.USD), BigDecimal.ONE,
-          new CurrencyLedger.CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"));
+          new CurrencyPair(Currency.GBP, Currency.IDR), BigDecimal.TEN,
+          new CurrencyPair(Currency.GBP, Currency.USD), BigDecimal.ONE,
+          new CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"),
+          new CurrencyPair(Currency.USD, Currency.USD), BigDecimal.ONE,
+          new CurrencyPair(Currency.GBP, Currency.GBP), BigDecimal.ONE,
+          new CurrencyPair(Currency.IDR, Currency.IDR), BigDecimal.ONE);
 }

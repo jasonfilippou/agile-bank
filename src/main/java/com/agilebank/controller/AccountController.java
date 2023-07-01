@@ -34,8 +34,7 @@ public class AccountController {
   @GetMapping("/allaccounts")
   public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts() {
     return ResponseEntity.ok(accountModelAssembler.toCollectionModel(
-            accountService.getAllAccounts()
-    ));
+            accountService.getAllAccounts()));
   }
 
   @GetMapping("/account/{id}")

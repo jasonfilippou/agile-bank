@@ -1,10 +1,7 @@
 package com.agilebank.unit.service.transaction;
 
 import com.agilebank.service.transaction.TransactionSanityChecker;
-import com.agilebank.util.exceptions.InsufficientBalanceException;
-import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.InvalidTransactionCurrencyException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.*;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -39,6 +36,12 @@ public class TransactionSanityCheckerUnitTests {
     public void whenTransactionCurrencyIsNotTargetAccountCurrency_thenInvalidTransactionCurrencyExceptionIsThrown(){
         // Transaction 4 reproduces this scenario.
         transactionSanityChecker.checkTransaction(TEST_TRANSACTION_DTO_FOUR, Optional.of(TEST_ACCOUNT_DAO_THREE),
+                Optional.of(TEST_ACCOUNT_DAO_TWO), TEST_EXCHANGE_RATES);
+    }
+
+    @Test(expected = SameAccountException.class)
+    public void whenTransactionIsFromAnAccountToItself_thenSameAccountExceptionIsThrown(){
+        transactionSanityChecker.checkTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF, Optional.of(TEST_ACCOUNT_DAO_TWO),
                 Optional.of(TEST_ACCOUNT_DAO_TWO), TEST_EXCHANGE_RATES);
     }
 

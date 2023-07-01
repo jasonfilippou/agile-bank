@@ -15,6 +15,7 @@ import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.exceptions.InsufficientBalanceException;
 import com.agilebank.util.exceptions.InvalidAmountException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.SameAccountException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -105,6 +106,22 @@ public class TransactionServiceUnitTests {
             Optional.of(TEST_ACCOUNT_DAO_TWO),
             TEST_EXCHANGE_RATES);
     transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE);
+  }
+
+  @Test(expected = SameAccountException.class)
+  public void whenSanityCheckerThrowsSameAccountException_thenExceptionBubblesUp(){
+    when(accountRepository.findById(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF.getSourceAccountId()))
+            .thenReturn(Optional.of(TEST_ACCOUNT_DAO_TWO));
+    when(accountRepository.findById(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF.getTargetAccountId()))
+            .thenReturn(Optional.of(TEST_ACCOUNT_DAO_TWO));
+    doThrow(new SameAccountException(TEST_ACCOUNT_DAO_TWO.getId()))
+            .when(transactionSanityChecker)
+            .checkTransaction(
+                    TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF,
+                    Optional.of(TEST_ACCOUNT_DAO_TWO),
+                    Optional.of(TEST_ACCOUNT_DAO_TWO),
+                    TEST_EXCHANGE_RATES);
+    transactionService.storeTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
   }
   
   @Test

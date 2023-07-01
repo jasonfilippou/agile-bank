@@ -20,13 +20,18 @@ public class TransactionSanityChecker {
       Map<CurrencyPair, BigDecimal> currencyExchangeRates)
       throws NonExistentAccountException,
           InvalidAmountException,
-          InvalidTransactionCurrencyException {
+          InvalidTransactionCurrencyException,
+          SameAccountException,
+          InsufficientBalanceException{
     // If either account could not be found, throw an exception.
     if (sourceAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getSourceAccountId().strip());
     }
     if (targetAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getTargetAccountId().strip());
+    }
+    if(sourceAccount.get().getId().equals(targetAccount.get().getId())) {
+      throw new SameAccountException(sourceAccount.get().getId());
     }
     // If the amount of the transaction was non-positive, throw an exception.
     if (transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {

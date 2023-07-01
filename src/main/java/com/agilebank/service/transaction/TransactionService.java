@@ -8,9 +8,7 @@ import com.agilebank.model.transaction.TransactionDao;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
-import com.agilebank.util.exceptions.InsufficientBalanceException;
-import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.*;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,7 +42,11 @@ public class TransactionService {
 
   @Transactional // Since there's a bunch of persistence calls
   public TransactionDto storeTransaction(TransactionDto transactionDto)
-      throws NonExistentAccountException, InvalidAmountException, InsufficientBalanceException {
+      throws NonExistentAccountException,
+          InvalidAmountException,
+          InvalidTransactionCurrencyException,
+          SameAccountException,
+          InsufficientBalanceException {
     Optional<AccountDao> sourceAccount =
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
     Optional<AccountDao> targetAccount =
