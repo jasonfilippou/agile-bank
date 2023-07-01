@@ -1,7 +1,5 @@
 package com.agilebank.unit.service.account;
 
-import static com.agilebank.unit.controller.AccountControllerUnitTests.*;
-import static com.agilebank.unit.controller.TransactionControllerUnitTests.*;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.exceptions.AccountAlreadyExistsException;
+import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +33,12 @@ public class AccountServiceUnitTests {
                 Optional.empty());
         when(accountRepository.save(TEST_ACCOUNT_DAO_ONE)).thenReturn(TEST_ACCOUNT_DAO_ONE);
         assertEquals(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE), TEST_ACCOUNT_DTO_ONE);
+    }
+    
+    @Test(expected = InvalidBalanceException.class)
+    public void whenAccountHasANonPositiveBalance_thenInvalidBalanceExceptionIsThrown(){
+        // Test account 3 is created with a negative balance.
+        accountService.storeAccount(TEST_ACCOUNT_DTO_THREE);
     }
     
     @Test(expected = AccountAlreadyExistsException.class)

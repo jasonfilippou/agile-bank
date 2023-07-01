@@ -6,19 +6,21 @@ import com.agilebank.model.account.AccountDao;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TransactionSanityChecker {
-  
+
   public void checkTransaction(
       TransactionDto transactionDto,
       Optional<AccountDao> sourceAccount,
       Optional<AccountDao> targetAccount,
-      Map<CurrencyPair, BigDecimal> currencyExchangeRates) throws NonExistentAccountException, InvalidAmountException, InvalidTransactionCurrencyException {
+      Map<CurrencyPair, BigDecimal> currencyExchangeRates)
+      throws NonExistentAccountException,
+          InvalidAmountException,
+          InvalidTransactionCurrencyException {
     // If either account could not be found, throw an exception.
     if (sourceAccount.isEmpty()) {
       throw new NonExistentAccountException(transactionDto.getSourceAccountId().strip());
@@ -40,8 +42,11 @@ public class TransactionSanityChecker {
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
     // Have to divide to find out how many units of the transaction's currency we hold.
-    if (transactionDto.getAmount().compareTo(sourceAccount.get().getBalance().divide(sourceToTransactionCurrencyExchangeRate, 
-            RoundingMode.HALF_EVEN)) < 0) {
+    if (transactionDto
+            .getAmount()
+            .compareTo(
+                sourceAccount.get().getBalance().multiply(sourceToTransactionCurrencyExchangeRate))
+        > 0) {
       throw new InsufficientBalanceException(
           transactionDto.getSourceAccountId().strip(),
           sourceAccount.get().getBalance(),

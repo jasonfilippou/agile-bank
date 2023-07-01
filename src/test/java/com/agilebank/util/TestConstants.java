@@ -31,24 +31,36 @@ public class TestConstants {
   /* Account DTOs */
 
   public static final AccountDto TEST_ACCOUNT_DTO_ONE =
-      new AccountDto(ACCOUNT_ONE_ID, new BigDecimal("1400.25"), Currency.GBP);
+      new AccountDto(ACCOUNT_ONE_ID, new BigDecimal("120.25"), Currency.GBP);
 
   public static final AccountDto TEST_ACCOUNT_DTO_TWO =
       new AccountDto(ACCOUNT_TWO_ID, new BigDecimal("801.01"), Currency.IDR);
 
   public static final AccountDto TEST_ACCOUNT_DTO_THREE =
-      new AccountDto(ACCOUNT_THREE_ID, new BigDecimal("50.00"), Currency.USD);
+      new AccountDto(ACCOUNT_THREE_ID, new BigDecimal("-51.00"), Currency.USD); // Invalid valuem put here for testing.
 
   /* Account DAOs */
 
   public static final AccountDao TEST_ACCOUNT_DAO_ONE =
-      new AccountDao(ACCOUNT_ONE_ID, new BigDecimal("1400.25"), Currency.GBP, new Date());
+      new AccountDao(
+          TEST_ACCOUNT_DTO_ONE.getId(),
+          TEST_ACCOUNT_DTO_ONE.getBalance(),
+          TEST_ACCOUNT_DTO_ONE.getCurrency(),
+          new Date(946083999988L));
 
   public static final AccountDao TEST_ACCOUNT_DAO_TWO =
-      new AccountDao(ACCOUNT_TWO_ID, new BigDecimal("801.01"), Currency.IDR, new Date());
+      new AccountDao(
+          TEST_ACCOUNT_DTO_TWO.getId(),
+          TEST_ACCOUNT_DTO_TWO.getBalance(),
+          TEST_ACCOUNT_DTO_TWO.getCurrency(),
+          new Date(946083999989L));
 
   public static final AccountDao TEST_ACCOUNT_DAO_THREE =
-      new AccountDao(ACCOUNT_THREE_ID, new BigDecimal("50.00"), Currency.USD, new Date());
+      new AccountDao(
+          TEST_ACCOUNT_DTO_THREE.getId(),
+          TEST_ACCOUNT_DTO_THREE.getBalance(),
+          TEST_ACCOUNT_DTO_THREE.getCurrency(),
+          new Date(946083999990L));
 
   /* Constant for relationship of Entity Models for Account DTOs */
 
@@ -93,13 +105,19 @@ public class TestConstants {
       new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("20.01"), Currency.IDR);
 
   public static final TransactionDto TEST_TRANSACTION_DTO_TWO =
-      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("190.80"), Currency.IDR);
+      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID, new BigDecimal("1900.80"), Currency.IDR);
 
   public static final TransactionDto TEST_TRANSACTION_DTO_THREE =
-      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_THREE_ID, new BigDecimal("200.103"), Currency.USD);
+      new TransactionDto(ACCOUNT_ONE_ID, ACCOUNT_THREE_ID, BigDecimal.ZERO, Currency.USD);
 
   public static final TransactionDto TEST_TRANSACTION_DTO_FOUR =
-      new TransactionDto(ACCOUNT_THREE_ID, ACCOUNT_TWO_ID, new BigDecimal("0.19"), Currency.IDR);
+      new TransactionDto(
+          ACCOUNT_THREE_ID,
+          ACCOUNT_TWO_ID,
+          new BigDecimal("0.19"),
+          Currency
+              .AFA); // Currency different from target account's on purpose, to test for a relevant
+                     // Exception being thrown.
 
   /* Transaction DAOs */
 

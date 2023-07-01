@@ -1,6 +1,5 @@
 package com.agilebank.unit.controller;
 
-import static com.agilebank.unit.controller.TransactionControllerUnitTests.*;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,7 +10,9 @@ import com.agilebank.controller.AccountController;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.exceptions.AccountAlreadyExistsException;
+import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
@@ -47,6 +48,14 @@ public class AccountControllerUnitTests {
       when(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE)).thenReturn(TEST_ACCOUNT_DTO_ONE);
       assertEquals(ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE), 
               accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE));
+  }
+  
+  @Test(expected = InvalidBalanceException.class)
+  public void whenPostingNewAccountWithNonPositiveBalance_andServiceThrowsInvalidBalanceException_thenExceptionBubblesUp(){
+    doThrow(new InvalidBalanceException(TEST_ACCOUNT_DTO_ONE.getId(), BigDecimal.ZERO))
+        .when(accountService)
+        .storeAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
   }
   
   @Test(expected = AccountAlreadyExistsException.class)
