@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ACCOUNT")
-public class AccountDao {
+public class Account {
 
   @Id
   @Column(name = "id", nullable = false)
@@ -46,7 +46,7 @@ public class AccountDao {
             ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
             : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    AccountDao that = (AccountDao) o;
+    Account that = (Account) o;
     return getId() != null && Objects.equals(getId(), that.getId());
   }
 

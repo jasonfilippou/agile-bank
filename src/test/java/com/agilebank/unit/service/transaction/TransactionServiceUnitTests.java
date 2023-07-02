@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.agilebank.model.currency.CurrencyLedger;
-import com.agilebank.model.transaction.TransactionDao;
+import com.agilebank.model.transaction.Transaction;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
 import com.agilebank.service.transaction.TransactionSanityChecker;
@@ -59,7 +59,7 @@ public class TransactionServiceUnitTests {
             TEST_EXCHANGE_RATES);
     when(accountRepository.save(TEST_ACCOUNT_DAO_ONE)).thenReturn(TEST_ACCOUNT_DAO_ONE);
     when(accountRepository.save(TEST_ACCOUNT_DAO_TWO)).thenReturn(TEST_ACCOUNT_DAO_TWO);
-    when(transactionRepository.save(any(TransactionDao.class))).thenReturn(TEST_TRANSACTION_DAO_ONE);
+    when(transactionRepository.save(any(Transaction.class))).thenReturn(TEST_TRANSACTION_DAO_ONE);
     assertEquals(
         TEST_TRANSACTION_DTO_ONE, transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE));
   }

@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @ToString
 @NoArgsConstructor
 @Table(name = "TRANSACTION")
-public class TransactionDao {
+public class Transaction {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class TransactionDao {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   private Date submittedAt;
 
-  public TransactionDao(
+  public Transaction(
       String sourceAccountId,
       String targetAccountId,
       BigDecimal amount,

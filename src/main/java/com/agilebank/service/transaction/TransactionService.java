@@ -2,9 +2,9 @@ package com.agilebank.service.transaction;
 
 import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 
-import com.agilebank.model.account.AccountDao;
+import com.agilebank.model.account.Account;
 import com.agilebank.model.currency.CurrencyLedger;
-import com.agilebank.model.transaction.TransactionDao;
+import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
@@ -36,9 +36,9 @@ public class TransactionService {
           InvalidTransactionCurrencyException,
           SameAccountException,
           InsufficientBalanceException {
-    Optional<AccountDao> sourceAccount =
+    Optional<Account> sourceAccount =
         accountRepository.findById(transactionDto.getSourceAccountId().strip());
-    Optional<AccountDao> targetAccount =
+    Optional<Account> targetAccount =
         accountRepository.findById(transactionDto.getTargetAccountId().strip());
     Map<CurrencyPair, BigDecimal> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
     // Check the transaction for various inconsistencies.
@@ -59,27 +59,27 @@ public class TransactionService {
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
     // Finally, save and return the transaction.
-    TransactionDao storedTransactionDao = transactionRepository.save(
-        new TransactionDao(
+    Transaction storedTransaction = transactionRepository.save(
+        new Transaction(
             transactionDto.getSourceAccountId().strip(),
             transactionDto.getTargetAccountId().strip(),
             transactionDto.getAmount(),
             transactionDto.getCurrency(),
             new Date()));
-    return new TransactionDto(storedTransactionDao.getSourceAccountId(), storedTransactionDao.getTargetAccountId(),
-            storedTransactionDao.getAmount().setScale(2, RoundingMode.HALF_EVEN), storedTransactionDao.getCurrency());
+    return new TransactionDto(storedTransaction.getSourceAccountId(), storedTransaction.getTargetAccountId(),
+            storedTransaction.getAmount().setScale(2, RoundingMode.HALF_EVEN), storedTransaction.getCurrency());
   }
 
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactions() {
     return transactionRepository.findAll().stream()
         .map(
-            transactionDao ->
+                transaction ->
                 new TransactionDto(
-                    transactionDao.getSourceAccountId(),
-                    transactionDao.getTargetAccountId(),
-                    transactionDao.getAmount(),
-                    transactionDao.getCurrency()))
+                    transaction.getSourceAccountId(),
+                    transaction.getTargetAccountId(),
+                    transaction.getAmount(),
+                    transaction.getCurrency()))
         .collect(Collectors.toList());
   }
 
@@ -87,12 +87,12 @@ public class TransactionService {
   public List<TransactionDto> getAllTransactionsFrom(String sourceAccountId) {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
         .map(
-            transactionDao ->
+                transaction ->
                 new TransactionDto(
-                    transactionDao.getSourceAccountId(),
-                    transactionDao.getTargetAccountId(),
-                    transactionDao.getAmount(),
-                    transactionDao.getCurrency()))
+                    transaction.getSourceAccountId(),
+                    transaction.getTargetAccountId(),
+                    transaction.getAmount(),
+                    transaction.getCurrency()))
         .collect(Collectors.toList());
   }
 
@@ -100,12 +100,12 @@ public class TransactionService {
   public List<TransactionDto> getAllTransactionsTo(String targetAccountId) {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
         .map(
-            transactionDao ->
+                transaction ->
                 new TransactionDto(
-                    transactionDao.getSourceAccountId(),
-                    transactionDao.getTargetAccountId(),
-                    transactionDao.getAmount(),
-                    transactionDao.getCurrency()))
+                    transaction.getSourceAccountId(),
+                    transaction.getTargetAccountId(),
+                    transaction.getAmount(),
+                    transaction.getCurrency()))
         .collect(Collectors.toList());
   }
 
@@ -116,12 +116,12 @@ public class TransactionService {
         .findBySourceAccountIdAndTargetAccountId(sourceAccountId, targetAccountId)
         .stream()
         .map(
-            transactionDao ->
+                transaction ->
                 new TransactionDto(
-                    transactionDao.getSourceAccountId(),
-                    transactionDao.getTargetAccountId(),
-                    transactionDao.getAmount(),
-                    transactionDao.getCurrency()))
+                    transaction.getSourceAccountId(),
+                    transaction.getTargetAccountId(),
+                    transaction.getAmount(),
+                    transaction.getCurrency()))
         .collect(Collectors.toList());
   }
 }

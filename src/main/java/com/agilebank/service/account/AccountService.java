@@ -1,6 +1,6 @@
 package com.agilebank.service.account;
 
-import com.agilebank.model.account.AccountDao;
+import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.util.exceptions.AccountAlreadyExistsException;
@@ -28,17 +28,17 @@ public class AccountService {
     if (accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
       throw new InvalidBalanceException(accountDto.getId(), accountDto.getBalance());
     }
-    Optional<AccountDao> accountDao = accountRepository.findById(accountDto.getId());
+    Optional<Account> accountDao = accountRepository.findById(accountDto.getId());
     if (accountDao.isEmpty()) {
-      AccountDao savedAccountDao =
+      Account savedAccount =
           accountRepository.save(
-              new AccountDao(
+              new Account(
                   accountDto.getId(),
                   accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN),
                   accountDto.getCurrency(),
                   new Date()));
       return new AccountDto(
-          savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
+          savedAccount.getId(), savedAccount.getBalance(), savedAccount.getCurrency());
     }
     throw new AccountAlreadyExistsException(accountDto.getId());
   }

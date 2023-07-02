@@ -2,7 +2,7 @@ package com.agilebank.service.transaction;
 
 import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 
-import com.agilebank.model.account.AccountDao;
+import com.agilebank.model.account.Account;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
@@ -15,8 +15,8 @@ public class TransactionSanityChecker {
 
   public void checkTransaction(
       TransactionDto transactionDto,
-      Optional<AccountDao> sourceAccount,
-      Optional<AccountDao> targetAccount,
+      Optional<Account> sourceAccount,
+      Optional<Account> targetAccount,
       Map<CurrencyPair, BigDecimal> currencyExchangeRates)
       throws NonExistentAccountException,
           InvalidAmountException,

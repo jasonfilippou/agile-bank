@@ -8,10 +8,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.agilebank.controller.AccountController;
 import com.agilebank.controller.TransactionController;
-import com.agilebank.model.account.AccountDao;
+import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.currency.Currency;
-import com.agilebank.model.transaction.TransactionDao;
+import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -43,22 +43,22 @@ public final class TestConstants {
   
   /* Account DAOs */
 
-  public static final AccountDao TEST_ACCOUNT_DAO_ONE =
-      new AccountDao(
+  public static final Account TEST_ACCOUNT_DAO_ONE =
+      new Account(
           TEST_ACCOUNT_DTO_ONE.getId(),
           TEST_ACCOUNT_DTO_ONE.getBalance(),
           TEST_ACCOUNT_DTO_ONE.getCurrency(),
           new Date(946083999988L));
 
-  public static final AccountDao TEST_ACCOUNT_DAO_TWO =
-      new AccountDao(
+  public static final Account TEST_ACCOUNT_DAO_TWO =
+      new Account(
           TEST_ACCOUNT_DTO_TWO.getId(),
           TEST_ACCOUNT_DTO_TWO.getBalance(),
           TEST_ACCOUNT_DTO_TWO.getCurrency(),
           new Date(946083999989L));
 
-  public static final AccountDao TEST_ACCOUNT_DAO_THREE =
-      new AccountDao(
+  public static final Account TEST_ACCOUNT_DAO_THREE =
+      new Account(
           TEST_ACCOUNT_DTO_THREE.getId(),
           TEST_ACCOUNT_DTO_THREE.getBalance(),
           TEST_ACCOUNT_DTO_THREE.getCurrency(),
@@ -127,31 +127,31 @@ public final class TestConstants {
   
   /* Transaction DAOs */
 
-  public static final TransactionDao TEST_TRANSACTION_DAO_ONE =
-      new TransactionDao(
+  public static final Transaction TEST_TRANSACTION_DAO_ONE =
+      new Transaction(
           TEST_TRANSACTION_DTO_ONE.getSourceAccountId(),
           TEST_TRANSACTION_DTO_ONE.getTargetAccountId(),
           TEST_TRANSACTION_DTO_ONE.getAmount(),
           TEST_TRANSACTION_DTO_ONE.getCurrency(),
           new Date(946083999998L));
-  public static final TransactionDao TEST_TRANSACTION_DAO_TWO =
-      new TransactionDao(
+  public static final Transaction TEST_TRANSACTION_DAO_TWO =
+      new Transaction(
           TEST_TRANSACTION_DTO_TWO.getSourceAccountId(),
           TEST_TRANSACTION_DTO_TWO.getTargetAccountId(),
           TEST_TRANSACTION_DTO_TWO.getAmount(),
           TEST_TRANSACTION_DTO_TWO.getCurrency(),
           new Date(946083999999L));
 
-  public static final TransactionDao TEST_TRANSACTION_DAO_THREE =
-      new TransactionDao(
+  public static final Transaction TEST_TRANSACTION_DAO_THREE =
+      new Transaction(
           TEST_TRANSACTION_DTO_THREE.getSourceAccountId(),
           TEST_TRANSACTION_DTO_THREE.getTargetAccountId(),
           TEST_TRANSACTION_DTO_THREE.getAmount(),
           TEST_TRANSACTION_DTO_THREE.getCurrency(),
           new Date(946084000000L));
 
-  public static final TransactionDao TEST_TRANSACTION_DAO_FOUR =
-      new TransactionDao(
+  public static final Transaction TEST_TRANSACTION_DAO_FOUR =
+      new Transaction(
           TEST_TRANSACTION_DTO_FOUR.getSourceAccountId(),
           TEST_TRANSACTION_DTO_FOUR.getTargetAccountId(),
           TEST_TRANSACTION_DTO_FOUR.getAmount(),
