@@ -14,6 +14,7 @@ import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.exceptions.InsufficientBalanceException;
 import com.agilebank.util.exceptions.InvalidAmountException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.TransactionNotFoundException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,7 @@ public class TransactionControllerUnitTests {
         .thenReturn(TEST_TRANSACTION_DTO_ONE);
     assertEquals(
         new ResponseEntity<>(TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE, HttpStatus.CREATED),
-        transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE));
+        transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE));
   }
 
   @Test(expected = NonExistentAccountException.class)
@@ -60,7 +61,7 @@ public class TransactionControllerUnitTests {
     doThrow(new NonExistentAccountException("non-existent account"))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
-    transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE);
+    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
   }
 
   @Test(expected = InvalidAmountException.class)
@@ -69,20 +70,40 @@ public class TransactionControllerUnitTests {
     doThrow(new InvalidAmountException(BigDecimal.TEN))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
-    transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE);
+    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
   }
 
   @Test(expected = InsufficientBalanceException.class)
   public void
-      whenPostingANewTransaction_andServiceInsufficientBalanceException_thenExceptionBubblesUp() {
+      whenPostingANewTransaction_andServicethrowsInsufficientBalanceException_thenExceptionBubblesUp() {
     doThrow(
             new InsufficientBalanceException(
                 "accountId", BigDecimal.ZERO, Currency.GBP, BigDecimal.ONE))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
-    transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE);
+    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
   }
 
+  /* GET transaction tests */
+  
+  @Test
+  public void whenPostingANewTransaction_thenGettingItByIdReturnsTheTransaction(){
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(TEST_TRANSACTION_DTO_ONE);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId())).thenReturn(TEST_TRANSACTION_DTO_TWO);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId())).thenReturn(TEST_TRANSACTION_DTO_THREE);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId())).thenReturn(TEST_TRANSACTION_DTO_FOUR);
+    assertEquals(TEST_TRANSACTION_DTO_ONE, transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+    assertEquals(TEST_TRANSACTION_DTO_TWO, transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()));
+    assertEquals(TEST_TRANSACTION_DTO_THREE, transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()));
+    assertEquals(TEST_TRANSACTION_DTO_FOUR, transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()));
+  }
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenGettingATransaction_andServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp(){
+    doThrow(new TransactionNotFoundException(1L)).when(transactionService).getTransaction(1L);
+    transactionController.getTransaction(1L);
+  }
+  
   /* GET from / to / between / all tests */
 
   @Test

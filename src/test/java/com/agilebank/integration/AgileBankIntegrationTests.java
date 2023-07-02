@@ -10,7 +10,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import com.agilebank.controller.AccountController;
-import com.agilebank.controller.CurrencyLedgerController;
 import com.agilebank.controller.TransactionController;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.model.transaction.TransactionDto;
@@ -34,14 +33,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @NoArgsConstructor
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public class AgileBankIntegrationTest {
+public class AgileBankIntegrationTests {
 
   @Autowired private AccountController accountController;
 
   @Autowired private TransactionController transactionController;
-
-  @Autowired private CurrencyLedgerController currencyLedgerController;
-
+  
   @Autowired private AccountModelAssembler accountModelAssembler;
 
   @Autowired private TransactionModelAssembler transactionModelAssembler;
@@ -104,7 +101,9 @@ public class AgileBankIntegrationTest {
       whenPostingAValidTransactionBetweenTwoAccounts_thenWeCanFindTheTransactionInMultipleWays() {
     accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
     accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE);
+    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
+    assertEquals(ResponseEntity.ok(transactionModelAssembler.toModel(TEST_TRANSACTION_DTO_ONE)), 
+            transactionController.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
     List<ResponseEntity<CollectionModel<EntityModel<TransactionDto>>>> responseEntities =
         Arrays.asList(
             transactionController.getAllTransactions(Collections.emptyMap()),
@@ -131,7 +130,7 @@ public class AgileBankIntegrationTest {
   public void
       whenPostingATransactionFromANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
     accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postNewTransaction(
+    transactionController.postTransaction(
         TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
   }
 
@@ -139,14 +138,22 @@ public class AgileBankIntegrationTest {
   public void
       whenPostingATransactionToANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
     accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    transactionController.postNewTransaction(
+    transactionController.postTransaction(
         TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
   }
-
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenGettingATransactionThatHasNotBeenPosted_thenATransactionNotFoundExceptionIsThrown(){
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
+    transactionController.getTransaction(TEST_TRANSACTION_DTO_ONE.getId() + 1); 
+  }
+  
   @Test(expected = SameAccountException.class)
   public void whenPostingATransactionFromAnAccountToItself_thenASameAccountExceptionIsThrown() {
     accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postNewTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
+    transactionController.postTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
   }
 
   @Test(expected = InsufficientBalanceException.class)
@@ -154,7 +161,7 @@ public class AgileBankIntegrationTest {
       whenPostingATransactionForWhichThereIsAnInsufficientBalanceInSourceAccount_thenInsufficientBalanceExceptionIsThrown() {
     accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
     accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postNewTransaction(
+    transactionController.postTransaction(
         TEST_TRANSACTION_DTO_TWO); // Specially crafted to be too much for account one, even with
                                    // the real ledger values.
   }

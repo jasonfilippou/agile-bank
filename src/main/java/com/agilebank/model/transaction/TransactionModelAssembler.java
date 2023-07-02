@@ -1,5 +1,6 @@
 package com.agilebank.model.transaction;
 
+import static com.agilebank.util.Constants.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -22,17 +23,19 @@ public class TransactionModelAssembler
   public @NonNull EntityModel<TransactionDto> toModel(@NonNull TransactionDto transactionDto) {
     return EntityModel.of(
         transactionDto,
+        linkTo(methodOn(TransactionController.class)
+                .getTransaction(transactionDto.getId())).withSelfRel(),
         linkTo(
                 methodOn(TransactionController.class)
                     .getAllTransactions(
                         Map.of(
-                            "sourceAccountId",
+                            SOURCE_ACCOUNT_ID,
                             transactionDto.getSourceAccountId(),
-                            "targetAccountId",
+                            TARGET_ACCOUNT_ID,
                             transactionDto.getTargetAccountId())))
-            .withRel("all_transactions_between"),
+            .withRel(ALL_TRANSACTIONS_BETWEEN),
         linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
-            .withRel("all_transactions"));
+            .withRel(ALL_TRANSACTIONS));
   }
 
   @Override
@@ -46,6 +49,9 @@ public class TransactionModelAssembler
                                                                         Map<String, String> params){
     CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
     collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
+    if(params.size() > 0){
+      collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap())).withRel(ALL_TRANSACTIONS));
+    }
     return collectionModel;
   }
 }

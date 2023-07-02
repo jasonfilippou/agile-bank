@@ -15,17 +15,17 @@ public class TransactionControllerLogger {
 
     /* POST transaction */
 
-    @Before("execution(* com.agilebank.controller.TransactionController.postNewTransaction(..))")
+    @Before("execution(* com.agilebank.controller.TransactionController.postTransaction(..))")
     public void beforePostingNewTransaction(JoinPoint jp){
         log.info(msg(Loc.BEGIN, jp));
     }
 
-    @AfterReturning("execution(* com.agilebank.controller.TransactionController.postNewTransaction(..))")
+    @AfterReturning("execution(* com.agilebank.controller.TransactionController.postTransaction(..))")
     public void afterPostingNewTransaction(JoinPoint jp){
         log.info(msg(Loc.END, jp));
     }
 
-    @AfterThrowing(value = "execution(* com.agilebank.controller.TransactionController.postNewTransaction(..))", throwing = "ex")
+    @AfterThrowing(value = "execution(* com.agilebank.controller.TransactionController.postTransaction(..))", throwing = "ex")
     public void afterPostingNewTransactionThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }

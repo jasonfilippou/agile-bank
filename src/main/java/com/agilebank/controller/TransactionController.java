@@ -23,14 +23,19 @@ public class TransactionController {
   private final TransactionModelAssembler transactionModelAssembler;
 
   @PostMapping("/transaction")
-  public ResponseEntity<EntityModel<TransactionDto>> postNewTransaction(
+  public ResponseEntity<EntityModel<TransactionDto>> postTransaction(
       @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
         transactionModelAssembler.toModel(transactionService.storeTransaction(transactionDto)),
         HttpStatus.CREATED);
   }
 
-  @GetMapping("/transaction")
+  @GetMapping("/transaction/{id}")
+  public ResponseEntity<EntityModel<TransactionDto>> getTransaction(@PathVariable Long id){
+    return ResponseEntity.ok(transactionModelAssembler.toModel(transactionService.getTransaction(id)));
+  }
+
+  @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
       @RequestParam Map<String, String> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {

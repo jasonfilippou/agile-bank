@@ -28,7 +28,7 @@ public class TransactionService {
   private final TransactionRepository transactionRepository;
   private final TransactionSanityChecker transactionSanityChecker;
   private final CurrencyLedger currencyLedger;
-  
+
   @Transactional
   public TransactionDto storeTransaction(TransactionDto transactionDto)
       throws NonExistentAccountException,
@@ -51,31 +51,57 @@ public class TransactionService {
     sourceAccount
         .get()
         .setBalance(
-            sourceAccount.get().getBalance().subtract(
-                transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate)));
+            sourceAccount
+                .get()
+                .getBalance()
+                .subtract(
+                    transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate)));
     // Credit the target account in its own currency.
-    targetAccount.get().setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
+    targetAccount
+        .get()
+        .setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
     // Save the updated accounts.
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
     // Finally, save and return the transaction.
-    Transaction storedTransaction = transactionRepository.save(
-        new Transaction(
-            transactionDto.getSourceAccountId().strip(),
-            transactionDto.getTargetAccountId().strip(),
-            transactionDto.getAmount(),
-            transactionDto.getCurrency(),
-            new Date()));
-    return new TransactionDto(storedTransaction.getSourceAccountId(), storedTransaction.getTargetAccountId(),
-            storedTransaction.getAmount().setScale(2, RoundingMode.HALF_EVEN), storedTransaction.getCurrency());
+    Transaction storedTransaction =
+        transactionRepository.save(
+            new Transaction(
+                transactionDto.getSourceAccountId().strip(),
+                transactionDto.getTargetAccountId().strip(),
+                transactionDto.getAmount(),
+                transactionDto.getCurrency(),
+                new Date()));
+    return new TransactionDto(
+        storedTransaction.getId(),
+        storedTransaction.getSourceAccountId(),
+        storedTransaction.getTargetAccountId(),
+        storedTransaction.getAmount().setScale(2, RoundingMode.HALF_EVEN),
+        storedTransaction.getCurrency());
+  }
+
+  @Transactional(readOnly = true)
+  public TransactionDto getTransaction(Long id) throws TransactionNotFoundException{
+    return transactionRepository
+        .findById(id)
+        .map(
+            transaction ->
+                new TransactionDto(
+                    transaction.getId(),
+                    transaction.getSourceAccountId(),
+                    transaction.getTargetAccountId(),
+                    transaction.getAmount(),
+                    transaction.getCurrency()))
+        .orElseThrow(() -> new TransactionNotFoundException(id));
   }
 
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactions() {
     return transactionRepository.findAll().stream()
         .map(
-                transaction ->
+            transaction ->
                 new TransactionDto(
+                        transaction.getId(),
                     transaction.getSourceAccountId(),
                     transaction.getTargetAccountId(),
                     transaction.getAmount(),
@@ -87,8 +113,9 @@ public class TransactionService {
   public List<TransactionDto> getAllTransactionsFrom(String sourceAccountId) {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
         .map(
-                transaction ->
+            transaction ->
                 new TransactionDto(
+                        transaction.getId(),
                     transaction.getSourceAccountId(),
                     transaction.getTargetAccountId(),
                     transaction.getAmount(),
@@ -100,8 +127,9 @@ public class TransactionService {
   public List<TransactionDto> getAllTransactionsTo(String targetAccountId) {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
         .map(
-                transaction ->
+            transaction ->
                 new TransactionDto(
+                        transaction.getId(),
                     transaction.getSourceAccountId(),
                     transaction.getTargetAccountId(),
                     transaction.getAmount(),
@@ -116,8 +144,9 @@ public class TransactionService {
         .findBySourceAccountIdAndTargetAccountId(sourceAccountId, targetAccountId)
         .stream()
         .map(
-                transaction ->
+            transaction ->
                 new TransactionDto(
+                        transaction.getId(),
                     transaction.getSourceAccountId(),
                     transaction.getTargetAccountId(),
                     transaction.getAmount(),

@@ -12,10 +12,7 @@ import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
 import com.agilebank.service.transaction.TransactionSanityChecker;
 import com.agilebank.service.transaction.TransactionService;
-import com.agilebank.util.exceptions.InsufficientBalanceException;
-import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
-import com.agilebank.util.exceptions.SameAccountException;
+import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +38,8 @@ public class TransactionServiceUnitTests {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
   }
 
+  /* Storing transaction tests */
+  
   @Test
   public void whenStoringATransactionSuccessfully_thenTransactionIsReturned() {
     // Transaction 1 is from account 1 to account 2
@@ -124,6 +123,21 @@ public class TransactionServiceUnitTests {
     transactionService.storeTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
   }
   
+  /* Getting transaction tests */
+  
+  @Test
+  public void whenGettingAStoredTransactionById_thenTransactionIsReturned(){
+    when(transactionRepository.findById(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(Optional.of(TEST_TRANSACTION_DAO_ONE));
+    assertEquals(TEST_TRANSACTION_DTO_ONE, transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+  }
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenGettingAMissingTransaction_thenATransactionNotFoundExceptionIsThrown(){
+    when(transactionRepository.findById(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(Optional.empty());
+    transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId());
+  }
+  
+  /* Getting all / from / to / between tests */
   @Test
   public void whenGettingAllTransactions_AllTransactionsAreReturned(){
     when(transactionRepository.findAll()).thenReturn(List.of(TEST_TRANSACTION_DAO_ONE,
