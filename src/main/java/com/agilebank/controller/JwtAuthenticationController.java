@@ -6,7 +6,7 @@ import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/bankapi")
 @CrossOrigin
+@RequiredArgsConstructor
 public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;
   private final JwtUserDetailsService userDetailsService;
 
   private final JwtAuthenticationService jwtAuthenticationService;
-
-  @Autowired
-  public JwtAuthenticationController(
-      JwtTokenUtil jwtTokenUtil,
-      JwtUserDetailsService jwtUserDetailsService,
-      JwtAuthenticationService jwtAuthenticationService) {
-    this.jwtTokenUtil = jwtTokenUtil;
-    this.userDetailsService = jwtUserDetailsService;
-    this.jwtAuthenticationService = jwtAuthenticationService;
-  }
 
   @PostMapping(value = "/authenticate")
   public ResponseEntity<JwtResponse> createAuthenticationToken(

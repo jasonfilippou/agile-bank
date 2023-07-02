@@ -9,68 +9,19 @@ import org.springframework.web.bind.annotation.*;
 public class ExceptionAdvice {
 
   @ResponseBody
-  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ExceptionHandler({ HttpMessageNotReadableException.class,
+          InsufficientBalanceException.class, InvalidAmountException.class, SameAccountException.class,
+          AccountAlreadyExistsException.class, InvalidTransactionCurrencyException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> messageNotReadableException() {
-    return new ResponseEntity<>(
-        "Bad message format; please check your fields' values and types.",
-        HttpStatus.BAD_REQUEST);
+  public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc){
+    return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
-  @ResponseBody
-  @ExceptionHandler(NonExistentAccountException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> nonExistentAccountException(NonExistentAccountException exc) {
-    return new ResponseEntity<>(
-            "Account with id: " + exc.getAccountId() + " is non-existent.",
-            HttpStatus.BAD_REQUEST);
-  }
 
   @ResponseBody
-  @ExceptionHandler(InsufficientBalanceException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> insufficientBalanceInSourceAccount(
-      InsufficientBalanceException ex) {
-    return new ResponseEntity<>(
-        "Insufficient balance in source account "
-            + ex.getAccountId()
-            + " equal to "
-            + ex.getAccountBalanceInCurrency() + " in currency " + ex.getCurrency() + ".",
-        HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseBody
-  @ExceptionHandler(InvalidAmountException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> invalidBalanceRequested(InvalidAmountException ex) {
-    return new ResponseEntity<>(
-        "Invalid amount requested: " + ex.getAmount() + ".", HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseBody
-  @ExceptionHandler(SameAccountException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> sameSourceAndTargetAccount(SameAccountException ex) {
-    return new ResponseEntity<>(
-        "Same source and target account " + ex.getAccountId() + " in transaction",
-        HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseBody
-  @ExceptionHandler(AccountAlreadyExistsException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> accountAlreadyExists(AccountAlreadyExistsException ex) {
-    return new ResponseEntity<>(
-        "Account with ID " + ex.getAccountId() + " already exists.", HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseBody
-  @ExceptionHandler(InvalidTransactionCurrencyException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> transactionCurrencyDifferentFromTargetAccountCurrency
-          (InvalidTransactionCurrencyException ex) {
-    return new ResponseEntity<>(
-        "Transaction in currency " + ex.getTransactionCurrency() + " but target account in currency "  + ex.getTargetAccountCurrency() + ".",
-        HttpStatus.BAD_REQUEST);
+  @ExceptionHandler({NonExistentAccountException.class, })
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<String> notFoundStatusMessage(RuntimeException exc){
+    return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_FOUND);
   }
 }

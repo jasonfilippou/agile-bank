@@ -6,7 +6,7 @@ import com.agilebank.persistence.UserRepository;
 import com.agilebank.util.exceptions.BadPasswordLengthException;
 import java.util.ArrayList;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,16 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder encoder;
-
-  @Autowired
-  public JwtUserDetailsService(UserRepository userRepository, PasswordEncoder encoder) {
-    this.userRepository = userRepository;
-    this.encoder = encoder;
-  }
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,30 +22,39 @@ public class AccountService {
 
   private final AccountRepository accountRepository;
 
-  public AccountDto storeAccount(AccountDto accountDto) throws InvalidBalanceException, AccountAlreadyExistsException {
-    if(accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0){
+  @Transactional
+  public AccountDto storeAccount(AccountDto accountDto)
+      throws InvalidBalanceException, AccountAlreadyExistsException {
+    if (accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
       throw new InvalidBalanceException(accountDto.getId(), accountDto.getBalance());
     }
     Optional<AccountDao> accountDao = accountRepository.findById(accountDto.getId());
     if (accountDao.isEmpty()) {
-      AccountDao savedAccountDao = accountRepository.save(
-          new AccountDao( // TODO: Consider BinUtils
-              accountDto.getId(), accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN), accountDto.getCurrency(), new Date()));
-      return new AccountDto(savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
-    }       
+      AccountDao savedAccountDao =
+          accountRepository.save(
+              new AccountDao(
+                  accountDto.getId(),
+                  accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN),
+                  accountDto.getCurrency(),
+                  new Date()));
+      return new AccountDto(
+          savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
+    }
     throw new AccountAlreadyExistsException(accountDto.getId());
   }
 
+  @Transactional(readOnly = true)
   public List<AccountDto> getAllAccounts() {
     return accountRepository.findAll().stream()
         .map(
-            accountDao -> // TODO: Consider BinUtils
+            accountDao ->
                 new AccountDto(
                     accountDao.getId(), accountDao.getBalance(), accountDao.getCurrency()))
         .collect(Collectors.toList());
   }
 
-  public AccountDto getAccount(String id) throws NonExistentAccountException{
+  @Transactional(readOnly = true)
+  public AccountDto getAccount(String id) throws NonExistentAccountException {
     return accountRepository
         .findById(id)
         .map(

@@ -1,16 +1,16 @@
 package com.agilebank.model.account;
 
 import com.agilebank.model.currency.Currency;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
-
-import java.math.BigDecimal;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AccountDto {
-  @NonNull private String id;
-  @NonNull private BigDecimal balance;
-  @NonNull private Currency currency;
+  private String id;
+  private BigDecimal balance;
+  private Currency currency;
 }

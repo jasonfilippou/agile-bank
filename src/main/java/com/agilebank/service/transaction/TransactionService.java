@@ -16,31 +16,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
 
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
   private final TransactionSanityChecker transactionSanityChecker;
   private final CurrencyLedger currencyLedger;
-
-  @Autowired
-  public TransactionService(
-      AccountRepository accountRepository,
-      TransactionRepository transactionRepository,
-      TransactionSanityChecker transactionSanityChecker,
-      CurrencyLedger currencyLedger) {
-    this.accountRepository = accountRepository;
-    this.transactionRepository = transactionRepository;
-    this.transactionSanityChecker = transactionSanityChecker;
-    this.currencyLedger = currencyLedger;
-  }
-
-  @Transactional // Add Spring's @Transactional annotations to all service layer methods that use repositories, and for SELECT queries add the parameter readOnly = true (it's false by default)
+  
+  @Transactional
   public TransactionDto storeTransaction(TransactionDto transactionDto)
       throws NonExistentAccountException,
           InvalidAmountException,

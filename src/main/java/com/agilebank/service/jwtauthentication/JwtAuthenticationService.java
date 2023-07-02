@@ -1,7 +1,7 @@
 package com.agilebank.service.jwtauthentication;
 
 import com.agilebank.util.exceptions.BadPasswordLengthException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -9,14 +9,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JwtAuthenticationService {
 
   private final AuthenticationManager authenticationManager;
-
-  @Autowired
-  public JwtAuthenticationService(AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-  }
 
   public void authenticate(String username, String password) throws Exception {
     try {

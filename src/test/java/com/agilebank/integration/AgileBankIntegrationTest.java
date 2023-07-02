@@ -1,7 +1,7 @@
 package com.agilebank.integration;
 
-import static com.agilebank.controller.TransactionController.SOURCE_ACCOUNT_ID;
-import static com.agilebank.controller.TransactionController.TARGET_ACCOUNT_ID;
+import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
+import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

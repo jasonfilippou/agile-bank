@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,8 +43,9 @@ public class AccountControllerUnitTests {
   @Test
   public void whenPostingNewAccount_andServiceStoresSuccessfully_accountIsReturned(){
       when(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE)).thenReturn(TEST_ACCOUNT_DTO_ONE);
-      assertEquals(ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE), 
-              accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
+    assertEquals(
+        new ResponseEntity<>(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE, HttpStatus.CREATED),
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
   }
   
   @Test(expected = InvalidBalanceException.class)

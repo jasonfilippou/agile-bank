@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Getter
@@ -37,6 +38,7 @@ public class TransactionDao {
   private Currency currency;
 
   @Column(name = "submitted_at")
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   private Date submittedAt;
 
   public TransactionDao(

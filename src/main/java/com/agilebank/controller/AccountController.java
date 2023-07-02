@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,8 @@ public class AccountController {
   // TODO: @Operation annotation : https://www.baeldung.com/openapi-jwt-authentication
   @Operation()
   public ResponseEntity<EntityModel<AccountDto>> postAccount(@RequestBody AccountDto accountDto) {
-    return ResponseEntity.ok(accountModelAssembler.toModel(accountService.storeAccount(accountDto)));
+    return new ResponseEntity<>(accountModelAssembler.toModel(accountService.storeAccount(accountDto)),
+            HttpStatus.CREATED);
   }
 
   @GetMapping("/account")

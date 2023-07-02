@@ -1,6 +1,7 @@
 package com.agilebank.config;
 
 import com.agilebank.service.jwtauthentication.JwtRequestFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,24 +19,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final UserDetailsService jwtUserDetailsService;
   private final JwtRequestFilter jwtRequestFilter;
   private final PasswordEncoder passwordEncoder;
-
-  @Autowired
-  public SecurityConfig(
-      JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-      UserDetailsService jwtUserDetailsService,
-      JwtRequestFilter jwtRequestFilter,
-      PasswordEncoder passwordEncoder) {
-    this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-    this.jwtUserDetailsService = jwtUserDetailsService;
-    this.jwtRequestFilter = jwtRequestFilter;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @Bean
   public AuthenticationManager authenticationManager(
@@ -57,7 +47,7 @@ public class SecurityConfig {
         .disable()
         .authorizeRequests()
         .requestMatchers("/bankapi/register", "/bankapi/authenticate")
-        .permitAll() // TODO: Add swagger/openapiv3.0 entrypoint
+        .permitAll()
         .anyRequest()
         .authenticated()
         .and()

@@ -1,5 +1,7 @@
 package com.agilebank.util;
 
+import static com.agilebank.util.Constants.JWT_TOKEN_VALIDITY;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenUtil implements Serializable {
-
-  public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
   @Serial private static final long serialVersionUID = -2550185165626007488L;
   @Value("${jwt.secret}")
   private String secret;

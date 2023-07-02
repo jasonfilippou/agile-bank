@@ -1,5 +1,7 @@
 package com.agilebank.service.jwtauthentication;
 
+import static com.agilebank.util.Constants.AUTH_HEADER_BEARER_PREFIX;
+
 import com.agilebank.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -7,7 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,17 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
+@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-  public static final String BEARER_PREFIX = "Bearer ";
   private final JwtUserDetailsService jwtUserDetailsService;
   private final JwtTokenUtil jwtTokenUtil;
-
-  @Autowired
-  public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
-    this.jwtUserDetailsService = jwtUserDetailsService;
-    this.jwtTokenUtil = jwtTokenUtil;
-  }
 
   @Override
   protected void doFilterInternal(
@@ -36,8 +31,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     final String requestTokenHeader = request.getHeader("Authorization");
     String username = null;
     String jwtToken = null;
-    if (requestTokenHeader != null && requestTokenHeader.startsWith(BEARER_PREFIX)) {
-      jwtToken = requestTokenHeader.substring(BEARER_PREFIX.length());
+    if (requestTokenHeader != null && requestTokenHeader.startsWith(AUTH_HEADER_BEARER_PREFIX)) {
+      jwtToken = requestTokenHeader.substring(AUTH_HEADER_BEARER_PREFIX.length());
       try {
         // Get the username from the token.
         username = jwtTokenUtil.getUsernameFromToken(jwtToken);
@@ -47,7 +42,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         logger.warn("JWT Token has expired");
       }
     } else { // Token not found
-      logger.warn("JWT Token does not begin with \"" + BEARER_PREFIX + "\" string");
+      logger.warn("JWT Token does not begin with \"" + AUTH_HEADER_BEARER_PREFIX + "\" string");
     }
     // Validate the username and password
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

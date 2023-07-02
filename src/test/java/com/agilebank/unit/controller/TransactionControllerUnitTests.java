@@ -1,7 +1,7 @@
 package com.agilebank.unit.controller;
 
-import static com.agilebank.controller.TransactionController.SOURCE_ACCOUNT_ID;
-import static com.agilebank.controller.TransactionController.TARGET_ACCOUNT_ID;
+import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
+import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,14 +43,14 @@ public class TransactionControllerUnitTests {
         .thenReturn(TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE);
   }
 
-  /* POST new transaction tests */
+  /* POST transaction tests */
 
   @Test
   public void whenPostingANewTransaction_andServiceCompletesSuccessfully_thenReturnTransaction() {
     when(transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE))
         .thenReturn(TEST_TRANSACTION_DTO_ONE);
     assertEquals(
-        ResponseEntity.ok(TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE),
+        new ResponseEntity<>(TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE, HttpStatus.CREATED),
         transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE));
   }
 

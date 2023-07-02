@@ -6,7 +6,7 @@ import com.agilebank.model.currency.Currency;
 import com.agilebank.model.currency.CurrencyLedger;
 import java.math.BigDecimal;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +14,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestController
 @RequestMapping("/bankapi")
+@RequiredArgsConstructor
 public class CurrencyLedgerController {
 
   private final CurrencyLedger currencyLedger;
-
-  @Autowired
-  public CurrencyLedgerController(CurrencyLedger currencyLedger) {
-    this.currencyLedger = currencyLedger;
-  }
 
   @GetMapping("/currencyledger")
   public ResponseEntity<Map<CurrencyPair, BigDecimal>> getAllCurrencyExchangeRates() {
@@ -30,8 +26,8 @@ public class CurrencyLedgerController {
 
   @GetMapping("/exchangerate")
   public ResponseEntity<BigDecimal> getCurrencyExchangeRate(
-      @RequestParam(name = "currencyOne") Currency currencyOne,
-      @RequestParam(name = "currencyTwo") Currency currencyTwo) throws MethodArgumentTypeMismatchException{
+      @RequestParam(name = "currencyOne", required = false) Currency currencyOne,
+      @RequestParam(name = "currencyTwo", required = false) Currency currencyTwo) throws MethodArgumentTypeMismatchException{
     return ResponseEntity.ok(
         currencyLedger.getCurrencyExchangeRates().get(new CurrencyPair(currencyOne, currencyTwo)));
   }

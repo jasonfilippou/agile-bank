@@ -1,8 +1,8 @@
 package com.agilebank.util;
 
-import static com.agilebank.controller.TransactionController.SOURCE_ACCOUNT_ID;
-import static com.agilebank.controller.TransactionController.TARGET_ACCOUNT_ID;
 import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
+import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
+import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
