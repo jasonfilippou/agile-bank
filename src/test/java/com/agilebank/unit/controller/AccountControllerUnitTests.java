@@ -43,7 +43,7 @@ public class AccountControllerUnitTests {
   public void whenPostingNewAccount_andServiceStoresSuccessfully_accountIsReturned(){
       when(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE)).thenReturn(TEST_ACCOUNT_DTO_ONE);
       assertEquals(ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE), 
-              accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE));
+              accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
   }
   
   @Test(expected = InvalidBalanceException.class)
@@ -51,13 +51,13 @@ public class AccountControllerUnitTests {
     doThrow(new InvalidBalanceException(TEST_ACCOUNT_DTO_ONE.getId(), BigDecimal.ZERO))
         .when(accountService)
         .storeAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
   }
   
   @Test(expected = AccountAlreadyExistsException.class)
   public void whenPostingNewAccount_andServiceThrowsAccountAlreadyExistsException_thenExceptionBubblesUp(){
     doThrow(new AccountAlreadyExistsException(TEST_ACCOUNT_DTO_ONE.getId())).when(accountService).storeAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
   }
   
   @Test

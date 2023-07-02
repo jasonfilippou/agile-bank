@@ -14,6 +14,7 @@ import org.hibernate.proxy.HibernateProxy;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+// TODO: Consider the @DynamicUpdate annotation. Read up on it.
 @Table(name = "ACCOUNT")
 public class AccountDao {
 
@@ -28,7 +29,7 @@ public class AccountDao {
   @Enumerated(EnumType.STRING)
   private Currency currency;
 
-  @Column(name = "created_at")
+  @Column(name = "created_at") // TODO: Consider looking at different formats for the date/time persistence
   private Date createdAt;
 
   @Override

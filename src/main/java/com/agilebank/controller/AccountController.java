@@ -5,8 +5,9 @@ package com.agilebank.controller;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +15,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/bankapi")
+@RequiredArgsConstructor
 public class AccountController {
 
   private final AccountService accountService;
   private final AccountModelAssembler accountModelAssembler;
 
-  @Autowired
-  public AccountController(
-      AccountService accountService, AccountModelAssembler accountModelAssembler) {
-    this.accountService = accountService;
-    this.accountModelAssembler = accountModelAssembler;
-  }
-
-  @PostMapping("/newaccount")
-  public ResponseEntity<EntityModel<AccountDto>> postNewAccount(@RequestBody AccountDto accountDto) {
+  @PostMapping("/account") // singular!
+  // TODO: @Operation annotation : https://www.baeldung.com/openapi-jwt-authentication
+  @Operation()
+  public ResponseEntity<EntityModel<AccountDto>> postAccount(@RequestBody AccountDto accountDto) {
     return ResponseEntity.ok(accountModelAssembler.toModel(accountService.storeAccount(accountDto)));
   }
 
-  @GetMapping("/allaccounts")
+  @GetMapping("/account")
   public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts() {
     return ResponseEntity.ok(accountModelAssembler.toCollectionModel(
             accountService.getAllAccounts()));

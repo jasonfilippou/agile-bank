@@ -22,6 +22,7 @@ public class TransactionDao {
   @Column(name = "id")
   private Long id;
 
+  // TODO: Consider connecting the Account to Transaction entity with a @OneToMany annotation.
   @Column(name = "source_account_id")
   private String sourceAccountId;
 

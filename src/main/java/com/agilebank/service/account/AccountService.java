@@ -12,18 +12,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
   private final AccountRepository accountRepository;
-
-  @Autowired
-  public AccountService(AccountRepository accountRepository) {
-    this.accountRepository = accountRepository;
-  }
 
   public AccountDto storeAccount(AccountDto accountDto) throws InvalidBalanceException, AccountAlreadyExistsException {
     if(accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0){
@@ -32,18 +28,17 @@ public class AccountService {
     Optional<AccountDao> accountDao = accountRepository.findById(accountDto.getId());
     if (accountDao.isEmpty()) {
       AccountDao savedAccountDao = accountRepository.save(
-          new AccountDao(
+          new AccountDao( // TODO: Consider BinUtils
               accountDto.getId(), accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN), accountDto.getCurrency(), new Date()));
       return new AccountDto(savedAccountDao.getId(), savedAccountDao.getBalance(), savedAccountDao.getCurrency());
-    } else {
-      throw new AccountAlreadyExistsException(accountDto.getId());
-    }
+    }       
+    throw new AccountAlreadyExistsException(accountDto.getId());
   }
 
   public List<AccountDto> getAllAccounts() {
     return accountRepository.findAll().stream()
         .map(
-            accountDao ->
+            accountDao -> // TODO: Consider BinUtils
                 new AccountDto(
                     accountDao.getId(), accountDao.getBalance(), accountDao.getCurrency()))
         .collect(Collectors.toList());

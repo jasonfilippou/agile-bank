@@ -50,7 +50,7 @@ public class AgileBankIntegrationTest {
 
   @Test
   public void whenPostingAValidAccount_accountCanThenBeFound() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
     assertEquals(
         ResponseEntity.ok(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_ONE)),
         accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId()));
@@ -58,8 +58,8 @@ public class AgileBankIntegrationTest {
 
   @Test
   public void whenPostingTwoValidAccounts_getAllFindsThemBoth() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     assertEquals(
         ResponseEntity.ok(
             CollectionModel.of(
@@ -82,28 +82,28 @@ public class AgileBankIntegrationTest {
 
   @Test(expected = InvalidBalanceException.class)
   public void whenPostingAnAccountWithABadBalance_thenInvalidBalanceExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_THREE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_THREE);
   }
 
   @Test(expected = NonExistentAccountException.class)
   public void whenGettingAnAccountThatWeHaveNotPosted_thenNonExistentAccountExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId() + "spam");
   }
 
   @Test(expected = AccountAlreadyExistsException.class)
   public void whenPostingTheSameAccountTwice_thenAnAccountAlreadyExistsExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
   }
 
   /* Now we put transactions in the mix as well. */
   @Test
   public void
       whenPostingAValidTransactionBetweenTwoAccounts_thenWeCanFindTheTransactionInMultipleWays() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     transactionController.postNewTransaction(TEST_TRANSACTION_DTO_ONE);
     List<ResponseEntity<CollectionModel<EntityModel<TransactionDto>>>> responseEntities =
         Arrays.asList(
@@ -130,7 +130,7 @@ public class AgileBankIntegrationTest {
   @Test(expected = NonExistentAccountException.class)
   public void
       whenPostingATransactionFromANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     transactionController.postNewTransaction(
         TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
   }
@@ -138,22 +138,22 @@ public class AgileBankIntegrationTest {
   @Test(expected = NonExistentAccountException.class)
   public void
       whenPostingATransactionToANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
     transactionController.postNewTransaction(
         TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
   }
 
   @Test(expected = SameAccountException.class)
   public void whenPostingATransactionFromAnAccountToItself_thenASameAccountExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     transactionController.postNewTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
   }
 
   @Test(expected = InsufficientBalanceException.class)
   public void
       whenPostingATransactionForWhichThereIsAnInsufficientBalanceInSourceAccount_thenInsufficientBalanceExceptionIsThrown() {
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postNewAccount(TEST_ACCOUNT_DTO_TWO);
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     transactionController.postNewTransaction(
         TEST_TRANSACTION_DTO_TWO); // Specially crafted to be too much for account one, even with
                                    // the real ledger values.

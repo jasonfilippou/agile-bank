@@ -17,17 +17,17 @@ import org.springframework.stereotype.Component;
 public class AccountControllerLogger {
 
   /* POST */
-  @Before("execution(* com.agilebank.controller.AccountController.postNewAccount(..))")
+  @Before("execution(* com.agilebank.controller.AccountController.postAccount(..))")
   public void beforePostAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
   }
 
-  @AfterReturning("execution(* com.agilebank.controller.AccountController.postNewAccount(..))")
+  @AfterReturning("execution(* com.agilebank.controller.AccountController.postAccount(..))")
   public void afterPostAccount(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.postNewAccount(..))", throwing = "ex")
+  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.postAccount(..))", throwing = "ex")
   public void afterPostAccountThrows(JoinPoint jp, Throwable ex){
     log.warn(msg(jp, ex.getClass()));
   }

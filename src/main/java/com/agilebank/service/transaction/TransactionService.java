@@ -9,7 +9,6 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
 import com.agilebank.util.exceptions.*;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -19,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionService {
@@ -40,7 +40,7 @@ public class TransactionService {
     this.currencyLedger = currencyLedger;
   }
 
-  @Transactional // Since there's a bunch of persistence calls
+  @Transactional // Add Spring's @Transactional annotations to all service layer methods that use repositories, and for SELECT queries add the parameter readOnly = true (it's false by default)
   public TransactionDto storeTransaction(TransactionDto transactionDto)
       throws NonExistentAccountException,
           InvalidAmountException,
@@ -81,6 +81,7 @@ public class TransactionService {
             storedTransactionDao.getAmount().setScale(2, RoundingMode.HALF_EVEN), storedTransactionDao.getCurrency());
   }
 
+  @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactions() {
     return transactionRepository.findAll().stream()
         .map(
@@ -93,6 +94,7 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsFrom(String sourceAccountId) {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
         .map(
@@ -105,6 +107,7 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsTo(String targetAccountId) {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
         .map(
@@ -117,6 +120,7 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsBetween(
       String sourceAccountId, String targetAccountId) {
     return transactionRepository

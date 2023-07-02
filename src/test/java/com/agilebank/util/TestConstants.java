@@ -21,7 +21,9 @@ import java.util.Map;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
-public class TestConstants {
+public final class TestConstants {
+  
+  private TestConstants(){}
 
   /* Account IDs */
   public static final String ACCOUNT_ONE_ID = "acc1";
