@@ -9,19 +9,25 @@ import org.springframework.web.bind.annotation.*;
 public class ExceptionAdvice {
 
   @ResponseBody
-  @ExceptionHandler({ HttpMessageNotReadableException.class,
-          InsufficientBalanceException.class, InvalidAmountException.class, SameAccountException.class,
-          InvalidTransactionCurrencyException.class})
+  @ExceptionHandler({
+    HttpMessageNotReadableException.class,
+    InsufficientBalanceException.class,
+    InvalidAmountException.class,
+    SameAccountException.class,
+    InvalidTransactionCurrencyException.class,
+    OneOfTwoCurrenciesMissingException.class,
+    BadPasswordLengthException.class,
+    InvalidBalanceException.class
+  })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc){
+  public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc) {
     return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
   }
-
 
   @ResponseBody
   @ExceptionHandler({AccountNotFoundException.class, TransactionNotFoundException.class})
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public ResponseEntity<String> notFoundStatusMessage(RuntimeException exc){
+  public ResponseEntity<String> notFoundStatusMessage(RuntimeException exc) {
     return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_FOUND);
   }
 }

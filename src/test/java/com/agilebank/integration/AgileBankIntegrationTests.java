@@ -1,5 +1,6 @@
 package com.agilebank.integration;
 
+import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestConstants.*;
@@ -10,9 +11,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import com.agilebank.controller.AccountController;
+import com.agilebank.controller.CurrencyLedgerController;
 import com.agilebank.controller.TransactionController;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
+import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.util.exceptions.*;
@@ -44,6 +47,8 @@ public class AgileBankIntegrationTests {
   @Autowired private AccountModelAssembler accountModelAssembler;
 
   @Autowired private TransactionModelAssembler transactionModelAssembler;
+
+  @Autowired private CurrencyLedgerController currencyLedgerController;
 
   /* Tests exclusively for accounts first. */
 
@@ -188,7 +193,7 @@ public class AgileBankIntegrationTests {
             .amount(BigDecimal.ONE)
             .currency(accountDto.getCurrency())
             .build()); // Currency doesn't matter here; the NonExistentAccountException should be
-                       // thrown first.
+    // thrown first.
   }
 
   @Test(expected = TransactionNotFoundException.class)
@@ -247,8 +252,51 @@ public class AgileBankIntegrationTests {
             .amount(
                 new BigDecimal(
                     "19000.80")) // Specially crafted to be too much for account one, even with
-                                      // the real ledger values.
+            // the real ledger values.
             .currency(accountDtoTwo.getCurrency())
             .build());
+  }
+
+  /* Exchange rate endpoint tests */
+
+  @Test
+  public void whenRequestingAllExchangeRates_thenAllOfThemAreReturned() {
+    int numberOfCurrencies = Currency.values().length;
+    ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity =
+        currencyLedgerController.getCurrencyExchangeRate(null, null);
+    assertEquals(
+        numberOfCurrencies * numberOfCurrencies,
+        Objects.requireNonNull(responseEntity.getBody())
+            .size()); // n^2 ordered pairs for a set of size n
+  }
+  
+  @Test(expected = OneOfTwoCurrenciesMissingException.class)
+  public void whenProvidingTheFirstCurrencyButNeglectingTheSecondOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+    currencyLedgerController.getCurrencyExchangeRate(Currency.AED, null);
+  }
+
+  @Test(expected = OneOfTwoCurrenciesMissingException.class)
+  public void whenProvidingTheSecondCurrencyButNeglectingTheFirstOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+    currencyLedgerController.getCurrencyExchangeRate(null, Currency.AOK);
+  }
+  
+  @Test
+  public void whenRequestingASpecificExchangeRate_thenTheCorrectOneIsReturned(){
+    // This is a bit of an expensive test, but important for data integrity.
+    ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity = currencyLedgerController.getCurrencyExchangeRate(null, null);
+    Map<CurrencyPair, BigDecimal> exchangeRates = responseEntity.getBody();
+    assert exchangeRates != null;
+    for(Currency currencyOne: Currency.values()){
+      for(Currency currencyTwo: Currency.values()){
+        CurrencyPair currencyPair = new CurrencyPair(currencyOne, currencyTwo);
+        BigDecimal exchangeRateFromFullLedger = exchangeRates.get(currencyPair);
+        ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForSpecificCurrencyPair =
+                currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo);
+        Map<CurrencyPair, BigDecimal> mapForSpecificCurrencyPair = responseEntityForSpecificCurrencyPair.getBody();
+        assert mapForSpecificCurrencyPair != null && mapForSpecificCurrencyPair.size() == 1;
+        BigDecimal exchangeRateThatWeGetForCurrencyPair = mapForSpecificCurrencyPair.get(currencyPair);
+        assertEquals(exchangeRateFromFullLedger, exchangeRateThatWeGetForCurrencyPair);
+      }
+    }
   }
 }

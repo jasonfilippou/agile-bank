@@ -1,5 +1,6 @@
 package com.agilebank.unit.controller;
 
+import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static com.agilebank.util.TestConstants.TEST_EXCHANGE_RATES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -7,7 +8,9 @@ import static org.mockito.Mockito.when;
 import com.agilebank.controller.CurrencyLedgerController;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.currency.CurrencyLedger;
+import com.agilebank.util.exceptions.OneOfTwoCurrenciesMissingException;
 import java.math.BigDecimal;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,12 +32,22 @@ public class CurrencyLedgerControllerUnitTests {
   }
   @Test
   public void whenCurrencyLedgerReturnsTheFullExchangeRates_thenSoDoesTheController(){
-    assertEquals(ResponseEntity.ok(TEST_EXCHANGE_RATES), currencyLedgerController.getAllCurrencyExchangeRates());
+    assertEquals(ResponseEntity.ok(TEST_EXCHANGE_RATES), currencyLedgerController.getCurrencyExchangeRate(null, null));
   }
   
   @Test
   public void whenRequestingASpecificExchangeRate_thenWeGetTheCorrectExchangeRate(){
-    assertEquals(ResponseEntity.ok(new BigDecimal("5.65")), currencyLedgerController
-            .getCurrencyExchangeRate(Currency.USD, Currency.IDR));
+    assertEquals(ResponseEntity.ok(Map.of(new CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"))),
+            currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.IDR));
+  }
+  
+  @Test(expected = OneOfTwoCurrenciesMissingException.class)
+  public void whenProvidingCurrencyOneButNeglectingToProvideCurrencyTwo_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+    currencyLedgerController.getCurrencyExchangeRate(Currency.AFA, null);
+  }
+
+  @Test(expected = OneOfTwoCurrenciesMissingException.class)
+  public void whenProvidingCurrencyTwoButNeglectingToProvideCurrencyOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+    currencyLedgerController.getCurrencyExchangeRate(null, Currency.AFA);
   }
 }
