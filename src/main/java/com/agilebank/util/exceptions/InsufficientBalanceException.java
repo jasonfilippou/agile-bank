@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 @Getter
 public class InsufficientBalanceException extends RuntimeException {
 
-  private final String accountId;
+  private final Long accountId;
   private final BigDecimal accountBalanceInCurrency;
   private final Currency currency;
 
-  public InsufficientBalanceException(String accountId, BigDecimal accountBalanceInCurrency, Currency currency, BigDecimal amountRequested) {
+  public InsufficientBalanceException(Long accountId, BigDecimal accountBalanceInCurrency, Currency currency, BigDecimal amountRequested) {
     super(
         "Account "
             + accountId

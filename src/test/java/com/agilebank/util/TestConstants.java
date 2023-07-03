@@ -25,9 +25,9 @@ public final class TestConstants {
   private TestConstants() {}
 
   /* Account IDs */
-  public static final String ACCOUNT_ONE_ID = "acc1";
-  public static final String ACCOUNT_TWO_ID = "acc2";
-  public static final String ACCOUNT_THREE_ID = "acc3";
+  public static final Long ACCOUNT_ONE_ID = 1L;
+  public static final Long ACCOUNT_TWO_ID = 2L;
+  public static final Long ACCOUNT_THREE_ID = 3L;
 
   /* Account DTOs */
 
@@ -43,23 +43,23 @@ public final class TestConstants {
           new BigDecimal("-51.00"),
           Currency.USD); // Invalid value put here for testing.
 
-  /* Account DAOs */
+  /* Accounts */
 
-  public static final Account TEST_ACCOUNT_DAO_ONE =
+  public static final Account TEST_ACCOUNT_ONE =
       new Account(
           TEST_ACCOUNT_DTO_ONE.getId(),
           TEST_ACCOUNT_DTO_ONE.getBalance(),
           TEST_ACCOUNT_DTO_ONE.getCurrency(),
           new Date(946083999988L));
 
-  public static final Account TEST_ACCOUNT_DAO_TWO =
+  public static final Account TEST_ACCOUNT_TWO =
       new Account(
           TEST_ACCOUNT_DTO_TWO.getId(),
           TEST_ACCOUNT_DTO_TWO.getBalance(),
           TEST_ACCOUNT_DTO_TWO.getCurrency(),
           new Date(946083999989L));
 
-  public static final Account TEST_ACCOUNT_DAO_THREE =
+  public static final Account TEST_ACCOUNT_THREE =
       new Account(
           TEST_ACCOUNT_DTO_THREE.getId(),
           TEST_ACCOUNT_DTO_THREE.getBalance(),
@@ -123,7 +123,7 @@ public final class TestConstants {
           new BigDecimal("0.19"),
           Currency
               .AFA); // Currency different from target account's on purpose, to test for a relevant
-  // Exception being thrown.
+                    // Exception being thrown.
 
   public static final TransactionDto TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF =
       new TransactionDto(
@@ -133,9 +133,9 @@ public final class TestConstants {
           BigDecimal.TEN,
           Currency.IDR); // Again, an instance only for testing.
 
-  /* Transaction DAOs */
+  /* Transactions */
 
-  public static final Transaction TEST_TRANSACTION_DAO_ONE =
+  public static final Transaction TEST_TRANSACTION_ONE =
       new Transaction(
           TEST_TRANSACTION_DTO_ONE.getId(),
           TEST_TRANSACTION_DTO_ONE.getSourceAccountId(),
@@ -143,7 +143,7 @@ public final class TestConstants {
           TEST_TRANSACTION_DTO_ONE.getAmount(),
           TEST_TRANSACTION_DTO_ONE.getCurrency(),
           new Date(946083999998L));
-  public static final Transaction TEST_TRANSACTION_DAO_TWO =
+  public static final Transaction TEST_TRANSACTION_TWO =
       new Transaction(
           TEST_TRANSACTION_DTO_TWO.getId(),
           TEST_TRANSACTION_DTO_TWO.getSourceAccountId(),
@@ -152,7 +152,7 @@ public final class TestConstants {
           TEST_TRANSACTION_DTO_TWO.getCurrency(),
           new Date(946083999999L));
 
-  public static final Transaction TEST_TRANSACTION_DAO_THREE =
+  public static final Transaction TEST_TRANSACTION_THREE =
       new Transaction(
           TEST_TRANSACTION_DTO_THREE.getId(),
           TEST_TRANSACTION_DTO_THREE.getSourceAccountId(),
@@ -161,7 +161,7 @@ public final class TestConstants {
           TEST_TRANSACTION_DTO_THREE.getCurrency(),
           new Date(946084000000L));
 
-  public static final Transaction TEST_TRANSACTION_DAO_FOUR =
+  public static final Transaction TEST_TRANSACTION_FOUR =
       new Transaction(
           TEST_TRANSACTION_DTO_FOUR.getId(),
           TEST_TRANSACTION_DTO_FOUR.getSourceAccountId(),

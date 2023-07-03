@@ -58,7 +58,7 @@ public class TransactionControllerUnitTests {
   @Test(expected = NonExistentAccountException.class)
   public void
       whenPostingANewTransaction_andServiceThrowsNonExistentAccountException_thenExceptionBubblesUp() {
-    doThrow(new NonExistentAccountException("non-existent account"))
+    doThrow(new NonExistentAccountException(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
     transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
@@ -78,7 +78,7 @@ public class TransactionControllerUnitTests {
       whenPostingANewTransaction_andServicethrowsInsufficientBalanceException_thenExceptionBubblesUp() {
     doThrow(
             new InsufficientBalanceException(
-                "accountId", BigDecimal.ZERO, Currency.GBP, BigDecimal.ONE))
+                TEST_TRANSACTION_DTO_ONE.getSourceAccountId(), BigDecimal.ZERO, Currency.GBP, BigDecimal.ONE))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
     transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
@@ -132,7 +132,7 @@ public class TransactionControllerUnitTests {
     when(transactionService.getAllTransactionsFrom(ACCOUNT_ONE_ID))
         .thenReturn(
             List.of(
-                TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE));
+                TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE)); // Those three transactions are from Acc1.
     when(transactionModelAssembler.toCollectionModel(
             List.of(
                     TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE),
@@ -147,7 +147,7 @@ public class TransactionControllerUnitTests {
   public void whenGettingAllTransactionsToAcc2_returnOnlyThoseTransactions() {
     when(transactionService.getAllTransactionsTo(ACCOUNT_TWO_ID))
         .thenReturn(
-            List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR));
+            List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR)); // Those are all to Acc2
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR),
             Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId())))
@@ -160,7 +160,7 @@ public class TransactionControllerUnitTests {
   @Test
   public void whenGettingAllTransactionsFromAcc1ToAcc2_returnOnlyThoseTransactions() {
     when(transactionService.getAllTransactionsBetween(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID))
-        .thenReturn(List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO));
+        .thenReturn(List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO)); // Those are from Acc1 to Acc2.
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO),
             Map.of(

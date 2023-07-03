@@ -25,10 +25,10 @@ public class TransactionSanityChecker {
           InsufficientBalanceException{
     // If either account could not be found, throw an exception.
     if (sourceAccount.isEmpty()) {
-      throw new NonExistentAccountException(transactionDto.getSourceAccountId().strip());
+      throw new NonExistentAccountException(transactionDto.getSourceAccountId());
     }
     if (targetAccount.isEmpty()) {
-      throw new NonExistentAccountException(transactionDto.getTargetAccountId().strip());
+      throw new NonExistentAccountException(transactionDto.getTargetAccountId());
     }
     if(sourceAccount.get().getId().equals(targetAccount.get().getId())) {
       throw new SameAccountException(sourceAccount.get().getId());
@@ -53,7 +53,7 @@ public class TransactionSanityChecker {
                 sourceAccount.get().getBalance().multiply(sourceToTransactionCurrencyExchangeRate))
         > 0) {
       throw new InsufficientBalanceException(
-          transactionDto.getSourceAccountId().strip(),
+          transactionDto.getSourceAccountId(),
           sourceAccount.get().getBalance(),
           sourceAccount.get().getCurrency(),
           transactionDto.getAmount());

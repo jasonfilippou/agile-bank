@@ -37,7 +37,7 @@ public class TransactionController {
 
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
-      @RequestParam Map<String, String> params) {
+      @RequestParam Map<String, Long> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
               transactionService.getAllTransactionsBetween(params.get(SOURCE_ACCOUNT_ID), params.get(TARGET_ACCOUNT_ID)), params));

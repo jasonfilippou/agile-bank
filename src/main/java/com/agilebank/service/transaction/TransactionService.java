@@ -10,7 +10,6 @@ import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +29,11 @@ public class TransactionService {
   private final CurrencyLedger currencyLedger;
 
   @Transactional
-  public TransactionDto storeTransaction(TransactionDto transactionDto)
-      throws NonExistentAccountException,
-          InvalidAmountException,
-          InvalidTransactionCurrencyException,
-          SameAccountException,
-          InsufficientBalanceException {
+  public TransactionDto storeTransaction(TransactionDto transactionDto) {
     Optional<Account> sourceAccount =
-        accountRepository.findById(transactionDto.getSourceAccountId().strip());
+        accountRepository.findById(transactionDto.getSourceAccountId());
     Optional<Account> targetAccount =
-        accountRepository.findById(transactionDto.getTargetAccountId().strip());
+        accountRepository.findById(transactionDto.getTargetAccountId());
     Map<CurrencyPair, BigDecimal> currencyExchangeRates = currencyLedger.getCurrencyExchangeRates();
     // Check the transaction for various inconsistencies.
     transactionSanityChecker.checkTransaction(
@@ -67,8 +61,8 @@ public class TransactionService {
     Transaction storedTransaction =
         transactionRepository.save(
             new Transaction(
-                transactionDto.getSourceAccountId().strip(),
-                transactionDto.getTargetAccountId().strip(),
+                transactionDto.getSourceAccountId(),
+                transactionDto.getTargetAccountId(),
                 transactionDto.getAmount(),
                 transactionDto.getCurrency(),
                 new Date()));
@@ -76,7 +70,7 @@ public class TransactionService {
         storedTransaction.getId(),
         storedTransaction.getSourceAccountId(),
         storedTransaction.getTargetAccountId(),
-        storedTransaction.getAmount().setScale(2, RoundingMode.HALF_EVEN),
+        storedTransaction.getAmount(),
         storedTransaction.getCurrency());
   }
 
@@ -110,7 +104,7 @@ public class TransactionService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsFrom(String sourceAccountId) {
+  public List<TransactionDto> getAllTransactionsFrom(Long sourceAccountId) {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
         .map(
             transaction ->
@@ -124,7 +118,7 @@ public class TransactionService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsTo(String targetAccountId) {
+  public List<TransactionDto> getAllTransactionsTo(Long targetAccountId) {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
         .map(
             transaction ->
@@ -139,7 +133,7 @@ public class TransactionService {
 
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsBetween(
-      String sourceAccountId, String targetAccountId) {
+      Long sourceAccountId, Long targetAccountId) {
     return transactionRepository
         .findBySourceAccountIdAndTargetAccountId(sourceAccountId, targetAccountId)
         .stream()

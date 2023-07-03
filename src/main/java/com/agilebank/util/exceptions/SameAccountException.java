@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class SameAccountException extends RuntimeException {
 
-  private final String accountId;
+  private final Long accountId;
 
-  public SameAccountException(String accountId) {
+  public SameAccountException(Long accountId) {
     super("Attempted a transaction from and to the same account with id: " + accountId);
     this.accountId = accountId;
   }

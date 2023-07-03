@@ -1,20 +1,18 @@
 package com.agilebank.model.transaction;
 
 import com.agilebank.model.currency.Currency;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 import java.math.BigDecimal;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@EqualsAndHashCode
 public class TransactionDto {
   private Long id;
-  @NonNull private String sourceAccountId;
-  @NonNull private String targetAccountId;
+  @NonNull private Long sourceAccountId;
+  @NonNull private Long targetAccountId;
   @NonNull private BigDecimal amount;
   @NonNull private Currency currency;
 }

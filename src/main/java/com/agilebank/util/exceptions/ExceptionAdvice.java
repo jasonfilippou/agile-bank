@@ -11,7 +11,7 @@ public class ExceptionAdvice {
   @ResponseBody
   @ExceptionHandler({ HttpMessageNotReadableException.class,
           InsufficientBalanceException.class, InvalidAmountException.class, SameAccountException.class,
-          AccountAlreadyExistsException.class, InvalidTransactionCurrencyException.class})
+          InvalidTransactionCurrencyException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc){
     return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);

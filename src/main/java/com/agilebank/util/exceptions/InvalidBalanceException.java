@@ -6,12 +6,11 @@ import java.math.BigDecimal;
 
 @Getter
 public class InvalidBalanceException extends RuntimeException{
-    private final String accountId;
+
     private final BigDecimal balance;
 
-    public InvalidBalanceException(String accountId, BigDecimal balance){
-        super("Account with " + accountId + " cannot be created with non-positive balance: " + balance);
-        this.accountId = accountId;
+    public InvalidBalanceException(BigDecimal balance){
+        super("Account cannot be created with non-positive balance: " + balance);
         this.balance = balance;
     }
 }

@@ -16,6 +16,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "TRANSACTION")
 public class Transaction {
 
@@ -25,10 +26,10 @@ public class Transaction {
   private Long id;
 
   @Column(name = "source_account_id")
-  private String sourceAccountId;
+  private Long sourceAccountId;
 
   @Column(name = "target_account_id")
-  private String targetAccountId;
+  private Long targetAccountId;
 
   @Column(name = "amount", scale = 2)
   private BigDecimal amount;
@@ -42,8 +43,8 @@ public class Transaction {
   private Date submittedAt;
 
   public Transaction(
-      String sourceAccountId,
-      String targetAccountId,
+      Long sourceAccountId,
+      Long targetAccountId,
       BigDecimal amount,
       Currency currency,
       Date submittedAt) {

@@ -3,11 +3,12 @@ package com.agilebank.unit.service.account;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.agilebank.model.account.Account;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
-import com.agilebank.util.exceptions.AccountAlreadyExistsException;
 import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import java.util.List;
@@ -29,9 +30,7 @@ public class AccountServiceUnitTests {
     
     @Test
     public void whenRepoSavesANewAccount_thenTheAccountIsReturned(){
-        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(
-                Optional.empty());
-        when(accountRepository.save(TEST_ACCOUNT_DAO_ONE)).thenReturn(TEST_ACCOUNT_DAO_ONE);
+    when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ONE);
         assertEquals(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE), TEST_ACCOUNT_DTO_ONE);
     }
     
@@ -41,15 +40,9 @@ public class AccountServiceUnitTests {
         accountService.storeAccount(TEST_ACCOUNT_DTO_THREE);
     }
     
-    @Test(expected = AccountAlreadyExistsException.class)
-    public void whenRepoFindsAnAccountWithTheSameID_thenAccountAlreadyExistsEceptionIsThrown(){
-        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.of(TEST_ACCOUNT_DAO_ONE));
-        accountService.storeAccount(TEST_ACCOUNT_DTO_ONE);
-    }
-    
     @Test
     public void whenRequestingSpecificAccount_andRepoFindsIt_thenTheAccountIsReturned(){
-        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.of(TEST_ACCOUNT_DAO_ONE));
+        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.of(TEST_ACCOUNT_ONE));
         assertEquals(accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId()), TEST_ACCOUNT_DTO_ONE);
     }
     
@@ -62,7 +55,7 @@ public class AccountServiceUnitTests {
     @Test
     public void whenRequestingAllAccounts_thenAllAccountsAreReturned(){
         when(accountRepository.findAll()).thenReturn(List.of(
-                TEST_ACCOUNT_DAO_ONE, TEST_ACCOUNT_DAO_TWO, TEST_ACCOUNT_DAO_THREE));
+                TEST_ACCOUNT_ONE, TEST_ACCOUNT_TWO, TEST_ACCOUNT_THREE));
         assertTrue(CollectionUtils.isEqualCollection(accountService.getAllAccounts(), List.of(
                 TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE)));
     }

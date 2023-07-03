@@ -2,19 +2,16 @@ package com.agilebank.unit.controller;
 
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.agilebank.controller.AccountController;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
-import com.agilebank.util.exceptions.AccountAlreadyExistsException;
 import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import java.math.BigDecimal;
 import java.util.List;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,15 +47,9 @@ public class AccountControllerUnitTests {
   
   @Test(expected = InvalidBalanceException.class)
   public void whenPostingNewAccountWithNonPositiveBalance_andServiceThrowsInvalidBalanceException_thenExceptionBubblesUp(){
-    doThrow(new InvalidBalanceException(TEST_ACCOUNT_DTO_ONE.getId(), BigDecimal.ZERO))
+    doThrow(new InvalidBalanceException(BigDecimal.ZERO))
         .when(accountService)
         .storeAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-  }
-  
-  @Test(expected = AccountAlreadyExistsException.class)
-  public void whenPostingNewAccount_andServiceThrowsAccountAlreadyExistsException_thenExceptionBubblesUp(){
-    doThrow(new AccountAlreadyExistsException(TEST_ACCOUNT_DTO_ONE.getId())).when(accountService).storeAccount(TEST_ACCOUNT_DTO_ONE);
     accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
   }
   
@@ -78,7 +69,7 @@ public class AccountControllerUnitTests {
   
   @Test(expected = NonExistentAccountException.class)
   public void whenGettingAnAccountThatDoesNotExist_thenNonExistentAccountIsThrown(){
-    doThrow(new NonExistentAccountException("someAccountId")).when(accountService).getAccount(anyString());
-    accountController.getAccount(RandomStringUtils.randomAlphanumeric(10));
+    doThrow(new NonExistentAccountException(0L)).when(accountService).getAccount(0L);
+    accountController.getAccount(0L);
   }
 }

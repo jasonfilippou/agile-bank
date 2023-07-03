@@ -46,7 +46,7 @@ public class TransactionModelAssembler
   }
 
   public CollectionModel<EntityModel<TransactionDto>> toCollectionModel(Iterable<? extends TransactionDto> entities,
-                                                                        Map<String, String> params){
+                                                                        Map<String, Long> params){
     CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
     collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
     if(params.size() > 0){

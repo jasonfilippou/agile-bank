@@ -11,10 +11,12 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 
 import com.agilebank.controller.AccountController;
 import com.agilebank.controller.TransactionController;
+import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.util.exceptions.*;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +40,7 @@ public class AgileBankIntegrationTests {
   @Autowired private AccountController accountController;
 
   @Autowired private TransactionController transactionController;
-  
+
   @Autowired private AccountModelAssembler accountModelAssembler;
 
   @Autowired private TransactionModelAssembler transactionModelAssembler;
@@ -47,20 +49,38 @@ public class AgileBankIntegrationTests {
 
   @Test
   public void whenPostingAValidAccount_accountCanThenBeFound() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntity =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto accountDto = Objects.requireNonNull(responseEntity.getBody()).getContent();
+    assert accountDto != null;
     assertEquals(
         ResponseEntity.ok(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_ONE)),
-        accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId()));
+        accountController.getAccount(accountDto.getId()));
   }
 
   @Test
   public void whenPostingTwoValidAccounts_getAllFindsThemBoth() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
+    AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
     assertEquals(
         ResponseEntity.ok(
             CollectionModel.of(
-                Stream.of(TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO)
+                Stream.of(
+                        AccountDto.builder()
+                            .id(accountDtoOne.getId())
+                            .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                            .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
+                            .build(),
+                        AccountDto.builder()
+                            .id(accountDtoTwo.getId())
+                            .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
+                            .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+                            .build())
                     .map(accountModelAssembler::toModel)
                     .collect(Collectors.toList()),
                 linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel())),
@@ -84,85 +104,133 @@ public class AgileBankIntegrationTests {
 
   @Test(expected = NonExistentAccountException.class)
   public void whenGettingAnAccountThatWeHaveNotPosted_thenNonExistentAccountExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId() + "spam");
-  }
-
-  @Test(expected = AccountAlreadyExistsException.class)
-  public void whenPostingTheSameAccountTwice_thenAnAccountAlreadyExistsExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntity =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto accountDto = Objects.requireNonNull(responseEntity.getBody()).getContent();
+    assert accountDto != null;
+    accountController.getAccount(accountDto.getId() + 1);
   }
 
   /* Now we put transactions in the mix as well. */
   @Test
   public void
       whenPostingAValidTransactionBetweenTwoAccounts_thenWeCanFindTheTransactionInMultipleWays() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
-    assertEquals(ResponseEntity.ok(transactionModelAssembler.toModel(TEST_TRANSACTION_DTO_ONE)), 
-            transactionController.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
+    AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
+    TransactionDto transactionDto =
+        TransactionDto.builder()
+            .id(accountDtoOne.getId())
+            .sourceAccountId(accountDtoOne.getId())
+            .targetAccountId(accountDtoTwo.getId())
+            .amount(new BigDecimal("1.00")) // BigDecimal.One here leads to a false failure of the test (1 vs 1.00)
+            .currency(accountDtoTwo.getCurrency())
+            .build();
+    transactionController.postTransaction(transactionDto);
+    assertEquals(
+        ResponseEntity.ok(transactionModelAssembler.toModel(transactionDto)),
+        transactionController.getTransaction(transactionDto.getId()));
     List<ResponseEntity<CollectionModel<EntityModel<TransactionDto>>>> responseEntities =
         Arrays.asList(
             transactionController.getAllTransactions(Collections.emptyMap()),
             transactionController.getAllTransactions(
-                Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId())),
+                Map.of(SOURCE_ACCOUNT_ID, accountDtoOne.getId())),
             transactionController.getAllTransactions(
-                Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId())),
+                Map.of(TARGET_ACCOUNT_ID, accountDtoTwo.getId())),
             transactionController.getAllTransactions(
                 Map.of(
                     SOURCE_ACCOUNT_ID,
-                    TEST_ACCOUNT_DTO_ONE.getId(),
+                    accountDtoOne.getId(),
                     TARGET_ACCOUNT_ID,
-                    TEST_ACCOUNT_DTO_TWO.getId())));
+                    accountDtoTwo.getId())));
     assertTrue(
         responseEntities.stream()
             .allMatch(
                 responseEntity ->
                     Objects.requireNonNull(responseEntity.getBody())
                         .getContent()
-                        .contains(transactionModelAssembler.toModel(TEST_TRANSACTION_DTO_ONE))));
+                        .contains(transactionModelAssembler.toModel(transactionDto))));
   }
 
   @Test(expected = NonExistentAccountException.class)
   public void
       whenPostingATransactionFromANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    ResponseEntity<EntityModel<AccountDto>> responseEntity =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDto = Objects.requireNonNull(responseEntity.getBody()).getContent();
+    assert accountDto != null;
     transactionController.postTransaction(
-        TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
+        TransactionDto.builder()
+            .sourceAccountId(accountDto.getId() + 1)
+            .targetAccountId(accountDto.getId())
+            .amount(BigDecimal.ONE)
+            .currency(accountDto.getCurrency())
+            .build());
   }
 
   @Test(expected = NonExistentAccountException.class)
   public void
       whenPostingATransactionToANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntity =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto accountDto = Objects.requireNonNull(responseEntity.getBody()).getContent();
+    assert accountDto != null;
     transactionController.postTransaction(
-        TEST_TRANSACTION_DTO_ONE); // This one goes from acc 1 to acc 2.
+        TransactionDto.builder()
+            .sourceAccountId(accountDto.getId())
+            .targetAccountId(accountDto.getId() + 1)
+            .amount(BigDecimal.ONE)
+            .currency(accountDto.getCurrency())
+            .build()); // Currency doesn't matter here; the NonExistentAccountException should be thrown first.
   }
-  
+
   @Test(expected = TransactionNotFoundException.class)
-  public void whenGettingATransactionThatHasNotBeenPosted_thenATransactionNotFoundExceptionIsThrown(){
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
-    transactionController.getTransaction(TEST_TRANSACTION_DTO_ONE.getId() + 1); 
+  public void
+      whenGettingATransactionThatHasNotBeenPosted_thenATransactionNotFoundExceptionIsThrown() {
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
+    AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityThree = transactionController.postTransaction(
+        TransactionDto.builder()
+            .sourceAccountId(accountDtoOne.getId())
+            .targetAccountId(accountDtoTwo.getId()).amount(BigDecimal.ONE).currency(TEST_ACCOUNT_DTO_TWO.getCurrency()).build());
+    TransactionDto transactionDto = Objects.requireNonNull(responseEntityThree.getBody()).getContent();
+    assert transactionDto != null;
+    transactionController.getTransaction(transactionDto.getId() + 1);
   }
-  
+
   @Test(expected = SameAccountException.class)
   public void whenPostingATransactionFromAnAccountToItself_thenASameAccountExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    transactionController.postTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
+    ResponseEntity<EntityModel<AccountDto>> responseEntity =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto newAccount = Objects.requireNonNull(responseEntity.getBody()).getContent();
+    assert newAccount != null;
+    transactionController.postTransaction(
+        new TransactionDto(
+            1L, newAccount.getId(), newAccount.getId(), BigDecimal.ONE, newAccount.getCurrency()));
   }
 
   @Test(expected = InsufficientBalanceException.class)
   public void
       whenPostingATransactionForWhichThereIsAnInsufficientBalanceInSourceAccount_thenInsufficientBalanceExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
+    AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
     transactionController.postTransaction(
-        TEST_TRANSACTION_DTO_TWO); // Specially crafted to be too much for account one, even with
-                                   // the real ledger values.
+        TransactionDto.builder()
+            .sourceAccountId(accountDtoOne.getId())
+            .targetAccountId(accountDtoTwo.getId())
+                .amount(new BigDecimal("19000.80")) // Specially crafted to be too much for account one, even with
+                                                        // the real ledger values.
+                .currency(accountDtoTwo.getCurrency())
+            .build()); 
   }
 }

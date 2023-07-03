@@ -3,14 +3,11 @@ package com.agilebank.service.account;
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
-import com.agilebank.util.exceptions.AccountAlreadyExistsException;
 import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.NonExistentAccountException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,24 +21,17 @@ public class AccountService {
 
   @Transactional
   public AccountDto storeAccount(AccountDto accountDto)
-      throws InvalidBalanceException, AccountAlreadyExistsException {
+      throws InvalidBalanceException{
     if (accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
-      throw new InvalidBalanceException(accountDto.getId(), accountDto.getBalance());
+      throw new InvalidBalanceException(accountDto.getBalance());
     }
-    Optional<Account> accountDao = accountRepository.findById(accountDto.getId());
-    if (accountDao.isEmpty()) {
-      Account savedAccount =
-          accountRepository.save(
-              new Account(
-                  accountDto.getId(),
-                  accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN),
-                  accountDto.getCurrency(),
-                  new Date()));
+    Account savedAccount = accountRepository.save(
+        new Account(
+            accountDto.getBalance().setScale(2, RoundingMode.HALF_EVEN),
+            accountDto.getCurrency()));
       return new AccountDto(
           savedAccount.getId(), savedAccount.getBalance(), savedAccount.getCurrency());
     }
-    throw new AccountAlreadyExistsException(accountDto.getId());
-  }
 
   @Transactional(readOnly = true)
   public List<AccountDto> getAllAccounts() {
@@ -54,7 +44,7 @@ public class AccountService {
   }
 
   @Transactional(readOnly = true)
-  public AccountDto getAccount(String id) throws NonExistentAccountException {
+  public AccountDto getAccount(Long id) throws NonExistentAccountException {
     return accountRepository
         .findById(id)
         .map(
