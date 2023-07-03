@@ -31,25 +31,36 @@ public class TransactionController {
   }
 
   @GetMapping("/transaction/{id}")
-  public ResponseEntity<EntityModel<TransactionDto>> getTransaction(@PathVariable Long id){
-    return ResponseEntity.ok(transactionModelAssembler.toModel(transactionService.getTransaction(id)));
+  public ResponseEntity<EntityModel<TransactionDto>> getTransaction(@PathVariable Long id) {
+    return ResponseEntity.ok(
+        transactionModelAssembler.toModel(transactionService.getTransaction(id)));
   }
 
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
       @RequestParam Map<String, String> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsBetween(Long.valueOf(params.get(SOURCE_ACCOUNT_ID)), Long.valueOf(params.get(TARGET_ACCOUNT_ID))), params));
+      return ResponseEntity.ok(
+          transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsBetween(
+                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID)),
+                  Long.valueOf(params.get(TARGET_ACCOUNT_ID))),
+              params));
     } else if (params.containsKey(SOURCE_ACCOUNT_ID)) {
-      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsFrom(Long.valueOf(params.get(SOURCE_ACCOUNT_ID))), params));
+      return ResponseEntity.ok(
+          transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsFrom(
+                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID))),
+              params));
     } else if (params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID))), params));
-    } else { // params is null, empty, or contains irrelevant keys; just return all transactions
-      return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactions(), params));
-    }
+      return ResponseEntity.ok(
+          transactionModelAssembler.toCollectionModel(
+              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID))),
+              params));
+    } 
+    // params is null, empty, or contains irrelevant keys; just return all transactions
+    return ResponseEntity.ok(
+        transactionModelAssembler.toCollectionModel(
+            transactionService.getAllTransactions(), params));
   }
 }

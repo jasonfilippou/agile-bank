@@ -7,6 +7,7 @@ import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,6 @@ public class JwtAuthenticationController {
 
   @PostMapping(value = "/register")
   public ResponseEntity<UserDto> registerUser(@RequestBody UserDto user) {
-    return ResponseEntity.ok(userDetailsService.save(user));
+    return new ResponseEntity<>(userDetailsService.save(user), HttpStatus.CREATED);
   }
 }
