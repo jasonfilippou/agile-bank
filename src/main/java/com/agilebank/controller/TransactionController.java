@@ -37,16 +37,16 @@ public class TransactionController {
 
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
-      @RequestParam Map<String, Long> params) {
+      @RequestParam Map<String, String> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsBetween(params.get(SOURCE_ACCOUNT_ID), params.get(TARGET_ACCOUNT_ID)), params));
+              transactionService.getAllTransactionsBetween(Long.valueOf(params.get(SOURCE_ACCOUNT_ID)), Long.valueOf(params.get(TARGET_ACCOUNT_ID))), params));
     } else if (params.containsKey(SOURCE_ACCOUNT_ID)) {
       return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsFrom(params.get(SOURCE_ACCOUNT_ID)), params));
+              transactionService.getAllTransactionsFrom(Long.valueOf(params.get(SOURCE_ACCOUNT_ID))), params));
     } else if (params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsTo(params.get(TARGET_ACCOUNT_ID)), params));
+              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID))), params));
     } else { // params is null, empty, or contains irrelevant keys; just return all transactions
       return ResponseEntity.ok(transactionModelAssembler.toCollectionModel(
               transactionService.getAllTransactions(), params));

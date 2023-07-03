@@ -30,9 +30,9 @@ public class TransactionModelAssembler
                     .getAllTransactions(
                         Map.of(
                             SOURCE_ACCOUNT_ID,
-                            transactionDto.getSourceAccountId(),
+                            Long.toString(transactionDto.getSourceAccountId()),
                             TARGET_ACCOUNT_ID,
-                            transactionDto.getTargetAccountId())))
+                            Long.toString(transactionDto.getTargetAccountId()))))
             .withRel(ALL_TRANSACTIONS_BETWEEN),
         linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
             .withRel(ALL_TRANSACTIONS));
@@ -46,7 +46,7 @@ public class TransactionModelAssembler
   }
 
   public CollectionModel<EntityModel<TransactionDto>> toCollectionModel(Iterable<? extends TransactionDto> entities,
-                                                                        Map<String, Long> params){
+                                                                        Map<String, String> params){
     CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
     collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
     if(params.size() > 0){

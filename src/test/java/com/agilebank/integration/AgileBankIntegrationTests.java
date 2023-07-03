@@ -140,15 +140,15 @@ public class AgileBankIntegrationTests {
         Arrays.asList(
             transactionController.getAllTransactions(Collections.emptyMap()),
             transactionController.getAllTransactions(
-                Map.of(SOURCE_ACCOUNT_ID, accountDtoOne.getId())),
+                Map.of(SOURCE_ACCOUNT_ID, accountDtoOne.getId().toString())),
             transactionController.getAllTransactions(
-                Map.of(TARGET_ACCOUNT_ID, accountDtoTwo.getId())),
+                Map.of(TARGET_ACCOUNT_ID, accountDtoTwo.getId().toString())),
             transactionController.getAllTransactions(
                 Map.of(
                     SOURCE_ACCOUNT_ID,
-                    accountDtoOne.getId(),
+                    accountDtoOne.getId().toString(),
                     TARGET_ACCOUNT_ID,
-                    accountDtoTwo.getId())));
+                    accountDtoTwo.getId().toString())));
     assertTrue(
         responseEntities.stream()
             .allMatch(

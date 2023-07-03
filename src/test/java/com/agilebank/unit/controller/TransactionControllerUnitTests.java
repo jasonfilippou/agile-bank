@@ -11,9 +11,9 @@ import com.agilebank.controller.TransactionController;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
+import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.InsufficientBalanceException;
 import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.TransactionNotFoundException;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -136,11 +136,11 @@ public class TransactionControllerUnitTests {
     when(transactionModelAssembler.toCollectionModel(
             List.of(
                     TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE),
-            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId())))
+            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId().toString())))
             .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE),
-        transactionController.getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID)));
+        transactionController.getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString())));
   }
 
   @Test
@@ -150,11 +150,11 @@ public class TransactionControllerUnitTests {
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR)); // Those are all to Acc2
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR),
-            Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId())))
+            Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId().toString())))
             .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO),
-        transactionController.getAllTransactions(Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID)));
+        transactionController.getAllTransactions(Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
   }
 
   @Test
@@ -165,13 +165,13 @@ public class TransactionControllerUnitTests {
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO),
             Map.of(
                 SOURCE_ACCOUNT_ID,
-                TEST_ACCOUNT_DTO_ONE.getId(),
+                TEST_ACCOUNT_DTO_ONE.getId().toString(),
                 TARGET_ACCOUNT_ID,
-                TEST_ACCOUNT_DTO_TWO.getId())))
+                TEST_ACCOUNT_DTO_TWO.getId().toString())))
         .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO),
         transactionController.getAllTransactions(
-            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID, TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID)));
+            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString(), TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
   }
 }

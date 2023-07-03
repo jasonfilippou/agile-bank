@@ -219,9 +219,9 @@ public final class TestConstants {
                       .getAllTransactions(
                           Map.of(
                               SOURCE_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_ONE.getSourceAccountId(),
+                              TEST_TRANSACTION_DTO_ONE.getSourceAccountId().toString(),
                               TARGET_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_ONE.getTargetAccountId())))
+                              TEST_TRANSACTION_DTO_ONE.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
@@ -238,9 +238,9 @@ public final class TestConstants {
                       .getAllTransactions(
                           Map.of(
                               SOURCE_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_TWO.getSourceAccountId(),
+                              TEST_TRANSACTION_DTO_TWO.getSourceAccountId().toString(),
                               TARGET_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_TWO.getTargetAccountId())))
+                              TEST_TRANSACTION_DTO_TWO.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
@@ -257,9 +257,9 @@ public final class TestConstants {
                       .getAllTransactions(
                           Map.of(
                               SOURCE_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_THREE.getSourceAccountId(),
+                              TEST_TRANSACTION_DTO_THREE.getSourceAccountId().toString(),
                               TARGET_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_THREE.getTargetAccountId())))
+                              TEST_TRANSACTION_DTO_THREE.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
@@ -276,9 +276,9 @@ public final class TestConstants {
                       .getAllTransactions(
                           Map.of(
                               SOURCE_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_FOUR.getSourceAccountId(),
+                              TEST_TRANSACTION_DTO_FOUR.getSourceAccountId().toString(),
                               TARGET_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_FOUR.getTargetAccountId())))
+                              TEST_TRANSACTION_DTO_FOUR.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
@@ -308,7 +308,7 @@ public final class TestConstants {
               linkTo(
                       methodOn(TransactionController.class)
                           .getAllTransactions(
-                              Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId())))
+                              Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId().toString())))
                   .withSelfRel(),
               linkTo(
                       methodOn(TransactionController.class)
@@ -325,7 +325,7 @@ public final class TestConstants {
               linkTo(
                       methodOn(TransactionController.class)
                           .getAllTransactions(
-                              Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId())))
+                              Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId().toString())))
                   .withSelfRel(),
               linkTo(
                       methodOn(TransactionController.class)
@@ -341,9 +341,9 @@ public final class TestConstants {
                           .getAllTransactions(
                               Map.of(
                                   SOURCE_ACCOUNT_ID,
-                                  TEST_ACCOUNT_DTO_ONE.getId(),
+                                  TEST_ACCOUNT_DTO_ONE.getId().toString(),
                                   TARGET_ACCOUNT_ID,
-                                  TEST_ACCOUNT_DTO_TWO.getId())))
+                                  TEST_ACCOUNT_DTO_TWO.getId().toString())))
                   .withSelfRel(),
               linkTo(
                       methodOn(TransactionController.class)
