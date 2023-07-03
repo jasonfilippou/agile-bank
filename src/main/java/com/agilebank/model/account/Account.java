@@ -34,12 +34,12 @@ public class Account {
 
   @Column(name = "created_at")
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private Date createdAt;
+  @Builder.Default
+  private Date createdAt = new Date();
 
   public Account(BigDecimal balance, Currency currency){
     this.balance = balance;
     this.currency = currency;
-    createdAt = new Date();
   }
 
   @Override

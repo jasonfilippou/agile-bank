@@ -129,7 +129,7 @@ public class TransactionControllerUnitTests {
 
   @Test
   public void whenGettingAllTransactionsFromAcc1_returnOnlyThoseTransactions() {
-    when(transactionService.getAllTransactionsFrom(ACCOUNT_ONE_ID))
+    when(transactionService.getAllTransactionsFrom(TEST_ACCOUNT_ONE_ID))
         .thenReturn(
             List.of(
                 TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE)); // Those three transactions are from Acc1.
@@ -140,12 +140,12 @@ public class TransactionControllerUnitTests {
             .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE),
-        transactionController.getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, ACCOUNT_ONE_ID)));
+        transactionController.getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID)));
   }
 
   @Test
   public void whenGettingAllTransactionsToAcc2_returnOnlyThoseTransactions() {
-    when(transactionService.getAllTransactionsTo(ACCOUNT_TWO_ID))
+    when(transactionService.getAllTransactionsTo(TEST_ACCOUNT_TWO_ID))
         .thenReturn(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR)); // Those are all to Acc2
     when(transactionModelAssembler.toCollectionModel(
@@ -154,12 +154,12 @@ public class TransactionControllerUnitTests {
             .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO),
-        transactionController.getAllTransactions(Map.of(TARGET_ACCOUNT_ID, ACCOUNT_TWO_ID)));
+        transactionController.getAllTransactions(Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID)));
   }
 
   @Test
   public void whenGettingAllTransactionsFromAcc1ToAcc2_returnOnlyThoseTransactions() {
-    when(transactionService.getAllTransactionsBetween(ACCOUNT_ONE_ID, ACCOUNT_TWO_ID))
+    when(transactionService.getAllTransactionsBetween(TEST_ACCOUNT_ONE_ID, TEST_ACCOUNT_TWO_ID))
         .thenReturn(List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO)); // Those are from Acc1 to Acc2.
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO),
@@ -172,6 +172,6 @@ public class TransactionControllerUnitTests {
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO),
         transactionController.getAllTransactions(
-            Map.of(SOURCE_ACCOUNT_ID, ACCOUNT_ONE_ID, TARGET_ACCOUNT_ID, ACCOUNT_TWO_ID)));
+            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID, TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID)));
   }
 }

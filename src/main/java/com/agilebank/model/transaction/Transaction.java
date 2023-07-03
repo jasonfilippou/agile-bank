@@ -40,20 +40,8 @@ public class Transaction {
 
   @Column(name = "submitted_at")
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private Date submittedAt;
-
-  public Transaction(
-      Long sourceAccountId,
-      Long targetAccountId,
-      BigDecimal amount,
-      Currency currency,
-      Date submittedAt) {
-    this.sourceAccountId = sourceAccountId;
-    this.targetAccountId = targetAccountId;
-    this.amount = amount;
-    this.currency = currency;
-    this.submittedAt = submittedAt;
-  }
+  @Builder.Default
+  private Date submittedAt = new Date();
 
   @Override
   public final boolean equals(Object o) {

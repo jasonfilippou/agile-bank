@@ -10,7 +10,6 @@ import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,32 +59,34 @@ public class TransactionService {
     // Finally, save and return the transaction.
     Transaction storedTransaction =
         transactionRepository.save(
-            new Transaction(
-                transactionDto.getSourceAccountId(),
-                transactionDto.getTargetAccountId(),
-                transactionDto.getAmount(),
-                transactionDto.getCurrency(),
-                new Date()));
-    return new TransactionDto(
-        storedTransaction.getId(),
-        storedTransaction.getSourceAccountId(),
-        storedTransaction.getTargetAccountId(),
-        storedTransaction.getAmount(),
-        storedTransaction.getCurrency());
+            Transaction.builder()
+                .sourceAccountId(transactionDto.getSourceAccountId())
+                .targetAccountId(transactionDto.getTargetAccountId())
+                .amount(transactionDto.getAmount())
+                .currency(transactionDto.getCurrency())
+                .build());
+    return TransactionDto.builder()
+        .id(storedTransaction.getId())
+        .sourceAccountId(storedTransaction.getSourceAccountId())
+        .targetAccountId(storedTransaction.getTargetAccountId())
+        .currency(storedTransaction.getCurrency())
+        .amount(storedTransaction.getAmount())
+        .build();
   }
 
   @Transactional(readOnly = true)
-  public TransactionDto getTransaction(Long id) throws TransactionNotFoundException{
+  public TransactionDto getTransaction(Long id) throws TransactionNotFoundException {
     return transactionRepository
         .findById(id)
         .map(
             transaction ->
-                new TransactionDto(
-                    transaction.getId(),
-                    transaction.getSourceAccountId(),
-                    transaction.getTargetAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency()))
+                TransactionDto.builder()
+                    .id(transaction.getId())
+                    .sourceAccountId(transaction.getSourceAccountId())
+                    .targetAccountId(transaction.getTargetAccountId())
+                    .currency(transaction.getCurrency())
+                    .amount(transaction.getAmount())
+                    .build())
         .orElseThrow(() -> new TransactionNotFoundException(id));
   }
 
@@ -94,12 +95,13 @@ public class TransactionService {
     return transactionRepository.findAll().stream()
         .map(
             transaction ->
-                new TransactionDto(
-                        transaction.getId(),
-                    transaction.getSourceAccountId(),
-                    transaction.getTargetAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency()))
+                TransactionDto.builder()
+                    .id(transaction.getId())
+                    .sourceAccountId(transaction.getSourceAccountId())
+                    .targetAccountId(transaction.getTargetAccountId())
+                    .currency(transaction.getCurrency())
+                    .amount(transaction.getAmount())
+                    .build())
         .collect(Collectors.toList());
   }
 
@@ -108,12 +110,13 @@ public class TransactionService {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
         .map(
             transaction ->
-                new TransactionDto(
-                        transaction.getId(),
-                    transaction.getSourceAccountId(),
-                    transaction.getTargetAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency()))
+                TransactionDto.builder()
+                    .id(transaction.getId())
+                    .sourceAccountId(transaction.getSourceAccountId())
+                    .targetAccountId(transaction.getTargetAccountId())
+                    .currency(transaction.getCurrency())
+                    .amount(transaction.getAmount())
+                    .build())
         .collect(Collectors.toList());
   }
 
@@ -122,12 +125,13 @@ public class TransactionService {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
         .map(
             transaction ->
-                new TransactionDto(
-                        transaction.getId(),
-                    transaction.getSourceAccountId(),
-                    transaction.getTargetAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency()))
+                TransactionDto.builder()
+                    .id(transaction.getId())
+                    .sourceAccountId(transaction.getSourceAccountId())
+                    .targetAccountId(transaction.getTargetAccountId())
+                    .currency(transaction.getCurrency())
+                    .amount(transaction.getAmount())
+                    .build())
         .collect(Collectors.toList());
   }
 
@@ -139,12 +143,13 @@ public class TransactionService {
         .stream()
         .map(
             transaction ->
-                new TransactionDto(
-                        transaction.getId(),
-                    transaction.getSourceAccountId(),
-                    transaction.getTargetAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency()))
+                TransactionDto.builder()
+                    .id(transaction.getId())
+                    .sourceAccountId(transaction.getSourceAccountId())
+                    .targetAccountId(transaction.getTargetAccountId())
+                    .currency(transaction.getCurrency())
+                    .amount(transaction.getAmount())
+                    .build())
         .collect(Collectors.toList());
   }
 }

@@ -127,7 +127,9 @@ public class AgileBankIntegrationTests {
             .id(accountDtoOne.getId())
             .sourceAccountId(accountDtoOne.getId())
             .targetAccountId(accountDtoTwo.getId())
-            .amount(new BigDecimal("1.00")) // BigDecimal.One here leads to a false failure of the test (1 vs 1.00)
+            .amount(
+                new BigDecimal(
+                    "1.00")) // BigDecimal.One here leads to a false failure of the test (1 vs 1.00)
             .currency(accountDtoTwo.getCurrency())
             .build();
     transactionController.postTransaction(transactionDto);
@@ -185,22 +187,30 @@ public class AgileBankIntegrationTests {
             .targetAccountId(accountDto.getId() + 1)
             .amount(BigDecimal.ONE)
             .currency(accountDto.getCurrency())
-            .build()); // Currency doesn't matter here; the NonExistentAccountException should be thrown first.
+            .build()); // Currency doesn't matter here; the NonExistentAccountException should be
+                       // thrown first.
   }
 
   @Test(expected = TransactionNotFoundException.class)
   public void
       whenGettingATransactionThatHasNotBeenPosted_thenATransactionNotFoundExceptionIsThrown() {
-    ResponseEntity<EntityModel<AccountDto>> responseEntityOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
     AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
     assert accountDtoOne != null && accountDtoTwo != null;
-    ResponseEntity<EntityModel<TransactionDto>> responseEntityThree = transactionController.postTransaction(
-        TransactionDto.builder()
-            .sourceAccountId(accountDtoOne.getId())
-            .targetAccountId(accountDtoTwo.getId()).amount(BigDecimal.ONE).currency(TEST_ACCOUNT_DTO_TWO.getCurrency()).build());
-    TransactionDto transactionDto = Objects.requireNonNull(responseEntityThree.getBody()).getContent();
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityThree =
+        transactionController.postTransaction(
+            TransactionDto.builder()
+                .sourceAccountId(accountDtoOne.getId())
+                .targetAccountId(accountDtoTwo.getId())
+                .amount(BigDecimal.ONE)
+                .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+                .build());
+    TransactionDto transactionDto =
+        Objects.requireNonNull(responseEntityThree.getBody()).getContent();
     assert transactionDto != null;
     transactionController.getTransaction(transactionDto.getId() + 1);
   }
@@ -212,15 +222,21 @@ public class AgileBankIntegrationTests {
     AccountDto newAccount = Objects.requireNonNull(responseEntity.getBody()).getContent();
     assert newAccount != null;
     transactionController.postTransaction(
-        new TransactionDto(
-            1L, newAccount.getId(), newAccount.getId(), BigDecimal.ONE, newAccount.getCurrency()));
+        TransactionDto.builder()
+            .sourceAccountId(newAccount.getId())
+            .targetAccountId(newAccount.getId())
+            .amount(BigDecimal.ONE)
+            .currency(newAccount.getCurrency())
+            .build());
   }
 
   @Test(expected = InsufficientBalanceException.class)
   public void
       whenPostingATransactionForWhichThereIsAnInsufficientBalanceInSourceAccount_thenInsufficientBalanceExceptionIsThrown() {
-    ResponseEntity<EntityModel<AccountDto>> responseEntityOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     AccountDto accountDtoOne = Objects.requireNonNull(responseEntityOne.getBody()).getContent();
     AccountDto accountDtoTwo = Objects.requireNonNull(responseEntityTwo.getBody()).getContent();
     assert accountDtoOne != null && accountDtoTwo != null;
@@ -228,9 +244,11 @@ public class AgileBankIntegrationTests {
         TransactionDto.builder()
             .sourceAccountId(accountDtoOne.getId())
             .targetAccountId(accountDtoTwo.getId())
-                .amount(new BigDecimal("19000.80")) // Specially crafted to be too much for account one, even with
-                                                        // the real ledger values.
-                .currency(accountDtoTwo.getCurrency())
-            .build()); 
+            .amount(
+                new BigDecimal(
+                    "19000.80")) // Specially crafted to be too much for account one, even with
+                                      // the real ledger values.
+            .currency(accountDtoTwo.getCurrency())
+            .build());
   }
 }

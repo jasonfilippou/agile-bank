@@ -41,7 +41,8 @@ public class TransactionSanityCheckerUnitTests {
 
     @Test(expected = SameAccountException.class)
     public void whenTransactionIsFromAnAccountToItself_thenSameAccountExceptionIsThrown(){
-        transactionSanityChecker.checkTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF, Optional.of(TEST_ACCOUNT_TWO),
+        // Transaction 5 is from account 2 to account 2.
+        transactionSanityChecker.checkTransaction(TEST_TRANSACTION_DTO_FIVE, Optional.of(TEST_ACCOUNT_TWO),
                 Optional.of(TEST_ACCOUNT_TWO), TEST_EXCHANGE_RATES);
     }
 

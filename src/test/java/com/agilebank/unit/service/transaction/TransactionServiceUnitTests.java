@@ -109,18 +109,19 @@ public class TransactionServiceUnitTests {
 
   @Test(expected = SameAccountException.class)
   public void whenSanityCheckerThrowsSameAccountException_thenExceptionBubblesUp(){
-    when(accountRepository.findById(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF.getSourceAccountId()))
+    // Transaction 5 is from account 2 to account 2.
+    when(accountRepository.findById(TEST_TRANSACTION_DTO_FIVE.getSourceAccountId()))
             .thenReturn(Optional.of(TEST_ACCOUNT_TWO));
-    when(accountRepository.findById(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF.getTargetAccountId()))
+    when(accountRepository.findById(TEST_TRANSACTION_DTO_FIVE.getTargetAccountId()))
             .thenReturn(Optional.of(TEST_ACCOUNT_TWO));
     doThrow(new SameAccountException(TEST_ACCOUNT_TWO.getId()))
             .when(transactionSanityChecker)
             .checkTransaction(
-                    TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF,
+                    TEST_TRANSACTION_DTO_FIVE,
                     Optional.of(TEST_ACCOUNT_TWO),
                     Optional.of(TEST_ACCOUNT_TWO),
                     TEST_EXCHANGE_RATES);
-    transactionService.storeTransaction(TEST_TRANSACTION_FROM_ACCOUNT_TO_ITSELF);
+    transactionService.storeTransaction(TEST_TRANSACTION_DTO_FIVE);
   }
   
   /* Getting transaction tests */

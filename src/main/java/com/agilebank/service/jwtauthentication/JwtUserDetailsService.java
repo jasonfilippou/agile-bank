@@ -4,7 +4,7 @@ import com.agilebank.model.user.UserDao;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
 import com.agilebank.util.exceptions.BadPasswordLengthException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -26,7 +26,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     Optional<UserDao> user = userRepository.findByUsername(username);
     if (user.isPresent()) {
       // Return an instance of org.springframework.security.core.userdetails.User
-      return new User(user.get().getUsername(), user.get().getPassword(), new ArrayList<>());
+      return new User(user.get().getUsername(), user.get().getPassword(), Collections.emptyList());
     } else {
       throw new UsernameNotFoundException("User with username: " + username + " not found.");
     }
