@@ -29,6 +29,23 @@ public class TransactionServiceLogger {
         log.warn(msg(jp, ex.getClass()));
     }
 
+    /* get specific transaction by ID */
+
+    @Before("execution(* com.agilebank.service.transaction.TransactionService.getTransaction(..))")
+    public void beforeGettingTransaction(JoinPoint jp) {
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.service.transaction.TransactionService.getTransaction(..))")
+    public void afterGettingTransaction(JoinPoint jp) {
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.service.transaction.TransactionService.getTransaction(..))", throwing = "ex")
+    public void afterGettingTransactionThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp,ex.getClass()));
+    }
+
     /* get all transactions */
 
     @Before("execution(* com.agilebank.service.transaction.TransactionService.getAllTransactions(..))")

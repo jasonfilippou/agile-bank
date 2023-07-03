@@ -33,6 +33,23 @@ public class TransactionRepositoryLogger {
         log.warn(msg(jp, ex.getClass()));
     }
     
+    /* find by ID */
+
+    @Before("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
+    public void beforeFindingATransactionById(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
+    public void afterFindingATransactionById(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findById(..))", throwing = "ex")
+    public void afterFindingATransactionByIdThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
+    
     /* find all */
 
     @Before("execution(* com.agilebank.persistence.TransactionRepository.findAll(..))")

@@ -15,26 +15,6 @@ import static com.agilebank.util.logger.MethodLoggingMessages.msg;
 @Component
 @Slf4j
 public class CurrencyLedgerControllerLogger {
-
-    /* get entire ledger */
-
-    @Before("execution(* com.agilebank.controller.CurrencyLedgerController.getAllCurrencyExchangeRates(..))")
-    public void beforeGettingAllExchangeRates(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
-
-    @AfterReturning("execution(* com.agilebank.controller.CurrencyLedgerController.getAllCurrencyExchangeRates(..))")
-    public void afterGettingAllExchangeRates(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
-
-    @AfterThrowing(value = "execution(* com.agilebank.controller.CurrencyLedgerController.getAllCurrencyExchangeRates(..))", throwing = "ex")
-    public void afterGettingAllExchangeRatesThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-
-    /* get exchange rate between two currencies */
-
     @Before("execution(* com.agilebank.controller.CurrencyLedgerController.getCurrencyExchangeRate(..))")
     public void beforeGettingExchangeRate(JoinPoint jp){
         log.info(msg(Loc.BEGIN, jp));

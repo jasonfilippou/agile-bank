@@ -26,7 +26,7 @@ public class AccountRepositoryLogger {
     }
 
     @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.findById(..))", throwing = "ex")
-    public void afterSaveThrows(JoinPoint jp, Throwable ex){
+    public void afterSavingAccountThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
 
@@ -43,7 +43,7 @@ public class AccountRepositoryLogger {
     }
 
     @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.findById(..))", throwing = "ex")
-    public void afterFindByIdThrows(JoinPoint jp, Throwable ex){
+    public void afterFindingByIdThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
 
@@ -60,7 +60,7 @@ public class AccountRepositoryLogger {
     }
 
     @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.findAll(..))", throwing = "ex")
-    public void afterFindAllAccountsThrows(JoinPoint jp, Throwable ex){
+    public void afterFindingAllAccountsThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
 }

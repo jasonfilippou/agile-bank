@@ -1,4 +1,4 @@
-package com.agilebank.util.logger.controller;
+package com.agilebank.util.logger.service;
 
 import static com.agilebank.util.logger.MethodLoggingMessages.msg;
 
@@ -30,7 +30,7 @@ public class AccountServiceLogger {
     log.warn(msg(jp, ex.getClass()));
   }
   
-  /* Get account */
+  /* Get single account */
   
   @Before("execution(* com.agilebank.service.account.AccountService.getAccount(..))")
   public void beforeGettingAccount(JoinPoint jp){
