@@ -13,13 +13,13 @@ public class TransactionSanityCheckerUnitTests {
     private final TransactionSanityChecker transactionSanityChecker = new TransactionSanityChecker();
 
     // Unhappy paths first.
-    @Test(expected = NonExistentAccountException.class)
+    @Test(expected = AccountNotFoundException.class)
     public void whenSourceAccountIsNonExistent_thenNonExistentAccountExceptionIsThrown(){
     transactionSanityChecker.checkTransaction(TEST_TRANSACTION_DTO_ONE, Optional.empty(),
             Optional.of(TEST_ACCOUNT_ONE), TEST_EXCHANGE_RATES);
     }
 
-    @Test(expected = NonExistentAccountException.class)
+    @Test(expected = AccountNotFoundException.class)
     public void whenTargetAccountIsNonExistent_thenNonExistentAccountExceptionIsThrown(){
         transactionSanityChecker.checkTransaction(TEST_TRANSACTION_DTO_ONE, Optional.of(TEST_ACCOUNT_THREE),
                 Optional.empty(), TEST_EXCHANGE_RATES);

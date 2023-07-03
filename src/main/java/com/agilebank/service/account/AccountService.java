@@ -4,7 +4,7 @@ import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.util.exceptions.InvalidBalanceException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public class AccountService {
   }
 
   @Transactional(readOnly = true)
-  public AccountDto getAccount(Long id) throws NonExistentAccountException {
+  public AccountDto getAccount(Long id) throws AccountNotFoundException {
     return accountRepository
         .findById(id)
         .map(
@@ -60,6 +60,6 @@ public class AccountService {
                     .balance(account.getBalance())
                     .currency(account.getCurrency())
                     .build())
-        .orElseThrow(() -> new NonExistentAccountException(id));
+        .orElseThrow(() -> new AccountNotFoundException(id));
   }
 }

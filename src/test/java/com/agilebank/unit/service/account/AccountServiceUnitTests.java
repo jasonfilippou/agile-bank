@@ -10,7 +10,7 @@ import com.agilebank.model.account.Account;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.exceptions.InvalidBalanceException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.AccountNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,7 +46,7 @@ public class AccountServiceUnitTests {
         assertEquals(accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId()), TEST_ACCOUNT_DTO_ONE);
     }
     
-    @Test(expected = NonExistentAccountException.class)
+    @Test(expected = AccountNotFoundException.class)
     public void whenRequestingSpecificAccount_andRepoDoesNotFindIt_thenThrowNonExistentAccountException(){
         when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.empty());
         accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId());

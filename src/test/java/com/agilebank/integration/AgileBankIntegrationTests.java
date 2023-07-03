@@ -102,7 +102,7 @@ public class AgileBankIntegrationTests {
     accountController.postAccount(TEST_ACCOUNT_DTO_THREE);
   }
 
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void whenGettingAnAccountThatWeHaveNotPosted_thenNonExistentAccountExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> responseEntity =
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
@@ -158,7 +158,7 @@ public class AgileBankIntegrationTests {
                         .contains(transactionModelAssembler.toModel(transactionDto))));
   }
 
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void
       whenPostingATransactionFromANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> responseEntity =
@@ -174,7 +174,7 @@ public class AgileBankIntegrationTests {
             .build());
   }
 
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void
       whenPostingATransactionToANonExistentAccount_thenANonExistentAccountExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> responseEntity =

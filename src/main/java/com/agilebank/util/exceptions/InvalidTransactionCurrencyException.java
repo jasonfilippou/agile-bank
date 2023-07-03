@@ -11,6 +11,7 @@ public class InvalidTransactionCurrencyException extends RuntimeException {
 
   public InvalidTransactionCurrencyException(
       Currency transactionCurrency, Currency targetAccountCurrency) {
+    super("Invalid transaction currency " + transactionCurrency + "; target account'scurrency is " + targetAccountCurrency + ".");
     this.transactionCurrency = transactionCurrency;
     this.targetAccountCurrency = targetAccountCurrency;
   }

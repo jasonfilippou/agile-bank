@@ -19,7 +19,7 @@ public class ExceptionAdvice {
 
 
   @ResponseBody
-  @ExceptionHandler({NonExistentAccountException.class, })
+  @ExceptionHandler({AccountNotFoundException.class, TransactionNotFoundException.class})
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ResponseEntity<String> notFoundStatusMessage(RuntimeException exc){
     return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_FOUND);

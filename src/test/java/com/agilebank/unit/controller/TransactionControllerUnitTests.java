@@ -13,7 +13,7 @@ import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.exceptions.InsufficientBalanceException;
 import com.agilebank.util.exceptions.InvalidAmountException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.TransactionNotFoundException;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -55,10 +55,10 @@ public class TransactionControllerUnitTests {
         transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE));
   }
 
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void
       whenPostingANewTransaction_andServiceThrowsNonExistentAccountException_thenExceptionBubblesUp() {
-    doThrow(new NonExistentAccountException(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))
+    doThrow(new AccountNotFoundException(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
     transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);

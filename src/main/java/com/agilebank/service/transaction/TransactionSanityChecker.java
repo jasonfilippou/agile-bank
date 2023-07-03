@@ -18,17 +18,17 @@ public class TransactionSanityChecker {
       Optional<Account> sourceAccount,
       Optional<Account> targetAccount,
       Map<CurrencyPair, BigDecimal> currencyExchangeRates)
-      throws NonExistentAccountException,
+      throws AccountNotFoundException,
           InvalidAmountException,
           InvalidTransactionCurrencyException,
           SameAccountException,
           InsufficientBalanceException{
     // If either account could not be found, throw an exception.
     if (sourceAccount.isEmpty()) {
-      throw new NonExistentAccountException(transactionDto.getSourceAccountId());
+      throw new AccountNotFoundException(transactionDto.getSourceAccountId());
     }
     if (targetAccount.isEmpty()) {
-      throw new NonExistentAccountException(transactionDto.getTargetAccountId());
+      throw new AccountNotFoundException(transactionDto.getTargetAccountId());
     }
     if(sourceAccount.get().getId().equals(targetAccount.get().getId())) {
       throw new SameAccountException(sourceAccount.get().getId());

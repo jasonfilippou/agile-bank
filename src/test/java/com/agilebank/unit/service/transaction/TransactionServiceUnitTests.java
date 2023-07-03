@@ -63,13 +63,13 @@ public class TransactionServiceUnitTests {
         TEST_TRANSACTION_DTO_ONE, transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE));
   }
   
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void whenSanityCheckerThrowsNonExistentAccountException_thenExceptionBubblesUp(){
     when(accountRepository.findById(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))
             .thenReturn(Optional.of(TEST_ACCOUNT_ONE));
     when(accountRepository.findById(TEST_TRANSACTION_DTO_ONE.getTargetAccountId()))
             .thenReturn(Optional.of(TEST_ACCOUNT_TWO));
-    doThrow(new NonExistentAccountException(TEST_TRANSACTION_DTO_ONE.getSourceAccountId())).when(transactionSanityChecker).checkTransaction(
+    doThrow(new AccountNotFoundException(TEST_TRANSACTION_DTO_ONE.getSourceAccountId())).when(transactionSanityChecker).checkTransaction(
             TEST_TRANSACTION_DTO_ONE, Optional.of(TEST_ACCOUNT_ONE), Optional.of(TEST_ACCOUNT_TWO), TEST_EXCHANGE_RATES);
     transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE);
   }

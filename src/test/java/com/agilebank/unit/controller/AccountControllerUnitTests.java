@@ -9,7 +9,7 @@ import com.agilebank.controller.AccountController;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.exceptions.InvalidBalanceException;
-import com.agilebank.util.exceptions.NonExistentAccountException;
+import com.agilebank.util.exceptions.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.Before;
@@ -67,9 +67,9 @@ public class AccountControllerUnitTests {
     assertEquals(ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE), accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId()));
   }
   
-  @Test(expected = NonExistentAccountException.class)
+  @Test(expected = AccountNotFoundException.class)
   public void whenGettingAnAccountThatDoesNotExist_thenNonExistentAccountIsThrown(){
-    doThrow(new NonExistentAccountException(0L)).when(accountService).getAccount(0L);
+    doThrow(new AccountNotFoundException(0L)).when(accountService).getAccount(0L);
     accountController.getAccount(0L);
   }
 }
