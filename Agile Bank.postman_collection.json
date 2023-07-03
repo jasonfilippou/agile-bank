@@ -7,6 +7,40 @@
 	},
 	"item": [
 		{
+			"name": "New Account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"balance\" : 530.01,\n    \"currency\" : \"EUR\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/bankapi/account",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bankapi",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "New Transaction ",
 			"request": {
 				"auth": {
@@ -22,7 +56,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"sourceAccountId\": \"acc1\",\n    \"targetAccountId\": \"acc4\",\n    \"amount\": 30.00,\n    \"currency\" : \"INR\"\n}",
+					"raw": "{\n    \"sourceAccountId\": 1,\n    \"targetAccountId\": 3,\n    \"amount\": 10.00,\n    \"currency\" : \"USD\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -30,51 +64,28 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/bankapi/newtransaction",
+					"raw": "http://localhost:8080/bankapi/transaction?sourceAccountId=1&targetAccountId=2",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"newtransaction"
+						"transaction"
+					],
+					"query": [
+						{
+							"key": "sourceAccountId",
+							"value": "1"
+						},
+						{
+							"key": "targetAccountId",
+							"value": "2"
+						}
 					]
 				},
 				"description": "POST a new transaction to the API."
-			},
-			"response": []
-		},
-		{
-			"name": "New Account",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{BEARER_TOKEN}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\" : \"acc4\",\n    \"balance\" : 1701.53,\n    \"currency\" : \"INR\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8080/bankapi/newaccount",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"bankapi",
-						"newaccount"
-					]
-				}
 			},
 			"response": []
 		},
@@ -146,7 +157,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/allaccounts",
+					"raw": "http://localhost:8080/bankapi/account",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -154,7 +165,7 @@
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"allaccounts"
+						"account"
 					]
 				}
 			},
@@ -172,7 +183,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/account/acc4",
+					"raw": "http://localhost:8080/bankapi/account/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -181,7 +192,33 @@
 					"path": [
 						"bankapi",
 						"account",
-						"acc4"
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transaction",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/bankapi/transaction/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bankapi",
+						"transaction",
+						""
 					]
 				}
 			},
@@ -199,7 +236,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/alltransactions",
+					"raw": "http://localhost:8080/bankapi/transactions",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -207,7 +244,7 @@
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"alltransactions"
+						"transactions"
 					]
 				}
 			},
@@ -225,7 +262,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/alltransactions?sourceAccountId=acc1",
+					"raw": "http://localhost:8080/bankapi/transactions?sourceAccountId=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -233,12 +270,12 @@
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"alltransactions"
+						"transactions"
 					],
 					"query": [
 						{
 							"key": "sourceAccountId",
-							"value": "acc1"
+							"value": "1"
 						}
 					]
 				}
@@ -257,7 +294,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/alltransactions?targetAccountId=acc2",
+					"raw": "http://localhost:8080/bankapi/transactions?targetAccountId=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -265,12 +302,12 @@
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"alltransactions"
+						"transactions"
 					],
 					"query": [
 						{
 							"key": "targetAccountId",
-							"value": "acc2"
+							"value": "1"
 						}
 					]
 				}
@@ -289,7 +326,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/alltransactions?sourceAccountId=acc1&targetAccountId=acc2",
+					"raw": "http://localhost:8080/bankapi/transactions?sourceAccountId=1&targetAccountId=3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -297,16 +334,16 @@
 					"port": "8080",
 					"path": [
 						"bankapi",
-						"alltransactions"
+						"transactions"
 					],
 					"query": [
 						{
 							"key": "sourceAccountId",
-							"value": "acc1"
+							"value": "1"
 						},
 						{
 							"key": "targetAccountId",
-							"value": "acc2"
+							"value": "3"
 						}
 					]
 				}
@@ -314,7 +351,7 @@
 			"response": []
 		},
 		{
-			"name": "Currency Ledger",
+			"name": "Exchange Rates",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -325,33 +362,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/currencyledger",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"bankapi",
-						"currencyledger"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Exchange Rate Between",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{BEARER_TOKEN}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8080/bankapi/exchangerate?currencyOne=USD&currencyTwo=INR",
+					"raw": "http://localhost:8080/bankapi/exchangerate",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -360,16 +371,6 @@
 					"path": [
 						"bankapi",
 						"exchangerate"
-					],
-					"query": [
-						{
-							"key": "currencyOne",
-							"value": "USD"
-						},
-						{
-							"key": "currencyTwo",
-							"value": "INR"
-						}
 					]
 				}
 			},
