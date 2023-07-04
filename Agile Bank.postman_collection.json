@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"balance\" : 530.01,\n    \"currency\" : \"EUR\"\n}",
+					"raw": "{\n    \"balance\" : 100000,\n    \"currency\" : \"INR\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -56,7 +56,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"sourceAccountId\": 1,\n    \"targetAccountId\": 3,\n    \"amount\": 10.00,\n    \"currency\" : \"USD\"\n}",
+					"raw": "{\n    \"sourceAccountId\": 53,\n    \"targetAccountId\": 54,\n    \"amount\": 10.00,\n    \"currency\" : \"USD\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -64,7 +64,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/bankapi/transaction?sourceAccountId=1&targetAccountId=2",
+					"raw": "http://localhost:8080/bankapi/transaction",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -73,16 +73,6 @@
 					"path": [
 						"bankapi",
 						"transaction"
-					],
-					"query": [
-						{
-							"key": "sourceAccountId",
-							"value": "1"
-						},
-						{
-							"key": "targetAccountId",
-							"value": "2"
-						}
 					]
 				},
 				"description": "POST a new transaction to the API."
@@ -183,7 +173,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/account/2",
+					"raw": "http://localhost:8080/bankapi/account/100",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -192,7 +182,7 @@
 					"path": [
 						"bankapi",
 						"account",
-						"2"
+						"100"
 					]
 				}
 			},
@@ -371,6 +361,95 @@
 					"path": [
 						"bankapi",
 						"exchangerate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/bankapi/account/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bankapi",
+						"account",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Accounts",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/bankapi/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bankapi",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Account",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"balance\": 1100.00,\n    \"currency\": \"GBP\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/bankapi/account/53",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bankapi",
+						"account",
+						"53"
 					]
 				}
 			},
