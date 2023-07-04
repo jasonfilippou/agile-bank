@@ -5,7 +5,6 @@ package com.agilebank.controller;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -34,7 +33,19 @@ public class AccountController {
   }
 
   @GetMapping("/account/{id}")
-  public ResponseEntity<EntityModel<AccountDto>> getAccount(@NonNull @PathVariable Long id) {
+  public ResponseEntity<EntityModel<AccountDto>> getAccount(@PathVariable Long id) {
     return ResponseEntity.ok(accountModelAssembler.toModel(accountService.getAccount(id)));
+  }
+
+  @DeleteMapping("/account/{id}")
+  public ResponseEntity<?> deleteAccount(@PathVariable Long id){
+    accountService.deleteAccount(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/account")
+  public ResponseEntity<?> deleteAllAccounts(){
+    accountService.deleteAllAccounts();
+    return ResponseEntity.noContent().build();
   }
 }

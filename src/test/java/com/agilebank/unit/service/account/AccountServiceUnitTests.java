@@ -1,16 +1,16 @@
 package com.agilebank.unit.service.account;
 
 import static com.agilebank.util.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.agilebank.model.account.Account;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.AccountNotFoundException;
+import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,5 +58,35 @@ public class AccountServiceUnitTests {
                 TEST_ACCOUNT_ONE, TEST_ACCOUNT_TWO, TEST_ACCOUNT_THREE));
         assertTrue(CollectionUtils.isEqualCollection(accountService.getAllAccounts(), List.of(
                 TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE)));
+    }
+    
+    @Test
+    public void whenDeletingAnAccountThatIsFoundInRepo_thenOk(){
+        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.of(TEST_ACCOUNT_ONE));
+        Throwable expected = null;
+        try {
+            accountService.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+        } catch(Throwable thrown){
+            expected = thrown;
+        }
+        assertNull(expected, "Expected nothing to be thrown by service method.");
+    }
+    
+    @Test(expected = AccountNotFoundException.class)
+    public void whenDeletingAnAccountThatIsNotFoundInRepo_thenAccountNotFoundExceptionIsThrown(){
+        when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.empty());
+        accountService.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    }
+    
+    @Test
+    public void whenDeletingAllAccounts_thenOk(){
+        doNothing().when(accountRepository).deleteAll();
+        Throwable expected = null;
+        try {
+            accountService.deleteAllAccounts();
+        } catch(Throwable thrown){
+            expected = thrown;
+        }
+        assertNull(expected, "Expected nothing to be thrown by service method.");
     }
 }

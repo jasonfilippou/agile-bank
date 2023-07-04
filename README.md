@@ -319,6 +319,21 @@ and we handle it appropriately.
 For details, refer to the implementation of `TransactionService` and the utility 
 `TransactionSanityChecker`.
 
+## Handling DELETEs
+
+DELETEs are handled rather naively. Sending a `DELETE` at `/bankapi/account/x` deletes the relevant
+account `x` from the database. We do NOT cascade DELETEs to transactions that have involved the account `x`. The account `x`
+can NO LONGER be involved in future transactions.
+
+Similarly, deleting a transaction does NOT credit or debit the relevant accounts in any way. It is seen
+as deleting a historical record.
+
+## Handling PUTs
+
+We allow updating `Account` entities through a dedicated `PUT` endpoint, but not transactions. Changing an account's `Currency`
+does NOT invalidate past transactions to it in the old `Currency`. Future transactions, of course, can be affected.
+
+
 ## Testing
 
 Under `src/test/java` you can find unit and integration tests. Unit tests make extensive use
@@ -331,6 +346,7 @@ We use some basic AOP features to enable logging at the `INFO` and `WARN` levels
 service and persistence layers. Examine the package `com.agilebank.util.logger` for the implementation,
 and peek at the Spring terminal after every call to the API to see the logging in action.
 
+
 ## Things that would've been nice to have
 
 We unfortunately did not have time to implement some interesting features such as:
@@ -338,5 +354,5 @@ We unfortunately did not have time to implement some interesting features such a
 - Pagination and sorting for aggregate `GET` endpoints
 - `PATCH` endpoints
 - Swagger / OpenAPI integration (couldn't make authentication work...)
-- Cascading and soft deletes for Accounts / Transactions 
+- Cascading and soft deletes for Accounts / Transactions
 - ... many more!

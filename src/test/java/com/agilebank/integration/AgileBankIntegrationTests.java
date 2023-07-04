@@ -4,8 +4,7 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -116,6 +115,36 @@ public class AgileBankIntegrationTests {
     accountController.getAccount(accountDto.getId() + 1);
   }
 
+  @Test(expected = AccountNotFoundException.class)
+  public void whenPostingAnAccountAndThenDeletingIt_thenAccountCanNoLongerBeFound(){
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountTwoDto = Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
+    assert accountTwoDto != null;
+    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAccount(accountTwoDto.getId()));
+    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> responseEntityForAllAccounts = accountController.getAllAccounts();
+    assertFalse(Objects.requireNonNull(responseEntityForAllAccounts.getBody()).getContent().contains(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE));
+    accountController.getAccount(accountTwoDto.getId()); // This call should throw
+  }
+
+  @Test(expected = AccountNotFoundException.class)
+  public void whenPostingAnAccountAndThenDeletingItTwice_thenAccountCanNoLongerBeFound(){
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto accountOneDto = Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
+    assert accountOneDto != null;
+    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAccount(accountOneDto.getId()));
+    accountController.deleteAccount(accountOneDto.getId()); // This call should throw
+  }
+  
+  @Test
+  public void whenDeletingAllAccounts_thenNoContentIsReturnedAndNoAccountsCanBeFound(){
+    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAllAccounts());
+    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> allAccountsResponseEntity = accountController.getAllAccounts();
+    assertEquals(Objects.requireNonNull(allAccountsResponseEntity.getBody()).getContent().size(), 0);
+  }
+  
   /* Now we put transactions in the mix as well. */
   @Test
   public void

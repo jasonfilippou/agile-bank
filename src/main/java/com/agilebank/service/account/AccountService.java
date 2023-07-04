@@ -3,10 +3,11 @@ package com.agilebank.service.account;
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.AccountNotFoundException;
+import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,5 +62,21 @@ public class AccountService {
                     .currency(account.getCurrency())
                     .build())
         .orElseThrow(() -> new AccountNotFoundException(id));
+  }
+  
+  @Transactional
+  public void deleteAccount(Long id) throws AccountNotFoundException{
+    Optional<Account> account = accountRepository.findById(id);
+    if (account.isPresent()) {
+      accountRepository.deleteById(id);
+      }
+    else {
+      throw new AccountNotFoundException(id);
+    }
+  }
+  
+  @Transactional
+  public void deleteAllAccounts(){
+    accountRepository.deleteAll();
   }
 }

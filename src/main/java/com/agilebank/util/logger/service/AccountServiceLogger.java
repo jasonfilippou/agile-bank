@@ -63,4 +63,38 @@ public class AccountServiceLogger {
   public void afterGettingAllAccountsThrows(JoinPoint jp, Throwable ex){
     log.warn(msg(jp, ex.getClass()));
   }
+  
+  /* Delete account */
+
+  @Before("execution(* com.agilebank.service.account.AccountService.deleteAccount(..))")
+  public void beforeDeletingAccount(JoinPoint jp){
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.service.account.AccountService.deleteAccount(..))")
+  public void afterDeletingAccount(JoinPoint jp){
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.getAllAccounts(..))", throwing = "ex")
+  public void afterDeletingAccountThrows(JoinPoint jp, Throwable ex){
+    log.warn(msg(jp, ex.getClass()));
+  }
+
+  /* Delete all accounts */
+
+  @Before("execution(* com.agilebank.service.account.AccountService.deleteAllAccounts(..))")
+  public void beforeDeletingAllAccounts(JoinPoint jp){
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.service.account.AccountService.deleteAllAccounts(..))")
+  public void afterDeletingAllAccounts(JoinPoint jp){
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.deleteAllAccounts(..))", throwing = "ex")
+  public void afterDeletingAllAccountsThrows(JoinPoint jp, Throwable ex){
+    log.warn(msg(jp, ex.getClass()));
+  }
 }

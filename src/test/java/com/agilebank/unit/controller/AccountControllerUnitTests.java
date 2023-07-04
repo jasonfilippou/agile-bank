@@ -2,14 +2,13 @@ package com.agilebank.unit.controller;
 
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.agilebank.controller.AccountController;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import com.agilebank.util.exceptions.AccountNotFoundException;
+import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.Before;
@@ -71,5 +70,23 @@ public class AccountControllerUnitTests {
   public void whenGettingAnAccountThatDoesNotExist_thenNonExistentAccountIsThrown(){
     doThrow(new AccountNotFoundException(0L)).when(accountService).getAccount(0L);
     accountController.getAccount(0L);
+  }
+  
+  @Test
+  public void whenDeletingAnAccountThatExists_thenNoContentIsReturned(){
+    doNothing().when(accountService).deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId()));
+  }
+  
+  @Test(expected = AccountNotFoundException.class)
+  public void whenDeletingAnAccountThatDoesNotExist_thenAccountNotFoundExceptionIsThrown(){
+    doThrow(new AccountNotFoundException(TEST_ACCOUNT_DTO_ONE.getId())).when(accountService).deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    accountController.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+  }
+  @Test
+  public void whenDeletingAllAccounts_thenNoContentIsReturned(){
+    doNothing().when(accountService).deleteAllAccounts();
+    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAllAccounts());
+
   }
 }
