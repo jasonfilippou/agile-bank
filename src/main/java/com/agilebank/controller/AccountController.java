@@ -48,4 +48,9 @@ public class AccountController {
     accountService.deleteAllAccounts();
     return ResponseEntity.noContent().build();
   }
+
+  @PutMapping("/account/{id}")
+  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id){
+    return ResponseEntity.ok(accountModelAssembler.toModel(accountService.updateAccount(id)));
+  }
 }

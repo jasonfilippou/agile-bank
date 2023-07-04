@@ -97,4 +97,21 @@ public class AccountRepositoryLogger {
     public void afterDeletingAllAccountsThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
+
+    /* Update account */
+
+    @Before("execution(* com.agilebank.persistence.AccountRepository.updateAccountById(..))")
+    public void beforeUpdatingAccountById(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.AccountRepository.updateAccountById(..))")
+    public void afterUpdatingAccountById(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.updateAccountById(..))", throwing = "ex")
+    public void afterUpdatingAccountByIdThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
 }

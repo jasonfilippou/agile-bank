@@ -63,9 +63,9 @@ public class AccountService {
                     .build())
         .orElseThrow(() -> new AccountNotFoundException(id));
   }
-  
+
   @Transactional
-  public void deleteAccount(Long id) throws AccountNotFoundException{
+  public void deleteAccount(Long id) throws AccountNotFoundException {
     Optional<Account> account = accountRepository.findById(id);
     if (account.isPresent()) {
       accountRepository.deleteById(id);
@@ -73,9 +73,23 @@ public class AccountService {
       throw new AccountNotFoundException(id);
     }
   }
-  
+
   @Transactional
-  public void deleteAllAccounts(){
+  public void deleteAllAccounts() {
     accountRepository.deleteAll();
+  }
+
+  @Transactional
+  public AccountDto updateAccount(Long id) throws AccountNotFoundException {
+    return accountRepository
+        .updateAccountById(id)
+        .map(
+            account ->
+                AccountDto.builder()
+                    .id(account.getId())
+                    .currency(account.getCurrency())
+                    .balance(account.getBalance())
+                    .build())
+        .orElseThrow(() -> new AccountNotFoundException(id));
   }
 }

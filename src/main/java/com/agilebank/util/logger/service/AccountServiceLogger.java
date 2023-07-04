@@ -97,4 +97,21 @@ public class AccountServiceLogger {
   public void afterDeletingAllAccountsThrows(JoinPoint jp, Throwable ex){
     log.warn(msg(jp, ex.getClass()));
   }
+  
+  /* Update account */
+
+  @Before("execution(* com.agilebank.service.account.AccountService.updateAccount(..))")
+  public void beforeUpdatingAccount(JoinPoint jp){
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.service.account.AccountService.updateAccount(..))")
+  public void afterUpdatingAccount(JoinPoint jp){
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.updateAccount(..))", throwing = "ex")
+  public void afterUpdatingAccountThrows(JoinPoint jp, Throwable ex){
+    log.warn(msg(jp, ex.getClass()));
+  }
 }
