@@ -101,6 +101,7 @@ public class AccountControllerLogger {
   }
 
   /* Update account */
+  
   @Before("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
   public void beforeUpdatingAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));

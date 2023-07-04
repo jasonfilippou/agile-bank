@@ -50,7 +50,7 @@ public class AccountController {
   }
 
   @PutMapping("/account/{id}")
-  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id){
-    return ResponseEntity.ok(accountModelAssembler.toModel(accountService.updateAccount(id)));
+  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id, @RequestBody AccountDto account){
+    return ResponseEntity.ok(accountModelAssembler.toModel(accountService.updateAccount(id, account)));
   }
 }

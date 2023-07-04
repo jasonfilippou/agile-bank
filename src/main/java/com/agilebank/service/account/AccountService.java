@@ -80,16 +80,24 @@ public class AccountService {
   }
 
   @Transactional
-  public AccountDto updateAccount(Long id) throws AccountNotFoundException {
-    return accountRepository
-        .updateAccountById(id)
-        .map(
-            account ->
-                AccountDto.builder()
-                    .id(account.getId())
-                    .currency(account.getCurrency())
-                    .balance(account.getBalance())
-                    .build())
-        .orElseThrow(() -> new AccountNotFoundException(id));
+  public AccountDto updateAccount(Long id, AccountDto accountDto) throws AccountNotFoundException {
+    Optional<Account> account = accountRepository.findById(id);
+    if (account.isPresent()) {
+      Account newAccount =
+          accountRepository.save(
+                  // Update the fields appropriately
+              Account.builder()
+                  .id(id)
+                  .createdAt(account.get().getCreatedAt())
+                  .currency(accountDto.getCurrency())
+                  .balance(accountDto.getBalance())
+                  .build());
+      return AccountDto.builder()
+          .id(newAccount.getId())
+          .currency(newAccount.getCurrency())
+          .balance(newAccount.getBalance())
+          .build();
+    }
+    throw new AccountNotFoundException(id);
   }
 }

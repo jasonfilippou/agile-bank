@@ -351,4 +351,5 @@ We unfortunately did not have time to implement some interesting features such a
 - `PATCH` endpoints
 - Swagger / OpenAPI integration (couldn't make authentication work...)
 - Cascading and soft deletes for Accounts / Transactions
+- An UPDATED_AT field for Accounts, since `PUT` is enabled for accounts
 - ... many more!
