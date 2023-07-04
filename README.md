@@ -13,8 +13,8 @@ and grant all privileges on `agile_bank` to `springuser`. This is how we did it 
 ```
 $ sudo mysql --password 
 mysql> create database agile_bank; -- Creates the new database
-mysql> create user 'springuser'@'%' identified by 'ThePassword882100##' -- Same password we have in the application.properties
-mysql> grant all on db_example.* to 'springuser'@'%'; -- Gives all privileges to the new user on the newly created database
+mysql> create user 'springuser'@'%' identified by 'ThePassword882100##'; -- Same password we have in the application.properties
+mysql> grant all on agile_bank.* to 'springuser'@'%'; -- Gives all privileges to the new user on the newly created database
 ```
 
 ### Authentication
@@ -99,7 +99,8 @@ to endpoints that will get you closely related resources:
 We use [SpringHATEOAS](https://spring.io/projects/spring-hateoas) to render
 the links. You can find details in the `AccountModelAssembler` and `TransactionModelAssembler` classes.
 
-Try getting the account that you just created by making a `GET` at `/bankapi/account/1`:
+Try getting the account that you just created by making a `GET` at `/bankapi/account/1`. You should receive 
+a `200 OK` and the same payload:
 
 ```json
 {
@@ -212,7 +213,9 @@ accounts.
 
 ### Unhappy paths
 
-We use `Exception` decoration to handle the unhappy paths. `POST`-ing a transaction from an
+We use `Exception` decoration to handle the unhappy paths, and the class `ExceptionAdvice` contains almost all the handlers. 
+
+1. `POST`-ing a transaction from an
 account that doesn't have a sufficient balance leads to a `400`. Try it by `POST`-ing
 the following transaction:
 
@@ -228,10 +231,10 @@ the following transaction:
 You should receive a `400` status code with the message 
 `Account 1 has a balance of 50990.00 in currency INR, but 100000.00 was requested.`.
 
-What if the source account and target account are of different currencies? Refer to the next section, "How we deal with currencies",
-for more details. 
+A good question here would be: _"What if the source account and target account are of different currencies?"_ 
+Refer to the next section, "How we deal with currencies", for more details on how this is handled. 
 
-Trying to `POST` a transaction from an account to itself, as this payload exemplifies:
+2. Trying to `POST` a transaction from an account to itself, as this payload exemplifies:
 
 ```json
 {
@@ -243,7 +246,7 @@ Trying to `POST` a transaction from an account to itself, as this payload exempl
 ```
 will return a `400` with the message `Attempted a transaction from and to the same account with id: 3.`.
 
-Attempting to `POST` a transaction that involves a non-existent account:
+3. Attempting to `POST` a transaction that involves a non-existent account:
 
 ```json
 {
@@ -256,7 +259,7 @@ Attempting to `POST` a transaction that involves a non-existent account:
 
 will return a code `404` (`NOT_FOUND`) and the message `Could not find account with id: 4.`.
 
-We also do not support transactions that involve a currency different from the _destination's_
+4. We also do not support transactions that involve a currency different from the _destination's_
 account currency, such as this:
 
 ```json
@@ -271,6 +274,10 @@ account currency, such as this:
 `POST`-ing the above payload to `/bankapi/transaction` will yield a `400` and the message:
 `Invalid transaction currency USD; target account's currency is EUR.`.
 
+Of course, those are not the only unhappy paths. The user might try to `GET` an account that does not exist, or attempt
+to `DELETE` an account or transaction twice. The package `com.agilebank.util.exceptions` has all our custom `Exception` classes
+that attempt to handle as many bad scenarios as possible.
+
 ## How we deal with currencies
 
 ### The `Currency` and `CurrencyLedger` classes
@@ -281,7 +288,7 @@ currency codes, and `CurrencyLedger` creates randomly generated `BigDecimal`s in
 use a static seed to enable reproducibility of the random chain in a given machine. There is no degree of financial realism
 in this approximation, except for the same currency (e.g `GBP`) being mapped to exactly 1 unit of its own currency.
 
-For example, in my given machine, some exchange rates are generated as follows (the full list is available 
+For example, in our given machine, some exchange rates are generated as follows (the full list is available 
 via a parameter-less `GET` at `/bankapi/exchangerate`):
 
 ```json
@@ -318,7 +325,7 @@ For details, refer to the implementation of `TransactionService` and the utility
 
 ## Handling DELETEs
 
-DELETEs are handled rather naively. Sending a `DELETE` at `/bankapi/account/x` deletes the relevant
+DELETEs are handled rather naively, merely for lack of time. Sending a `DELETE` at `/bankapi/account/x` hard-deletes the relevant
 account `x` from the database. We do NOT cascade `DELETE`s to transactions that have involved the account `x`. The account `x`
 can NO LONGER be involved in future transactions. As long as the same instance of the application is running,
 the ID generation strategy of `IDENTITY` guarantees that no new account will take the ID of a now deleted account, but of course
@@ -332,7 +339,7 @@ as deleting a historical record. The DB IDs of transactions are also generated s
 We allow updating `Account` entities through a dedicated `PUT` endpoint. Changing an account's `Currency`
 does NOT invalidate past transactions to it in the old `Currency`. Future transactions, of course, are affected.
 
-We do NOT offer a `PUT` endpoint for transactions.
+We do NOT offer a `PUT` endpoint for transactions, for lack of time.
 
 ## Testing
 
@@ -370,3 +377,7 @@ and log the calls there.
 - If you call an endpoint that requires a request parameter (e.g `DELETE` at `/bankapi/account/{id}`) but neglect to pass the request
 parameter `{id}`, you will get a `401 Unauthorized` HTTP Error. This is because of the way that the `commence()` method has been overloaded in
 `JwtAuthenticationEntryPoint` and could probably have been handled better.
+
+- The `TransactionModelAssembler` should also be rendering links for the endpoints of `GET` queries
+from the source account and to the source account. This was discovered right before submitting the exercise at 1am in the morning
+and sleep was prioritized.
