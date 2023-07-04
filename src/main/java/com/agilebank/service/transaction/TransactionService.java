@@ -152,9 +152,9 @@ public class TransactionService {
                     .build())
         .collect(Collectors.toList());
   }
-  
+
   @Transactional
-  public void deleteTransaction(Long id){
+  public void deleteTransaction(Long id) {
     Optional<Transaction> transaction = transactionRepository.findById(id);
     if (transaction.isPresent()) {
       transactionRepository.deleteById(id);
@@ -162,9 +162,9 @@ public class TransactionService {
       throw new TransactionNotFoundException(id);
     }
   }
-  
+
   @Transactional
-  public void deleteAllTransactions(){
+  public void deleteAllTransactions() {
     transactionRepository.deleteAll();
   }
 }

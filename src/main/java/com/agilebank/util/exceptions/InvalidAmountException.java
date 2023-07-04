@@ -1,8 +1,7 @@
 package com.agilebank.util.exceptions;
 
-import lombok.Getter;
-
 import java.math.BigDecimal;
+import lombok.Getter;
 
 @Getter
 public class InvalidAmountException extends RuntimeException {

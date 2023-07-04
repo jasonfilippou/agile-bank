@@ -175,7 +175,7 @@ public class AgileBankIntegrationTests {
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
     ResponseEntity<EntityModel<AccountDto>> putResponseEntity =
-            accountController.updateAccount(postedAccountDto.getId(), updatedAccountDto);
+        accountController.updateAccount(postedAccountDto.getId(), updatedAccountDto);
     assertEquals(
         AccountDto.builder()
             .id(postedAccountDto.getId())
@@ -188,18 +188,18 @@ public class AgileBankIntegrationTests {
   @Test(expected = AccountNotFoundException.class)
   public void whenUpdatingANonExistingAccount_thenAnAccountNotFoundExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> postResponseEntity =
-            accountController.postAccount(
-                    AccountDto.builder()
-                            .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
-                            .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
-                            .build());
+        accountController.postAccount(
+            AccountDto.builder()
+                .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
+                .build());
     AccountDto postedAccountDto = Objects.requireNonNull(postResponseEntity.getBody()).getContent();
     assert postedAccountDto != null;
     AccountDto updatedAccountDto =
-            AccountDto.builder()// Ensuring that the ID is non-existent
-                    .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
-                    .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
-                    .build();
+        AccountDto.builder()
+            .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
+            .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+            .build();
     accountController.updateAccount(postedAccountDto.getId() + 1, updatedAccountDto);
   }
 
@@ -473,7 +473,7 @@ public class AgileBankIntegrationTests {
   @Test
   public void whenDeletingAllTransactions_thenNoContentIsReturnedAndNoTransactionsCanBeFound() {
 
-    /* Post the accounts first ... */
+    // Post the accounts first ...
 
     ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
@@ -485,7 +485,7 @@ public class AgileBankIntegrationTests {
         Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
     assert accountOne != null && accountTwo != null;
 
-    /* Now post three transactions ... */
+    // Now post three transactions ... 
 
     ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionOne =
         transactionController.postTransaction(
@@ -521,7 +521,7 @@ public class AgileBankIntegrationTests {
         Objects.requireNonNull(responseEntityForTransactionThree.getBody()).getContent();
     assert transactionDtoThree != null;
 
-    /* Now delete all the transactions and make the relevant assertions. */
+    // Now delete all the transactions and make the relevant assertions.
 
     assertEquals(ResponseEntity.noContent().build(), transactionController.deleteAllTransactions());
     ResponseEntity<CollectionModel<EntityModel<TransactionDto>>>

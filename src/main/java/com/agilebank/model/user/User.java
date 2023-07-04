@@ -14,8 +14,10 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "`USER`") // Need backticks because "USER" is a reserved table in H2 and tests are affected.
-public class UserDao {
+@Table(
+    name =
+        "`USER`") // Need backticks because "USER" is a reserved table in H2 and tests are affected.
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,7 @@ public class UserDao {
   @ToString.Exclude
   private String password;
 
-  public UserDao(String username, String password) {
+  public User(String username, String password) {
     this.username = username;
     this.password = password;
   }
@@ -48,8 +50,8 @@ public class UserDao {
             ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
             : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    UserDao userDao = (UserDao) o;
-    return getId() != null && Objects.equals(getId(), userDao.getId());
+    User user = (User) o;
+    return getId() != null && Objects.equals(getId(), user.getId());
   }
 
   @Override

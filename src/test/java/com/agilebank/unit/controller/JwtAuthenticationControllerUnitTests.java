@@ -24,41 +24,49 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationControllerUnitTests {
 
+  private static final TestUserDetailsImpl TEST_USER_DETAILS =
+      new TestUserDetailsImpl("username", "password");
+  private static final JwtRequest TEST_JWT_REQUEST = new JwtRequest("username", "password");
+  private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
   @InjectMocks private JwtAuthenticationController jwtAuthenticationController;
   @Mock private JwtTokenUtil jwtTokenUtil;
   @Mock private JwtUserDetailsService userDetailsService;
   @Mock private JwtAuthenticationService jwtAuthenticationService;
-  
-  private static final TestUserDetailsImpl TEST_USER_DETAILS = new TestUserDetailsImpl("username", "password");
-  private static final JwtRequest TEST_JWT_REQUEST = new JwtRequest("username", "password");
-
-  private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
 
   @Test
   public void whenUserIsAuthenticatedInDB_thenReturnNewToken() throws Exception {
     doNothing().when(jwtAuthenticationService).authenticate(anyString(), anyString());
     when(userDetailsService.loadUserByUsername(anyString())).thenReturn(TEST_USER_DETAILS);
     when(jwtTokenUtil.generateToken(TEST_USER_DETAILS)).thenReturn("token");
-    assertEquals(Objects.requireNonNull(jwtAuthenticationController.createAuthenticationToken(
-                    TEST_JWT_REQUEST).getBody()),
-            new JwtResponse("token"));
+    assertEquals(
+        Objects.requireNonNull(
+            jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST).getBody()),
+        new JwtResponse("token"));
   }
-  
+
   @Test(expected = Exception.class)
-  public void whenAuthenticatingUser_andAuthenticationServiceThrowsException_thenExceptionBubblesUp() throws Exception {
-    doThrow(new Exception("some message")).when(jwtAuthenticationService).authenticate(anyString(), anyString());
+  public void
+      whenAuthenticatingUser_andAuthenticationServiceThrowsException_thenExceptionBubblesUp()
+          throws Exception {
+    doThrow(new Exception("some message"))
+        .when(jwtAuthenticationService)
+        .authenticate(anyString(), anyString());
     jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
   }
-  
+
   @Test(expected = UsernameNotFoundException.class)
-  public void whenAuthenticatingUser_andDetailsServiceThrowsUsernameNotFoundException_thenExceptionBubblesUp() throws Exception {
+  public void
+      whenAuthenticatingUser_andDetailsServiceThrowsUsernameNotFoundException_thenExceptionBubblesUp()
+          throws Exception {
     doNothing().when(jwtAuthenticationService).authenticate(anyString(), anyString());
-    doThrow(new UsernameNotFoundException("some message")).when(userDetailsService).loadUserByUsername(anyString());
+    doThrow(new UsernameNotFoundException("some message"))
+        .when(userDetailsService)
+        .loadUserByUsername(anyString());
     jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
   }
-  
+
   @Test(expected = BadPasswordLengthException.class)
-  public void whenUserDetailsServiceThrowsBadPasswordLengthException_thenExceptionBubblesUp(){
+  public void whenUserDetailsServiceThrowsBadPasswordLengthException_thenExceptionBubblesUp() {
     doThrow(new BadPasswordLengthException(8, 30)).when(userDetailsService).save(TEST_USER_DTO);
     jwtAuthenticationController.registerUser(TEST_USER_DTO);
   }

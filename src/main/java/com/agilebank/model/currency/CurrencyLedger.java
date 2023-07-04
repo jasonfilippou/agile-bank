@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CurrencyLedger {
+  private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
   private final Random random =
       new Random(47); // Keep the "randomness" consistent across runs of the app
-  private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
 
   public Map<CurrencyPair, BigDecimal> getCurrencyExchangeRates() {
     if (currencyExchangeRates == null) {

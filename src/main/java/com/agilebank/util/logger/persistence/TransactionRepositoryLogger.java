@@ -15,140 +15,164 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TransactionRepositoryLogger {
-    
-    /* save */
-    
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.save(..))")
-    public void beforeSavingNewTransaction(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.save(..))")
-    public void afterSavingNewTransaction(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
-    
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.save(..))", throwing = "ex")
-    public void afterSavingNewTransactionThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* find by ID */
+  /* save */
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
-    public void beforeFindingATransactionById(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.save(..))")
+  public void beforeSavingNewTransaction(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
-    public void afterFindingATransactionById(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.save(..))")
+  public void afterSavingNewTransaction(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findById(..))", throwing = "ex")
-    public void afterFindingATransactionByIdThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* find all */
+  @AfterThrowing(
+      value = "execution(* com.agilebank.persistence.TransactionRepository.save(..))",
+      throwing = "ex")
+  public void afterSavingNewTransactionThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.findAll(..))")
-    public void beforeFindingAllTransactions(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  /* find by ID */
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findAll(..))")
-    public void afterFindingAllTransactions(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
+  public void beforeFindingATransactionById(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findAll(..))", throwing = "ex")
-    public void afterFindingAllTransactionsThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* find all by source account id */
+  @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findById(..))")
+  public void afterFindingATransactionById(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))")
-    public void beforeFindingAllTransactionsBySourceAccountId(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  @AfterThrowing(
+      value = "execution(* com.agilebank.persistence.TransactionRepository.findById(..))",
+      throwing = "ex")
+  public void afterFindingATransactionByIdThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))")
-    public void afterFindingAllTransactionsBySourceAccountId(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  /* find all */
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))", throwing = "ex")
-    public void afterFindingAllTransactionsBySourceAccountIdThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* find all by target account id */
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.findAll(..))")
+  public void beforeFindingAllTransactions(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))")
-    public void beforeFindingAllTransactionsByTargetAccountId(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findAll(..))")
+  public void afterFindingAllTransactions(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))")
-    public void afterFindingAllTransactionsByTargetAccountId(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  @AfterThrowing(
+      value = "execution(* com.agilebank.persistence.TransactionRepository.findAll(..))",
+      throwing = "ex")
+  public void afterFindingAllTransactionsThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))", throwing = "ex")
-    public void afterFindingAllTransactionsByTargetAccountIdThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* find all by source and by target account ids */
+  /* find all by source account id */
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))")
-    public void beforeFindingAllTransactionsBySourceAndTargetAccountId(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))")
+  public void beforeFindingAllTransactionsBySourceAccountId(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))")
-    public void afterFindingAllTransactionsBySourceAndTargetAccountId(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  @AfterReturning(
+      "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))")
+  public void afterFindingAllTransactionsBySourceAccountId(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))", throwing = "ex")
-    public void afterFindingAllTransactionsBySourceAndTargetAccountIdThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* Delete Transaction by ID */
+  @AfterThrowing(
+      value =
+          "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountId(..))",
+      throwing = "ex")
+  public void afterFindingAllTransactionsBySourceAccountIdThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
-    public void beforeDeletingATransactionById(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  /* find all by target account id */
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
-    public void afterDeletingATransactionById(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))")
+  public void beforeFindingAllTransactionsByTargetAccountId(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))", throwing = "ex")
-    public void afterDeletingATransactionByIdThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
-    
-    /* Delete all transactions */
+  @AfterReturning(
+      "execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))")
+  public void afterFindingAllTransactionsByTargetAccountId(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
 
-    @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
-    public void beforeDeletingAllTransactions(JoinPoint jp){
-        log.info(msg(Loc.BEGIN, jp));
-    }
+  @AfterThrowing(
+      value =
+          "execution(* com.agilebank.persistence.TransactionRepository.findByTargetAccountId(..))",
+      throwing = "ex")
+  public void afterFindingAllTransactionsByTargetAccountIdThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 
-    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
-    public void afterDeletingAllTransactions(JoinPoint jp){
-        log.info(msg(Loc.END, jp));
-    }
+  /* find all by source and by target account ids */
 
-    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))", throwing = "ex")
-    public void afterDeletingAllTransactionsThrows(JoinPoint jp, Throwable ex){
-        log.warn(msg(jp, ex.getClass()));
-    }
+  @Before(
+      "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))")
+  public void beforeFindingAllTransactionsBySourceAndTargetAccountId(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning(
+      "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))")
+  public void afterFindingAllTransactionsBySourceAndTargetAccountId(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(
+      value =
+          "execution(* com.agilebank.persistence.TransactionRepository.findBySourceAccountIdAndTargetAccountId(..))",
+      throwing = "ex")
+  public void afterFindingAllTransactionsBySourceAndTargetAccountIdThrows(
+      JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
+
+  /* Delete Transaction by ID */
+
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
+  public void beforeDeletingATransactionById(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
+  public void afterDeletingATransactionById(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(
+      value = "execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))",
+      throwing = "ex")
+  public void afterDeletingATransactionByIdThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
+
+  /* Delete all transactions */
+
+  @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
+  public void beforeDeletingAllTransactions(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
+  public void afterDeletingAllTransactions(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(
+      value = "execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))",
+      throwing = "ex")
+  public void afterDeletingAllTransactionsThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
 }

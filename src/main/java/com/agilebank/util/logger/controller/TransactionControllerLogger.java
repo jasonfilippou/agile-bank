@@ -70,7 +70,7 @@ public class TransactionControllerLogger {
   public void afterGettingTransactionsThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* Delete transaction */
 
   @Before("execution(* com.agilebank.controller.TransactionController.deleteTransaction(..))")
@@ -79,18 +79,18 @@ public class TransactionControllerLogger {
   }
 
   @AfterReturning(
-          "execution(* com.agilebank.controller.TransactionController.deleteTransaction(..))")
+      "execution(* com.agilebank.controller.TransactionController.deleteTransaction(..))")
   public void afterDeletingTransaction(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
 
   @AfterThrowing(
-          value = "execution(* com.agilebank.controller.TransactionController.deleteTransaction(..))",
-          throwing = "ex")
+      value = "execution(* com.agilebank.controller.TransactionController.deleteTransaction(..))",
+      throwing = "ex")
   public void afterDeletingTransactionThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* Delete all transactions */
 
   @Before("execution(* com.agilebank.controller.TransactionController.deleteAllTransactions(..))")
@@ -99,16 +99,16 @@ public class TransactionControllerLogger {
   }
 
   @AfterReturning(
-          "execution(* com.agilebank.controller.TransactionController.deleteAllTransactions(..))")
+      "execution(* com.agilebank.controller.TransactionController.deleteAllTransactions(..))")
   public void afterDeletingAllTransactions(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
 
   @AfterThrowing(
-          value = "execution(* com.agilebank.controller.TransactionController.deleteAllTransactions(..))",
-          throwing = "ex")
+      value =
+          "execution(* com.agilebank.controller.TransactionController.deleteAllTransactions(..))",
+      throwing = "ex")
   public void afterDeletingAllTransactionsThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
 }

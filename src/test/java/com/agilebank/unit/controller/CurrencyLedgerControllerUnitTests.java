@@ -25,29 +25,36 @@ public class CurrencyLedgerControllerUnitTests {
   @InjectMocks private CurrencyLedgerController currencyLedgerController;
 
   @Mock private CurrencyLedger currencyLedger = new CurrencyLedger();
-  
+
   @Before
-  public void setUp(){
+  public void setUp() {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
   }
+
   @Test
-  public void whenCurrencyLedgerReturnsTheFullExchangeRates_thenSoDoesTheController(){
-    assertEquals(ResponseEntity.ok(TEST_EXCHANGE_RATES), currencyLedgerController.getCurrencyExchangeRate(null, null));
+  public void whenCurrencyLedgerReturnsTheFullExchangeRates_thenSoDoesTheController() {
+    assertEquals(
+        ResponseEntity.ok(TEST_EXCHANGE_RATES),
+        currencyLedgerController.getCurrencyExchangeRate(null, null));
   }
-  
+
   @Test
-  public void whenRequestingASpecificExchangeRate_thenWeGetTheCorrectExchangeRate(){
-    assertEquals(ResponseEntity.ok(Map.of(new CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"))),
-            currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.IDR));
+  public void whenRequestingASpecificExchangeRate_thenWeGetTheCorrectExchangeRate() {
+    assertEquals(
+        ResponseEntity.ok(
+            Map.of(new CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"))),
+        currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.IDR));
   }
-  
+
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
-  public void whenProvidingCurrencyOneButNeglectingToProvideCurrencyTwo_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+  public void
+      whenProvidingCurrencyOneButNeglectingToProvideCurrencyTwo_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
     currencyLedgerController.getCurrencyExchangeRate(Currency.AFA, null);
   }
 
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
-  public void whenProvidingCurrencyTwoButNeglectingToProvideCurrencyOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+  public void
+      whenProvidingCurrencyTwoButNeglectingToProvideCurrencyOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
     currencyLedgerController.getCurrencyExchangeRate(null, Currency.AFA);
   }
 }

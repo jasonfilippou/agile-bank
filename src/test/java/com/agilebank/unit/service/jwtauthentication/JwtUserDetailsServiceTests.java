@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.agilebank.model.user.UserDao;
+import com.agilebank.model.user.User;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
@@ -23,14 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RunWith(MockitoJUnitRunner.class)
 public class JwtUserDetailsServiceTests {
 
-  @InjectMocks private JwtUserDetailsService jwtUserDetailsService;
-
-  @Mock private UserRepository userRepository;
-
-  @Mock private PasswordEncoder passwordEncoder;
-
-  private static final UserDao TEST_USER_DAO = new UserDao("username", "password");
+  private static final User TEST_USER_DAO = new User("username", "password");
   private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
+  @InjectMocks private JwtUserDetailsService jwtUserDetailsService;
+  @Mock private UserRepository userRepository;
+  @Mock private PasswordEncoder passwordEncoder;
 
   @Test
   public void whenUserIsInDB_thenAppropriateUserDetailsReturned() {
@@ -51,6 +48,6 @@ public class JwtUserDetailsServiceTests {
     when(passwordEncoder.encode(TEST_USER_DTO.getPassword()))
         .thenReturn(TEST_USER_DTO.getPassword()); // Encoder basically does nothing.
     when(userRepository.save(any())).thenReturn(TEST_USER_DAO);
-      assertEquals(TEST_USER_DTO, jwtUserDetailsService.save(TEST_USER_DTO));
+    assertEquals(TEST_USER_DTO, jwtUserDetailsService.save(TEST_USER_DTO));
   }
 }

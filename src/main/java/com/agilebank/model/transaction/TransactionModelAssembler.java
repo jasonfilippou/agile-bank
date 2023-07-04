@@ -23,8 +23,8 @@ public class TransactionModelAssembler
   public @NonNull EntityModel<TransactionDto> toModel(@NonNull TransactionDto transactionDto) {
     return EntityModel.of(
         transactionDto,
-        linkTo(methodOn(TransactionController.class)
-                .getTransaction(transactionDto.getId())).withSelfRel(),
+        linkTo(methodOn(TransactionController.class).getTransaction(transactionDto.getId()))
+            .withSelfRel(),
         linkTo(
                 methodOn(TransactionController.class)
                     .getAllTransactions(
@@ -40,17 +40,20 @@ public class TransactionModelAssembler
 
   @Override
   public @NonNull CollectionModel<EntityModel<TransactionDto>> toCollectionModel(
-          @NonNull Iterable<? extends TransactionDto> entities) {
+      @NonNull Iterable<? extends TransactionDto> entities) {
     return CollectionModel.of(
-            IterableUtils.toList(entities).stream().map(this::toModel).collect(Collectors.toList()));
+        IterableUtils.toList(entities).stream().map(this::toModel).collect(Collectors.toList()));
   }
 
-  public CollectionModel<EntityModel<TransactionDto>> toCollectionModel(Iterable<? extends TransactionDto> entities,
-                                                                        Map<String, String> params){
+  public CollectionModel<EntityModel<TransactionDto>> toCollectionModel(
+      Iterable<? extends TransactionDto> entities, Map<String, String> params) {
     CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
-    collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
-    if(params.size() > 0){
-      collectionModel.add(linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap())).withRel(ALL_TRANSACTIONS));
+    collectionModel.add(
+        linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
+    if (params.size() > 0) {
+      collectionModel.add(
+          linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
+              .withRel(ALL_TRANSACTIONS));
     }
     return collectionModel;
   }

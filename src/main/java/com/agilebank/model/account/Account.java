@@ -2,13 +2,12 @@ package com.agilebank.model.account;
 
 import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Getter
@@ -37,7 +36,7 @@ public class Account {
   @Builder.Default
   private Date createdAt = new Date();
 
-  public Account(BigDecimal balance, Currency currency){
+  public Account(BigDecimal balance, Currency currency) {
     this.balance = balance;
     this.currency = currency;
   }
@@ -46,8 +45,14 @@ public class Account {
   public final boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
-    Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-    Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
     Account account = (Account) o;
     return getId() != null && Objects.equals(getId(), account.getId());

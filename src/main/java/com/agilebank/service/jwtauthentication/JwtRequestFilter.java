@@ -62,9 +62,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
     filterChain.doFilter(request, response);
   }
-  
+
   // This just makes easier to test the class since the method above is protected
-  public void doFilterTestEntryPoint(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  public void doFilterTestEntryPoint(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
     doFilterInternal(request, response, filterChain);
   }
 }

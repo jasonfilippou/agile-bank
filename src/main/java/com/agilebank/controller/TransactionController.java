@@ -57,21 +57,21 @@ public class TransactionController {
           transactionModelAssembler.toCollectionModel(
               transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID))),
               params));
-    } 
+    }
     // params is null, empty, or contains irrelevant keys; just return all transactions
     return ResponseEntity.ok(
         transactionModelAssembler.toCollectionModel(
             transactionService.getAllTransactions(), params));
   }
-  
+
   @DeleteMapping("/transaction/{id}")
-  public ResponseEntity<?> deleteTransaction(@PathVariable Long id){
+  public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
     transactionService.deleteTransaction(id);
     return ResponseEntity.noContent().build();
   }
-  
+
   @DeleteMapping("/transaction")
-  public ResponseEntity<?> deleteAllTransactions(){
+  public ResponseEntity<?> deleteAllTransactions() {
     transactionService.deleteAllTransactions();
     return ResponseEntity.noContent().build();
   }

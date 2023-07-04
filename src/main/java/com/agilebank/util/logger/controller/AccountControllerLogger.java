@@ -27,13 +27,15 @@ public class AccountControllerLogger {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.postAccount(..))", throwing = "ex")
-  public void afterPostAccountThrows(JoinPoint jp, Throwable ex){
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.postAccount(..))",
+      throwing = "ex")
+  public void afterPostAccountThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* GET account */
-  
+
   @Before("execution(* com.agilebank.controller.AccountController.getAccount(..))")
   public void beforeGetAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
@@ -43,14 +45,16 @@ public class AccountControllerLogger {
   public void afterGetAccount(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
-  
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.getAccount(..))", throwing = "ex")
-  public void afterGetAccountThrows(JoinPoint jp, Throwable ex){
+
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.getAccount(..))",
+      throwing = "ex")
+  public void afterGetAccountThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* GET ALL accounts */
-  
+
   @Before("execution(* com.agilebank.controller.AccountController.getAllAccounts(..))")
   public void beforeGetAllAccounts(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
@@ -60,12 +64,14 @@ public class AccountControllerLogger {
   public void afterGetAllAccounts(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
-  
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.getAllAccounts(..))", throwing = "ex")
-  public void afterGetAllAccountsThrows(JoinPoint jp, Throwable ex){
+
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.getAllAccounts(..))",
+      throwing = "ex")
+  public void afterGetAllAccountsThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* Delete account */
 
   @Before("execution(* com.agilebank.controller.AccountController.deleteAccount(..))")
@@ -78,11 +84,13 @@ public class AccountControllerLogger {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.deleteAccount(..))", throwing = "ex")
-  public void afterDeleteAccountByIdThrows(JoinPoint jp, Throwable ex){
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.deleteAccount(..))",
+      throwing = "ex")
+  public void afterDeleteAccountByIdThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-  
+
   /* Delete all accounts */
 
   @Before("execution(* com.agilebank.controller.AccountController.deleteAllAccounts(..))")
@@ -95,13 +103,15 @@ public class AccountControllerLogger {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.deleteAllAccounts(..))", throwing = "ex")
-  public void afterDeleteAllAccountsThrows(JoinPoint jp, Throwable ex){
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.deleteAllAccounts(..))",
+      throwing = "ex")
+  public void afterDeleteAllAccountsThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
 
   /* Update account */
-  
+
   @Before("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
   public void beforeUpdatingAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
@@ -112,9 +122,10 @@ public class AccountControllerLogger {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.controller.AccountController.updateAccount(..))", throwing = "ex")
-  public void afterUpdatingAccountByIdThrows(JoinPoint jp, Throwable ex){
+  @AfterThrowing(
+      value = "execution(* com.agilebank.controller.AccountController.updateAccount(..))",
+      throwing = "ex")
+  public void afterUpdatingAccountByIdThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
-
 }

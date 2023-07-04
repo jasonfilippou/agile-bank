@@ -20,17 +20,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationServiceUnitTests {
-  @InjectMocks private JwtAuthenticationService jwtAuthenticationService;
-  @Mock private AuthenticationManager authenticationManager;
   private static final String USERNAME = RandomStringUtils.randomAlphanumeric(10);
   private static final String ACCEPTABLE_PASSWORD = RandomStringUtils.randomAlphanumeric(20);
   private static final String PASSWORD_TOO_SMALL = RandomStringUtils.randomAlphanumeric(7);
   private static final String PASSWORD_TOO_LARGE = RandomStringUtils.randomAlphanumeric(31);
-  private static final UsernamePasswordAuthenticationToken OK_UPAT = new UsernamePasswordAuthenticationToken(new Object(), new Object());
+  private static final UsernamePasswordAuthenticationToken OK_UPAT =
+      new UsernamePasswordAuthenticationToken(new Object(), new Object());
+  @InjectMocks private JwtAuthenticationService jwtAuthenticationService;
+  @Mock private AuthenticationManager authenticationManager;
 
   @Test
   public void whenAuthenticationManagerAuthenticates_thenAllOk() {
-    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(OK_UPAT);
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenReturn(OK_UPAT);
     Exception exc = null;
     try {
       jwtAuthenticationService.authenticate(USERNAME, ACCEPTABLE_PASSWORD);
@@ -51,18 +53,20 @@ public class JwtAuthenticationServiceUnitTests {
   }
 
   @Test(expected = Exception.class)
-  public void whenAuthenticationManagerThrowsDisabledException_thenThrowException() throws Exception {
+  public void whenAuthenticationManagerThrowsDisabledException_thenThrowException()
+      throws Exception {
     doThrow(new DisabledException("some message"))
         .when(authenticationManager)
         .authenticate(any(UsernamePasswordAuthenticationToken.class));
-      jwtAuthenticationService.authenticate(USERNAME, ACCEPTABLE_PASSWORD);
+    jwtAuthenticationService.authenticate(USERNAME, ACCEPTABLE_PASSWORD);
   }
 
   @Test(expected = Exception.class)
-  public void whenAuthenticationManagerThrowsBadCredentialsException_thenThrowException() throws Exception {
+  public void whenAuthenticationManagerThrowsBadCredentialsException_thenThrowException()
+      throws Exception {
     doThrow(new BadCredentialsException("some message"))
         .when(authenticationManager)
         .authenticate(any(UsernamePasswordAuthenticationToken.class));
-      jwtAuthenticationService.authenticate(USERNAME, ACCEPTABLE_PASSWORD);
+    jwtAuthenticationService.authenticate(USERNAME, ACCEPTABLE_PASSWORD);
   }
 }

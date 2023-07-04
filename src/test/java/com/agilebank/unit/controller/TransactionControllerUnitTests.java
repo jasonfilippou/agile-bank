@@ -77,32 +77,48 @@ public class TransactionControllerUnitTests {
       whenPostingANewTransaction_andServicethrowsInsufficientBalanceException_thenExceptionBubblesUp() {
     doThrow(
             new InsufficientBalanceException(
-                TEST_TRANSACTION_DTO_ONE.getSourceAccountId(), BigDecimal.ZERO, Currency.GBP, BigDecimal.ONE))
+                TEST_TRANSACTION_DTO_ONE.getSourceAccountId(),
+                BigDecimal.ZERO,
+                Currency.GBP,
+                BigDecimal.ONE))
         .when(transactionService)
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
     transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
   }
 
   /* GET transaction tests */
-  
+
   @Test
-  public void whenPostingANewTransaction_thenGettingItByIdReturnsTheTransaction(){
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(TEST_TRANSACTION_DTO_ONE);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId())).thenReturn(TEST_TRANSACTION_DTO_TWO);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId())).thenReturn(TEST_TRANSACTION_DTO_THREE);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId())).thenReturn(TEST_TRANSACTION_DTO_FOUR);
-    assertEquals(TEST_TRANSACTION_DTO_ONE, transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
-    assertEquals(TEST_TRANSACTION_DTO_TWO, transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()));
-    assertEquals(TEST_TRANSACTION_DTO_THREE, transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()));
-    assertEquals(TEST_TRANSACTION_DTO_FOUR, transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()));
+  public void whenPostingANewTransaction_thenGettingItByIdReturnsTheTransaction() {
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()))
+        .thenReturn(TEST_TRANSACTION_DTO_ONE);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()))
+        .thenReturn(TEST_TRANSACTION_DTO_TWO);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()))
+        .thenReturn(TEST_TRANSACTION_DTO_THREE);
+    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()))
+        .thenReturn(TEST_TRANSACTION_DTO_FOUR);
+    assertEquals(
+        TEST_TRANSACTION_DTO_ONE,
+        transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+    assertEquals(
+        TEST_TRANSACTION_DTO_TWO,
+        transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()));
+    assertEquals(
+        TEST_TRANSACTION_DTO_THREE,
+        transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()));
+    assertEquals(
+        TEST_TRANSACTION_DTO_FOUR,
+        transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()));
   }
-  
+
   @Test(expected = TransactionNotFoundException.class)
-  public void whenGettingATransaction_andServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp(){
+  public void
+      whenGettingATransaction_andServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp() {
     doThrow(new TransactionNotFoundException(1L)).when(transactionService).getTransaction(1L);
     transactionController.getTransaction(1L);
   }
-  
+
   /* GET from / to / between / all tests */
 
   @Test
@@ -115,12 +131,13 @@ public class TransactionControllerUnitTests {
                 TEST_TRANSACTION_DTO_THREE,
                 TEST_TRANSACTION_DTO_FOUR));
     when(transactionModelAssembler.toCollectionModel(
-      List.of(
-              TEST_TRANSACTION_DTO_ONE,
-              TEST_TRANSACTION_DTO_TWO,
-              TEST_TRANSACTION_DTO_THREE,
-              TEST_TRANSACTION_DTO_FOUR), Collections.emptyMap()))
-            .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FULL);
+            List.of(
+                TEST_TRANSACTION_DTO_ONE,
+                TEST_TRANSACTION_DTO_TWO,
+                TEST_TRANSACTION_DTO_THREE,
+                TEST_TRANSACTION_DTO_FOUR),
+            Collections.emptyMap()))
+        .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FULL);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FULL),
         transactionController.getAllTransactions(Collections.emptyMap()));
@@ -131,35 +148,44 @@ public class TransactionControllerUnitTests {
     when(transactionService.getAllTransactionsFrom(TEST_ACCOUNT_ONE_ID))
         .thenReturn(
             List.of(
-                TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE)); // Those three transactions are from Acc1.
+                TEST_TRANSACTION_DTO_ONE,
+                TEST_TRANSACTION_DTO_TWO,
+                TEST_TRANSACTION_DTO_THREE)); // Those three transactions are from Acc1.
     when(transactionModelAssembler.toCollectionModel(
-            List.of(
-                    TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE),
+            List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_THREE),
             Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_DTO_ONE.getId().toString())))
-            .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE);
+        .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE),
-        transactionController.getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString())));
+        transactionController.getAllTransactions(
+            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString())));
   }
 
   @Test
   public void whenGettingAllTransactionsToAcc2_returnOnlyThoseTransactions() {
     when(transactionService.getAllTransactionsTo(TEST_ACCOUNT_TWO_ID))
         .thenReturn(
-            List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR)); // Those are all to Acc2
+            List.of(
+                TEST_TRANSACTION_DTO_ONE,
+                TEST_TRANSACTION_DTO_TWO,
+                TEST_TRANSACTION_DTO_FOUR)); // Those are all to Acc2
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO, TEST_TRANSACTION_DTO_FOUR),
             Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_DTO_TWO.getId().toString())))
-            .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO);
+        .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO);
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_TO_ACCOUNT_TWO),
-        transactionController.getAllTransactions(Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
+        transactionController.getAllTransactions(
+            Map.of(TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
   }
 
   @Test
   public void whenGettingAllTransactionsFromAcc1ToAcc2_returnOnlyThoseTransactions() {
     when(transactionService.getAllTransactionsBetween(TEST_ACCOUNT_ONE_ID, TEST_ACCOUNT_TWO_ID))
-        .thenReturn(List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO)); // Those are from Acc1 to Acc2.
+        .thenReturn(
+            List.of(
+                TEST_TRANSACTION_DTO_ONE,
+                TEST_TRANSACTION_DTO_TWO)); // Those are from Acc1 to Acc2.
     when(transactionModelAssembler.toCollectionModel(
             List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO),
             Map.of(
@@ -171,23 +197,31 @@ public class TransactionControllerUnitTests {
     assertEquals(
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO),
         transactionController.getAllTransactions(
-            Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString(), TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
+            Map.of(
+                SOURCE_ACCOUNT_ID,
+                TEST_ACCOUNT_ONE_ID.toString(),
+                TARGET_ACCOUNT_ID,
+                TEST_ACCOUNT_TWO_ID.toString())));
   }
-  
+
   @Test
-  public void whenDeletingATransactionSucceeds_thenReturnNoContent(){
+  public void whenDeletingATransactionSucceeds_thenReturnNoContent() {
     doNothing().when(transactionService).deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
-    assertEquals(ResponseEntity.noContent().build(), transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+    assertEquals(
+        ResponseEntity.noContent().build(),
+        transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
   }
-  
+
   @Test(expected = TransactionNotFoundException.class)
-  public void whenTransactionServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp(){
-    doThrow(new TransactionNotFoundException(TEST_TRANSACTION_DTO_ONE.getId())).when(transactionService).deleteTransaction(TEST_TRANSACTION_ONE.getId());
+  public void whenTransactionServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp() {
+    doThrow(new TransactionNotFoundException(TEST_TRANSACTION_DTO_ONE.getId()))
+        .when(transactionService)
+        .deleteTransaction(TEST_TRANSACTION_ONE.getId());
     transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
   }
-  
+
   @Test
-  public void whenDeletingAllTransactions_thenReturnNoContent(){
+  public void whenDeletingAllTransactions_thenReturnNoContent() {
     doNothing().when(transactionService).deleteAllTransactions();
     assertEquals(ResponseEntity.noContent().build(), transactionController.deleteAllTransactions());
   }
