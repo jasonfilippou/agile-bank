@@ -64,7 +64,7 @@ public class AccountServiceLogger {
     log.warn(msg(jp, ex.getClass()));
   }
   
-  /* Delete account */
+  /* Delete account by ID */
 
   @Before("execution(* com.agilebank.service.account.AccountService.deleteAccount(..))")
   public void beforeDeletingAccount(JoinPoint jp){
@@ -76,7 +76,7 @@ public class AccountServiceLogger {
     log.info(msg(Loc.END, jp));
   }
 
-  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.getAllAccounts(..))", throwing = "ex")
+  @AfterThrowing(value = "execution(* com.agilebank.service.account.AccountService.deleteAccount(..))", throwing = "ex")
   public void afterDeletingAccountThrows(JoinPoint jp, Throwable ex){
     log.warn(msg(jp, ex.getClass()));
   }

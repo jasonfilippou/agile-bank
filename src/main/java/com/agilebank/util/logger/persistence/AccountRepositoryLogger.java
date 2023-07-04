@@ -63,4 +63,38 @@ public class AccountRepositoryLogger {
     public void afterFindingAllAccountsThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
+
+    /* Delete by ID */
+
+    @Before("execution(* com.agilebank.persistence.AccountRepository.deleteById(..))")
+    public void beforeDeletingAnAccountById(JoinPoint jp) {
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.AccountRepository.deleteById(..))")
+    public void afterDeletingAnAccountById(JoinPoint jp) {
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.deleteById(..))", throwing = "ex")
+    public void afterDeletingAnAccountByIdThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
+
+    /* Delete All */
+
+    @Before("execution(* com.agilebank.persistence.AccountRepository.deleteAll(..))")
+    public void beforeDeletingAllAccounts(JoinPoint jp) {
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.AccountRepository.deleteAll(..))")
+    public void afterDeletingAllAccounts(JoinPoint jp) {
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.AccountRepository.deleteAll(..))", throwing = "ex")
+    public void afterDeletingAllAccountsThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
 }
