@@ -322,16 +322,16 @@ For details, refer to the implementation of `TransactionService` and the utility
 ## Handling DELETEs
 
 DELETEs are handled rather naively. Sending a `DELETE` at `/bankapi/account/x` deletes the relevant
-account `x` from the database. We do NOT cascade DELETEs to transactions that have involved the account `x`. The account `x`
+account `x` from the database. We do NOT cascade `DELETE`s to transactions that have involved the account `x`. The account `x`
 can NO LONGER be involved in future transactions.
 
-Similarly, deleting a transaction does NOT credit or debit the relevant accounts in any way. It is seen
+Similarly, deleting a transaction does NOT credit or debit the relevant accounts in any way. It is seen merely
 as deleting a historical record.
 
 ## Handling PUTs
 
 We allow updating `Account` entities through a dedicated `PUT` endpoint, but not transactions. Changing an account's `Currency`
-does NOT invalidate past transactions to it in the old `Currency`. Future transactions, of course, can be affected.
+does NOT invalidate past transactions to it in the old `Currency`. Future transactions, of course, are affected.
 
 
 ## Testing

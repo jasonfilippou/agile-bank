@@ -4,8 +4,7 @@ import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.agilebank.controller.TransactionController;
 import com.agilebank.model.currency.Currency;
@@ -173,5 +172,23 @@ public class TransactionControllerUnitTests {
         ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO),
         transactionController.getAllTransactions(
             Map.of(SOURCE_ACCOUNT_ID, TEST_ACCOUNT_ONE_ID.toString(), TARGET_ACCOUNT_ID, TEST_ACCOUNT_TWO_ID.toString())));
+  }
+  
+  @Test
+  public void whenDeletingATransactionSucceeds_thenReturnNoContent(){
+    doNothing().when(transactionService).deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
+    assertEquals(ResponseEntity.noContent().build(), transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
+  }
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenTransactionServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp(){
+    doThrow(new TransactionNotFoundException(TEST_TRANSACTION_DTO_ONE.getId())).when(transactionService).deleteTransaction(TEST_TRANSACTION_ONE.getId());
+    transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
+  }
+  
+  @Test
+  public void whenDeletingAllTransactions_thenReturnNoContent(){
+    doNothing().when(transactionService).deleteAllTransactions();
+    assertEquals(ResponseEntity.noContent().build(), transactionController.deleteAllTransactions());
   }
 }

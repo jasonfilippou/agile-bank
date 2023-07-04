@@ -113,4 +113,38 @@ public class TransactionServiceLogger {
     public void afterGettingAllTransactionsBetweenThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
+
+    /* Delete transaction */
+
+    @Before("execution(* com.agilebank.service.transaction.TransactionService.deleteTransaction(..))")
+    public void beforeDeletingTransaction(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.service.transaction.TransactionService.deleteTransaction(..))")
+    public void afterDeletingTransaction(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.service.transaction.TransactionService.deleteTransaction(..))", throwing = "ex")
+    public void afterDeletingTransactionThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
+
+    /* Delete all transactions */
+
+    @Before("execution(* com.agilebank.service.transaction.TransactionService.deleteAllTransactions(..))")
+    public void beforeDeletingAllTransactions(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.service.transaction.TransactionService.deleteAllTransactions(..))")
+    public void afterDeletingAllTransactions(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.service.transaction.TransactionService.deleteAllTransactions(..))", throwing = "ex")
+    public void afterDeletingAllTransactionsThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
 }

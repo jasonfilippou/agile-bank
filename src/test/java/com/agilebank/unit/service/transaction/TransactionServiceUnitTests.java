@@ -1,8 +1,7 @@
 package com.agilebank.unit.service.transaction;
 
 import static com.agilebank.util.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -173,5 +172,35 @@ public class TransactionServiceUnitTests {
             TEST_ACCOUNT_DTO_TWO.getId())).thenReturn(List.of(TEST_TRANSACTION_ONE, TEST_TRANSACTION_TWO));
     assertTrue(CollectionUtils.isEqualCollection(transactionService.getAllTransactionsBetween(TEST_ACCOUNT_DTO_ONE.getId(),
             TEST_ACCOUNT_DTO_TWO.getId()), List.of(TEST_TRANSACTION_DTO_ONE, TEST_TRANSACTION_DTO_TWO)));
+  }
+  
+  @Test
+  public void whenDeletingATransactionThatExistsInRepo_thenOk(){
+    when(transactionRepository.findById(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(Optional.of(TEST_TRANSACTION_ONE));
+    Throwable expected = null;
+    try {
+      transactionService.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
+    } catch(Throwable thrown){
+      expected = thrown;
+    }
+    assertNull(expected, "Expected nothing to be thrown by service method.");
+  }
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenDeletingATransactionThatDoesNotExistInRepo_ThenTransactionNotFoundExceptionIsThrown(){
+    when(transactionRepository.findById(TEST_TRANSACTION_DTO_ONE.getId())).thenReturn(Optional.empty());
+    transactionService.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
+  }
+  
+  @Test
+  public void whenDeletingAllTransactions_thenOk(){
+    doNothing().when(transactionRepository).deleteAll();
+    Throwable expected = null;
+    try {
+      transactionService.deleteAllTransactions();
+    } catch(Throwable thrown){
+      expected = thrown;
+    }
+    assertNull(expected, "Expected nothing to be thrown by service method.");
   }
 }

@@ -120,7 +120,7 @@ public final class TestConstants {
   public static final Long TEST_TRANSACTION_TWO_ID = 2L;
   public static final Long TEST_TRANSACTION_THREE_ID = 3L;
   public static final Long TEST_TRANSACTION_FOUR_ID = 4L;
-  public static final Long TEST_TRANSACTION_FiVE_ID = 5L;
+  public static final Long TEST_TRANSACTION_FIVE_ID = 5L;
 
 
   public static final TransactionDto TEST_TRANSACTION_DTO_ONE =
@@ -159,7 +159,7 @@ public final class TestConstants {
                   .build();
   public static final TransactionDto TEST_TRANSACTION_DTO_FIVE =
           TransactionDto.builder()
-                  .id(TEST_TRANSACTION_FiVE_ID)
+                  .id(TEST_TRANSACTION_FIVE_ID)
                   .sourceAccountId(TEST_ACCOUNT_TWO_ID)
                   .targetAccountId(TEST_ACCOUNT_TWO_ID)  // From an account to itself, for testing purposes.
                   .amount(BigDecimal.TEN)

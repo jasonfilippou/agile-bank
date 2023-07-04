@@ -116,35 +116,49 @@ public class AgileBankIntegrationTests {
   }
 
   @Test(expected = AccountNotFoundException.class)
-  public void whenPostingAnAccountAndThenDeletingIt_thenAccountCanNoLongerBeFound(){
-    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo = accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
-    AccountDto accountTwoDto = Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
+  public void whenPostingAnAccountAndThenDeletingIt_thenAccountCanNoLongerBeFound() {
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountTwoDto =
+        Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
     assert accountTwoDto != null;
-    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAccount(accountTwoDto.getId()));
-    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> responseEntityForAllAccounts = accountController.getAllAccounts();
-    assertFalse(Objects.requireNonNull(responseEntityForAllAccounts.getBody()).getContent().contains(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE));
+    assertEquals(
+        ResponseEntity.noContent().build(), accountController.deleteAccount(accountTwoDto.getId()));
+    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> responseEntityForAllAccounts =
+        accountController.getAllAccounts();
+    assertFalse(
+        Objects.requireNonNull(responseEntityForAllAccounts.getBody()).getContent().stream()
+            .map(EntityModel::getContent)
+            .toList()
+            .contains(accountTwoDto));
     accountController.getAccount(accountTwoDto.getId()); // This call should throw
   }
 
   @Test(expected = AccountNotFoundException.class)
-  public void whenPostingAnAccountAndThenDeletingItTwice_thenAccountCanNoLongerBeFound(){
-    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-    AccountDto accountOneDto = Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
+  public void whenPostingAnAccountAndThenDeletingItTwice_thenAccountNotFoundExceptionIsThrown() {
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto accountOneDto =
+        Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
     assert accountOneDto != null;
-    assertEquals(ResponseEntity.noContent().build(), accountController.deleteAccount(accountOneDto.getId()));
+    assertEquals(
+        ResponseEntity.noContent().build(), accountController.deleteAccount(accountOneDto.getId()));
     accountController.deleteAccount(accountOneDto.getId()); // This call should throw
   }
-  
+
   @Test
-  public void whenDeletingAllAccounts_thenNoContentIsReturnedAndNoAccountsCanBeFound(){
+  public void whenDeletingAllAccounts_thenNoContentIsReturnedAndNoAccountsCanBeFound() {
     accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
     accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
     assertEquals(ResponseEntity.noContent().build(), accountController.deleteAllAccounts());
-    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> allAccountsResponseEntity = accountController.getAllAccounts();
-    assertEquals(Objects.requireNonNull(allAccountsResponseEntity.getBody()).getContent().size(), 0);
+    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> allAccountsResponseEntity =
+        accountController.getAllAccounts();
+    assertEquals(
+        Objects.requireNonNull(allAccountsResponseEntity.getBody()).getContent().size(), 0);
   }
-  
+
   /* Now we put transactions in the mix as well. */
   @Test
   public void
@@ -286,6 +300,191 @@ public class AgileBankIntegrationTests {
             .build());
   }
 
+  @Test(expected = TransactionNotFoundException.class)
+  public void
+      whenPostingATransactionAndThenDeletingIt_thenTransactionCanNoLongerBeFoundByAnyMeans() {
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountOne =
+        Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
+    AccountDto accountTwo =
+        Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
+    assert accountOne != null && accountTwo != null;
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionOne =
+        transactionController.postTransaction(
+            TransactionDto.builder()
+                .sourceAccountId(accountOne.getId())
+                .targetAccountId(accountTwo.getId())
+                .currency(accountTwo.getCurrency())
+                .amount(BigDecimal.ONE) // Ok given test entities
+                .build());
+    TransactionDto transactionDto =
+        Objects.requireNonNull(responseEntityForTransactionOne.getBody()).getContent();
+    assert transactionDto != null;
+    // Let's post two more transactions to generify this test. No need to store returned IDs for
+    // those; we only care about the first transaction.
+    transactionController.postTransaction(
+        TransactionDto.builder()
+            .sourceAccountId(accountOne.getId())
+            .targetAccountId(accountTwo.getId())
+            .amount(BigDecimal.ONE)
+            .currency(accountTwo.getCurrency())
+            .build());
+    transactionController.postTransaction(
+        TransactionDto.builder()
+            .sourceAccountId(accountTwo.getId())
+            .targetAccountId(accountOne.getId())
+            .amount(BigDecimal.ONE)
+            .currency(accountOne.getCurrency())
+            .build());
+    assertEquals(
+        ResponseEntity.noContent().build(),
+        transactionController.deleteTransaction(transactionDto.getId()));
+    assertFalse(transactionFoundInGetFromQuery(transactionDto, accountOne.getId()));
+    assertFalse(transactionFoundInGetToQuery(transactionDto, accountTwo.getId()));
+    assertFalse(
+        transactionFoundInGetFromToQuery(transactionDto, accountOne.getId(), accountTwo.getId()));
+    assertFalse(transactionFoundInGetAllQuery(transactionDto));
+    transactionController.getTransaction(transactionDto.getId()); // This call is expected to throw.
+  }
+
+  private boolean transactionFoundInGetFromQuery(
+          TransactionDto transactionDto, Long sourceAccountId) {
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
+            transactionController.getAllTransactions(
+                    Map.of(SOURCE_ACCOUNT_ID, sourceAccountId.toString()));
+    Collection<TransactionDto> transactionsReturned =
+            Objects.requireNonNull(responseEntity.getBody()).getContent().stream()
+                    .map(EntityModel::getContent)
+                    .toList();
+    return transactionsReturned.contains(transactionDto);
+  }
+
+  private boolean transactionFoundInGetToQuery(
+          TransactionDto transactionDto, Long targetAccountId) {
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
+            transactionController.getAllTransactions(
+                    Map.of(TARGET_ACCOUNT_ID, targetAccountId.toString()));
+    Collection<TransactionDto> transactionsReturned =
+            Objects.requireNonNull(responseEntity.getBody()).getContent().stream()
+                    .map(EntityModel::getContent)
+                    .toList();
+    return transactionsReturned.contains(transactionDto);
+  }
+
+  private boolean transactionFoundInGetFromToQuery(
+          TransactionDto transactionDto, Long sourceAccountId, Long targetAccountId) {
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
+            transactionController.getAllTransactions(
+                    Map.of(
+                            SOURCE_ACCOUNT_ID,
+                            sourceAccountId.toString(),
+                            TARGET_ACCOUNT_ID,
+                            targetAccountId.toString()));
+    Collection<TransactionDto> transactionsReturned =
+            Objects.requireNonNull(responseEntity.getBody()).getContent().stream()
+                    .map(EntityModel::getContent)
+                    .toList();
+    return transactionsReturned.contains(transactionDto);
+  }
+
+  private boolean transactionFoundInGetAllQuery(TransactionDto transactionDto) {
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
+            transactionController.getAllTransactions(Collections.emptyMap());
+    Collection<TransactionDto> transactionsReturned =
+            Objects.requireNonNull(responseEntity.getBody()).getContent().stream()
+                    .map(EntityModel::getContent)
+                    .toList();
+    return transactionsReturned.contains(transactionDto);
+  }
+  
+  @Test(expected = TransactionNotFoundException.class)
+  public void whenPostingATransactionAndDeletingItTwice_thenTransactionNotFoundExceptionIsThrown() {
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountOne =
+        Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
+    AccountDto accountTwo =
+        Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
+    assert accountOne != null && accountTwo != null;
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionOne =
+        transactionController.postTransaction(
+            TransactionDto.builder()
+                .sourceAccountId(accountOne.getId())
+                .targetAccountId(accountTwo.getId())
+                .currency(accountTwo.getCurrency())
+                .amount(BigDecimal.ONE) // Ok given test entities
+                .build());
+    TransactionDto transactionDto =
+        Objects.requireNonNull(responseEntityForTransactionOne.getBody()).getContent();
+    assert transactionDto != null;
+    transactionController.deleteTransaction(transactionDto.getId());
+    transactionController.deleteTransaction(transactionDto.getId());
+  }
+
+  @Test
+  public void whenDeletingAllTransactions_thenNoContentIsReturnedAndNoTransactionsCanBeFound(){
+    
+    /* Post the accounts first ... */
+    
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountOne =
+            accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForAccountTwo =
+            accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountOne =
+            Objects.requireNonNull(responseEntityForAccountOne.getBody()).getContent();
+    AccountDto accountTwo =
+            Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
+    assert accountOne != null && accountTwo != null;
+    
+    /* Now post three transactions ... */
+    
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionOne =
+            transactionController.postTransaction(
+                    TransactionDto.builder()
+                            .sourceAccountId(accountOne.getId())
+                            .targetAccountId(accountTwo.getId())
+                            .currency(accountTwo.getCurrency())
+                            .amount(BigDecimal.ONE) // Ok given test entities
+                            .build());
+    TransactionDto transactionDtoOne =
+            Objects.requireNonNull(responseEntityForTransactionOne.getBody()).getContent();
+    assert transactionDtoOne != null;
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionTwo = 
+            transactionController.postTransaction(
+            TransactionDto.builder()
+                    .sourceAccountId(accountOne.getId())
+                    .targetAccountId(accountTwo.getId())
+                    .amount(BigDecimal.ONE)
+                    .currency(accountTwo.getCurrency())
+                    .build());
+    TransactionDto transactionDtoTwo =
+            Objects.requireNonNull(responseEntityForTransactionTwo.getBody()).getContent();
+    assert transactionDtoTwo != null;
+    ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionThree =
+            transactionController.postTransaction(
+            TransactionDto.builder()
+                    .sourceAccountId(accountTwo.getId())
+                    .targetAccountId(accountOne.getId())
+                    .amount(BigDecimal.ONE)
+                    .currency(accountOne.getCurrency())
+                    .build());
+    TransactionDto transactionDtoThree =
+            Objects.requireNonNull(responseEntityForTransactionThree.getBody()).getContent();
+    assert transactionDtoThree != null;
+    
+    /* Now delete all the transactions and make the relevant assertions. */
+    
+    assertEquals(ResponseEntity.noContent().build(), transactionController.deleteAllTransactions());
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntityForGetAllTransactionsQuery = 
+            transactionController.getAllTransactions(Collections.emptyMap());
+    assertEquals(Objects.requireNonNull(responseEntityForGetAllTransactionsQuery.getBody()).getContent().size(), 0);
+  }
+
   /* Exchange rate endpoint tests */
 
   @Test
@@ -298,32 +497,37 @@ public class AgileBankIntegrationTests {
         Objects.requireNonNull(responseEntity.getBody())
             .size()); // n^2 ordered pairs for a set of size n
   }
-  
+
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
-  public void whenProvidingTheFirstCurrencyButNeglectingTheSecondOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+  public void
+      whenProvidingTheFirstCurrencyButNeglectingTheSecondOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
     currencyLedgerController.getCurrencyExchangeRate(Currency.AED, null);
   }
 
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
-  public void whenProvidingTheSecondCurrencyButNeglectingTheFirstOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown(){
+  public void
+      whenProvidingTheSecondCurrencyButNeglectingTheFirstOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
     currencyLedgerController.getCurrencyExchangeRate(null, Currency.AOK);
   }
-  
+
   @Test
-  public void whenRequestingASpecificExchangeRate_thenTheCorrectOneIsReturned(){
+  public void whenRequestingASpecificExchangeRate_thenTheCorrectOneIsReturned() {
     // This is a bit of an expensive test, but important for data integrity.
-    ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity = currencyLedgerController.getCurrencyExchangeRate(null, null);
+    ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity =
+        currencyLedgerController.getCurrencyExchangeRate(null, null);
     Map<CurrencyPair, BigDecimal> exchangeRates = responseEntity.getBody();
     assert exchangeRates != null;
-    for(Currency currencyOne: Currency.values()){
-      for(Currency currencyTwo: Currency.values()){
+    for (Currency currencyOne : Currency.values()) {
+      for (Currency currencyTwo : Currency.values()) {
         CurrencyPair currencyPair = new CurrencyPair(currencyOne, currencyTwo);
         BigDecimal exchangeRateFromFullLedger = exchangeRates.get(currencyPair);
         ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForSpecificCurrencyPair =
-                currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo);
-        Map<CurrencyPair, BigDecimal> mapForSpecificCurrencyPair = responseEntityForSpecificCurrencyPair.getBody();
+            currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo);
+        Map<CurrencyPair, BigDecimal> mapForSpecificCurrencyPair =
+            responseEntityForSpecificCurrencyPair.getBody();
         assert mapForSpecificCurrencyPair != null && mapForSpecificCurrencyPair.size() == 1;
-        BigDecimal exchangeRateThatWeGetForCurrencyPair = mapForSpecificCurrencyPair.get(currencyPair);
+        BigDecimal exchangeRateThatWeGetForCurrencyPair =
+            mapForSpecificCurrencyPair.get(currencyPair);
         assertEquals(exchangeRateFromFullLedger, exchangeRateThatWeGetForCurrencyPair);
       }
     }

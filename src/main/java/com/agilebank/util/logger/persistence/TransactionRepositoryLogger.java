@@ -117,4 +117,38 @@ public class TransactionRepositoryLogger {
     public void afterFindingAllTransactionsBySourceAndTargetAccountIdThrows(JoinPoint jp, Throwable ex){
         log.warn(msg(jp, ex.getClass()));
     }
+    
+    /* Delete Transaction by ID */
+
+    @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
+    public void beforeDeletingATransactionById(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))")
+    public void afterDeletingATransactionById(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.deleteById(..))", throwing = "ex")
+    public void afterDeletingATransactionByIdThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
+    
+    /* Delete all transactions */
+
+    @Before("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
+    public void beforeDeletingAllTransactions(JoinPoint jp){
+        log.info(msg(Loc.BEGIN, jp));
+    }
+
+    @AfterReturning("execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))")
+    public void afterDeletingAllTransactions(JoinPoint jp){
+        log.info(msg(Loc.END, jp));
+    }
+
+    @AfterThrowing(value = "execution(* com.agilebank.persistence.TransactionRepository.deleteAll(..))", throwing = "ex")
+    public void afterDeletingAllTransactionsThrows(JoinPoint jp, Throwable ex){
+        log.warn(msg(jp, ex.getClass()));
+    }
 }

@@ -152,4 +152,19 @@ public class TransactionService {
                     .build())
         .collect(Collectors.toList());
   }
+  
+  @Transactional
+  public void deleteTransaction(Long id){
+    Optional<Transaction> transaction = transactionRepository.findById(id);
+    if (transaction.isPresent()) {
+      transactionRepository.deleteById(id);
+    } else {
+      throw new TransactionNotFoundException(id);
+    }
+  }
+  
+  @Transactional
+  public void deleteAllTransactions(){
+    transactionRepository.deleteAll();
+  }
 }

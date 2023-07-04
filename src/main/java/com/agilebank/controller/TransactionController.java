@@ -63,4 +63,16 @@ public class TransactionController {
         transactionModelAssembler.toCollectionModel(
             transactionService.getAllTransactions(), params));
   }
+  
+  @DeleteMapping("/transaction/{id}")
+  public ResponseEntity<?> deleteTransaction(@PathVariable Long id){
+    transactionService.deleteTransaction(id);
+    return ResponseEntity.noContent().build();
+  }
+  
+  @DeleteMapping("/transaction")
+  public ResponseEntity<?> deleteAllTransactions(){
+    transactionService.deleteAllTransactions();
+    return ResponseEntity.noContent().build();
+  }
 }

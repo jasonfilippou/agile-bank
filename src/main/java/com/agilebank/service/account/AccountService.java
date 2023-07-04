@@ -69,8 +69,7 @@ public class AccountService {
     Optional<Account> account = accountRepository.findById(id);
     if (account.isPresent()) {
       accountRepository.deleteById(id);
-      }
-    else {
+    } else {
       throw new AccountNotFoundException(id);
     }
   }
