@@ -38,9 +38,8 @@ You should then receive a JSON with just your username and a 201 CREATED Http Re
 }
 ```
 
-To receive the Bearer Token, `POST` the exact same JSON you `POST`-ed to the `/bankapi/register` endpoint, but this time 
-to the `/bankapi/authenticate` endpoint. You should receive a JSON with a single field called `jwtToken` alongside a 200 OK
-message. 
+To receive the Bearer Token, `POST` the exact same JSON you `POST`-ed to the `/bankapi/register` endpoint, but this time
+to the `/bankapi/authenticate` endpoint. You should receive a JSON with a single field called `jwtToken` alongside a 200 OK.
 
 ```json
 {
@@ -52,7 +51,7 @@ We have configured the tokens to last 5 hours by default, but you can
 tune that by changing the value of the variable `JWT_TOKEN_VALIDITY` in the `Constants` class.
 
 To make things easy, every account / transaction API call we subsequently make has the
-string `Bearer {{BEARER_TOKEN}}` in the `Authorization` header, where `BEARER_TOKEN` 
+string `Bearer {{BEARER_TOKEN}}` in the `Authorization` header, where `BEARER_TOKEN`
 is a POSTMAN variable. So just add the token as a variable in your POSTMAN environment called `BEARER_TOKEN`:
 
 ![Editing The Postman Environment Variables](editingPostmanEnvironmentVariables.png)
@@ -68,8 +67,7 @@ or any other tool that you'd like.
 
 ### Happy Path
 
-`POST` the following JSON to `/bankapi/account`
-to create a fresh account with 51,000 `INR` (Indian Rupees):
+`POST` the following JSON to `/bankapi/account` to create a fresh account with 51,000 `INR` (Indian Rupees):
 
 ```json
 {
@@ -80,6 +78,7 @@ to create a fresh account with 51,000 `INR` (Indian Rupees):
 
 You should receive a response with the status code `201`, the resource, and links
 to endpoints that will get you closely related resources:
+
 
 ```json
 {
@@ -243,7 +242,6 @@ Trying to `POST` a transaction from an account to itself, as this payload exempl
   "currency" : "EUR"
 }
 ```
-
 will return a `400` with the message `Attempted a transaction from and to the same account with id: 3.`.
 
 Attempting to `POST` a transaction that involves a non-existent account:
@@ -304,7 +302,7 @@ This means that 1 `KRW` (South Korean Won) costs 64.53 `SDD` (Sudanese Dinars), 
 costs 44.96 `MUR` (Mauritanian Rupees). A specific exchange rate can be found by placing
 the currency identifiers as request parameters in the `GET` call to `/bankapi/exchangerate`.
 
-### How transactions work with currencies
+
 
 A transaction from a given source account to a given target account can only be done if:
 
@@ -345,8 +343,6 @@ H2 database.
 We use some basic AOP features to enable logging at the `INFO` and `WARN` levels for all `public` methods at the controller,
 service and persistence layers. Examine the package `com.agilebank.util.logger` for the implementation,
 and peek at the Spring terminal after every call to the API to see the logging in action.
-
-
 ## Things that would've been nice to have
 
 We unfortunately did not have time to implement some interesting features such as:
