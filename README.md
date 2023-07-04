@@ -4,11 +4,11 @@
 
 ### Database 
 
-The code has been tested on a Linux Mint 20.2 Uma machine with kernel version `5.15.0-75-generic` and Java 17.
+The code has been developed and tested on a Linux Mint 20.2 Uma machine with kernel version `5.15.0-75-generic` and Java 17.
 We employ a MySQL database for persistence, and an H2 database for tests. The `application.properties` file of the 
 application lets it create all the entities on the database, so minimal database legwork should be required.
 You just need to create the database `agile_bank`, a user named `springuser` with the provided password
-and grant all privileges on `agile_bank` to `springuser`.
+and grant all privileges on `agile_bank` to `springuser`. This is how we did it in our machine:
 
 ```
 $ sudo mysql --password 
@@ -19,8 +19,8 @@ mysql> grant all on db_example.* to 'springuser'@'%'; -- Gives all privileges to
 
 ### Authentication
 
-The API generates JWT tokens for authentication. The provided POSTMAN collection
-shows an example of this. Register your user in the database by `POST`-ing the following JSON to the `/register`
+The API generates JWT tokens for authentication, with the secret stored in `application.properties`. The provided POSTMAN collection
+shows an example of this. Register your user in the database by `POST`-ing the following JSON to the `/bankapi/register`
 endpoint:
 
 ```json
@@ -30,7 +30,7 @@ endpoint:
 }
 ```
 
-You should then receive a JSON with just your username and a 201 CREATED Http Response code:
+You should then receive a JSON with just your username and a `201 CREATED` Http Response code:
 
 ```json
 {
@@ -39,7 +39,7 @@ You should then receive a JSON with just your username and a 201 CREATED Http Re
 ```
 
 To receive the Bearer Token, `POST` the exact same JSON you `POST`-ed to the `/bankapi/register` endpoint, but this time
-to the `/bankapi/authenticate` endpoint. You should receive a JSON with a single field called `jwtToken` alongside a 200 OK.
+to the `/bankapi/authenticate` endpoint. You should receive a JSON with a single field called `jwtToken` alongside a `200 OK`.
 
 ```json
 {
@@ -47,10 +47,10 @@ to the `/bankapi/authenticate` endpoint. You should receive a JSON with a single
 }
 ```
 
-We have configured the tokens to last 5 hours by default, but you can
+The token has been configured to last 5 hours by default, but you can
 tune that by changing the value of the variable `JWT_TOKEN_VALIDITY` in the `Constants` class.
 
-To make things easy, every account / transaction API call we subsequently make has the
+To make things easy, in the provided POSTMAN collection, every account / transaction API call we subsequently make has the
 string `Bearer {{BEARER_TOKEN}}` in the `Authorization` header, where `BEARER_TOKEN`
 is a POSTMAN variable. So just add the token as a variable in your POSTMAN environment called `BEARER_TOKEN`:
 
@@ -96,8 +96,7 @@ to endpoints that will get you closely related resources:
 }
 ```
 
-The actual value of the `id` field might vary in your machine; it is generated with `IDENTITY` as 
-the ID generation mechanism. We use [SpringHATEOAS](https://spring.io/projects/spring-hateoas) to render
+We use [SpringHATEOAS](https://spring.io/projects/spring-hateoas) to render
 the links. You can find details in the `AccountModelAssembler` and `TransactionModelAssembler` classes.
 
 Try getting the account that you just created by making a `GET` at `/bankapi/account/1`:
@@ -302,7 +301,7 @@ This means that 1 `KRW` (South Korean Won) costs 64.53 `SDD` (Sudanese Dinars), 
 costs 44.96 `MUR` (Mauritanian Rupees). A specific exchange rate can be found by placing
 the currency identifiers as request parameters in the `GET` call to `/bankapi/exchangerate`.
 
-
+### How transactions work with currencies
 
 A transaction from a given source account to a given target account can only be done if:
 
@@ -321,28 +320,36 @@ For details, refer to the implementation of `TransactionService` and the utility
 
 DELETEs are handled rather naively. Sending a `DELETE` at `/bankapi/account/x` deletes the relevant
 account `x` from the database. We do NOT cascade `DELETE`s to transactions that have involved the account `x`. The account `x`
-can NO LONGER be involved in future transactions.
+can NO LONGER be involved in future transactions. As long as the same instance of the application is running,
+the ID generation strategy of `IDENTITY` guarantees that no new account will take the ID of a now deleted account, but of course
+in a more realistic application, a more robust treatment of ID maintenance would be required.
 
 Similarly, deleting a transaction does NOT credit or debit the relevant accounts in any way. It is seen merely
-as deleting a historical record.
+as deleting a historical record. The DB IDs of transactions are also generated sequentially.
 
 ## Handling PUTs
 
-We allow updating `Account` entities through a dedicated `PUT` endpoint, but not transactions. Changing an account's `Currency`
+We allow updating `Account` entities through a dedicated `PUT` endpoint. Changing an account's `Currency`
 does NOT invalidate past transactions to it in the old `Currency`. Future transactions, of course, are affected.
 
+We do NOT offer a `PUT` endpoint for transactions.
 
 ## Testing
 
 Under `src/test/java` you can find unit and integration tests. Unit tests make extensive use
 of Mockito, while integration tests load the spring context and use the default in-memory
-H2 database.
+H2 database. 
+
+The following are the code coverage metrics generated by IntelliJ:
+
+![Editing The Postman Environment Variables](codeCoverageResults.png)
 
 ## Logging
 
 We use some basic AOP features to enable logging at the `INFO` and `WARN` levels for all `public` methods at the controller,
 service and persistence layers. Examine the package `com.agilebank.util.logger` for the implementation,
 and peek at the Spring terminal after every call to the API to see the logging in action.
+
 ## Things that would've been nice to have
 
 We unfortunately did not have time to implement some interesting features such as:
@@ -353,3 +360,13 @@ We unfortunately did not have time to implement some interesting features such a
 - Cascading and soft deletes for Accounts / Transactions
 - An UPDATED_AT field for Accounts, since `PUT` is enabled for accounts
 - ... many more!
+
+## Known issues
+
+- Logging of the `findAll()` methods of the persistence layer does not currently happen. We believe that this might be because
+`findAll()` is a method of `CrudRepository` and the `@Before` / `@After*` annotations can't quite go "up the inheritance chain"
+and log the calls there.
+
+- If you call an endpoint that requires a request parameter (e.g `DELETE` at `/bankapi/account/{id}`) but neglect to pass the request
+parameter `{id}`, you will get a `401 Unauthorized` HTTP Error. This is because of the way that the `commence()` method has been overloaded in
+`JwtAuthenticationEntryPoint` and could probably have been handled better.
