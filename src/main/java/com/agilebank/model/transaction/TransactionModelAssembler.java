@@ -17,11 +17,11 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link RepresentationModelAssembler} for {@link TransactionDto} instances. Provides methods for transforming a single or multiple
- * {@link TransactionDto} instance(s) to HAL-formatted JSONs with links to relevant resources.
+ * {@link RepresentationModelAssembler} for {@link TransactionDto} instances. Provides methods for
+ * transforming a single or multiple {@link TransactionDto} instance(s) to HAL-formatted JSONs with
+ * links to relevant resources.
  *
  * @author jason
- *
  * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#linkTo(Method)
  * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#methodOn(Class, Object...)
  */
@@ -35,6 +35,16 @@ public class TransactionModelAssembler
         transactionDto,
         linkTo(methodOn(TransactionController.class).getTransaction(transactionDto.getId()))
             .withSelfRel(),
+        linkTo(
+                methodOn(TransactionController.class)
+                    .getAllTransactions(
+                        Map.of(SOURCE_ACCOUNT_ID, transactionDto.getSourceAccountId().toString())))
+            .withRel(ALL_TRANSACTIONS_FROM),
+        linkTo(
+                methodOn(TransactionController.class)
+                    .getAllTransactions(
+                        Map.of(TARGET_ACCOUNT_ID, transactionDto.getTargetAccountId().toString())))
+            .withRel(ALL_TRANSACTIONS_TO),
         linkTo(
                 methodOn(TransactionController.class)
                     .getAllTransactions(

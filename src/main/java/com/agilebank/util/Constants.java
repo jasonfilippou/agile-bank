@@ -9,6 +9,9 @@ public final class Constants {
   public static final String TARGET_ACCOUNT_ID = "targetAccountId";
   public static final String AUTH_HEADER_BEARER_PREFIX = "Bearer ";
   public static final String ALL_TRANSACTIONS = "all_transactions";
+
+  public static final String ALL_TRANSACTIONS_FROM = "all_transactions_from";
+  public static final String ALL_TRANSACTIONS_TO = "all_transactions_to";
   public static final String ALL_TRANSACTIONS_BETWEEN = "all_transactions_between";
   /**
    * Tune this to affect how long the JWT token lasts. Default is 5 * 60 * 60, for 5 hours.

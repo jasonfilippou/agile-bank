@@ -23,21 +23,40 @@ import org.springframework.hateoas.EntityModel;
 public final class TestConstants {
 
   /* A string that is used a lot in ModelAssembler calls */
-  
+
   public static final String ALL_ACCOUNTS = "all_accounts";
-  
+
   /* Account IDs */
+  
   public static final Long TEST_ACCOUNT_ONE_ID = 1L;
   public static final Long TEST_ACCOUNT_TWO_ID = 2L;
   public static final Long TEST_ACCOUNT_THREE_ID = 3L;
-  public static final AccountDto TEST_ACCOUNT_DTO_ONE =
-      AccountDto.builder()
-          .id(TEST_ACCOUNT_ONE_ID)
-          .balance(new BigDecimal("120.25"))
-          .currency(Currency.GBP)
-          .build();
 
   /* Account DTOs */
+  
+  public static final AccountDto TEST_ACCOUNT_DTO_ONE =
+          AccountDto.builder()
+                  .id(TEST_ACCOUNT_ONE_ID)
+                  .balance(new BigDecimal("120.25"))
+                  .currency(Currency.GBP)
+                  .build();
+
+  public static final AccountDto TEST_ACCOUNT_DTO_TWO =
+          AccountDto.builder()
+                  .id(TEST_ACCOUNT_TWO_ID)
+                  .balance(new BigDecimal("801.01"))
+                  .currency(Currency.IDR)
+                  .build();
+
+  public static final AccountDto TEST_ACCOUNT_DTO_THREE =
+          AccountDto.builder()
+                  .id(TEST_ACCOUNT_THREE_ID)
+                  .balance(new BigDecimal("-51.00")) // Invalid value put here for testing.
+                  .currency(Currency.USD)
+                  .build();
+  
+  /* Accounts */
+  
   public static final Account TEST_ACCOUNT_ONE =
       Account.builder()
           .id(TEST_ACCOUNT_DTO_ONE.getId())
@@ -45,20 +64,7 @@ public final class TestConstants {
           .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
           .createdAt(new Date(946083999988L))
           .build();
-  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE =
-      EntityModel.of(
-          TEST_ACCOUNT_DTO_ONE,
-          linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_ONE.getId()))
-              .withSelfRel(),
-          linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
-  public static final AccountDto TEST_ACCOUNT_DTO_TWO =
-      AccountDto.builder()
-          .id(TEST_ACCOUNT_TWO_ID)
-          .balance(new BigDecimal("801.01"))
-          .currency(Currency.IDR)
-          .build();
-
-  /* Accounts */
+  
   public static final Account TEST_ACCOUNT_TWO =
       Account.builder()
           .id(TEST_ACCOUNT_DTO_TWO.getId())
@@ -66,20 +72,6 @@ public final class TestConstants {
           .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
           .createdAt(new Date(946083999989L))
           .build();
-  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_TWO =
-      EntityModel.of(
-          TEST_ACCOUNT_DTO_TWO,
-          linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_TWO.getId()))
-              .withSelfRel(),
-          linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
-  public static final AccountDto TEST_ACCOUNT_DTO_THREE =
-      AccountDto.builder()
-          .id(TEST_ACCOUNT_THREE_ID)
-          .balance(new BigDecimal("-51.00")) // Invalid value put here for testing.
-          .currency(Currency.USD)
-          .build();
-
-  /* Constant for relationship of Entity Models for Account DTOs */
   
   public static final Account TEST_ACCOUNT_THREE =
       Account.builder()
@@ -91,12 +83,27 @@ public final class TestConstants {
 
   /* Entity Models for Account DTOs */
   
+  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE =
+          EntityModel.of(
+                  TEST_ACCOUNT_DTO_ONE,
+                  linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_ONE.getId()))
+                          .withSelfRel(),
+                  linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
+  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_TWO =
+          EntityModel.of(
+                  TEST_ACCOUNT_DTO_TWO,
+                  linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_TWO.getId()))
+                          .withSelfRel(),
+                  linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
   public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_THREE =
       EntityModel.of(
-          TEST_ACCOUNT_DTO_ONE,
+          TEST_ACCOUNT_DTO_THREE,
           linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_THREE.getId()))
               .withSelfRel(),
           linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
+
+  /* Collection Model for Entity Models of Account DTOs */
+  
   public static final CollectionModel<EntityModel<AccountDto>> TEST_ENTITY_MODEL_COLLECTION_MODEL =
       CollectionModel.of(
           List.of(
@@ -105,14 +112,15 @@ public final class TestConstants {
               TEST_ACCOUNT_DTO_ENTITY_MODEL_THREE),
           linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel());
 
-  /* Collection Model for Entity Models of Account DTOs */
+  /* Transaction IDs */
   public static final Long TEST_TRANSACTION_ONE_ID = 1L;
-
-  /* Transaction DTOs */
   public static final Long TEST_TRANSACTION_TWO_ID = 2L;
   public static final Long TEST_TRANSACTION_THREE_ID = 3L;
   public static final Long TEST_TRANSACTION_FOUR_ID = 4L;
   public static final Long TEST_TRANSACTION_FIVE_ID = 5L;
+
+  /* Transaction DTOs */
+
   public static final TransactionDto TEST_TRANSACTION_DTO_ONE =
       TransactionDto.builder()
           .id(TEST_TRANSACTION_ONE_ID)
@@ -121,6 +129,49 @@ public final class TestConstants {
           .amount(new BigDecimal("20.01"))
           .currency(Currency.IDR)
           .build();
+
+  public static final TransactionDto TEST_TRANSACTION_DTO_TWO =
+          TransactionDto.builder()
+                  .id(TEST_TRANSACTION_TWO_ID)
+                  .sourceAccountId(TEST_ACCOUNT_ONE_ID)
+                  .targetAccountId(TEST_ACCOUNT_TWO_ID)
+                  .amount(new BigDecimal("19000.80"))
+                  .currency(Currency.IDR)
+                  .build();
+
+
+  public static final TransactionDto TEST_TRANSACTION_DTO_THREE =
+          TransactionDto.builder()
+                  .id(TEST_TRANSACTION_THREE_ID)
+                  .sourceAccountId(TEST_ACCOUNT_ONE_ID)
+                  .targetAccountId(TEST_ACCOUNT_THREE_ID)
+                  .amount(BigDecimal.ZERO) // Invalid value, put here for testing purposes.
+                  .currency(Currency.USD)
+                  .build();
+
+  public static final TransactionDto TEST_TRANSACTION_DTO_FOUR =
+          TransactionDto.builder()
+                  .id(TEST_TRANSACTION_FOUR_ID)
+                  .sourceAccountId(TEST_ACCOUNT_THREE_ID)
+                  .targetAccountId(TEST_ACCOUNT_TWO_ID)
+                  .amount(new BigDecimal("0.19"))
+                  .currency(
+                          Currency.AFA) // Currency different from target account's on purpose, to test for a
+                  // relevant
+                  // Exception being thrown.
+                  .build();
+
+  public static final TransactionDto TEST_TRANSACTION_DTO_FIVE =
+          TransactionDto.builder()
+                  .id(TEST_TRANSACTION_FIVE_ID)
+                  .sourceAccountId(TEST_ACCOUNT_TWO_ID)
+                  .targetAccountId(TEST_ACCOUNT_TWO_ID) // From an account to itself, for testing purposes.
+                  .amount(BigDecimal.TEN)
+                  .currency(Currency.IDR)
+                  .build();
+  
+  /* Transactions */
+  
   public static final Transaction TEST_TRANSACTION_ONE =
       Transaction.builder()
           .id(TEST_TRANSACTION_DTO_ONE.getId())
@@ -130,8 +181,39 @@ public final class TestConstants {
           .currency(TEST_TRANSACTION_DTO_ONE.getCurrency())
           .submittedAt(new Date(946083999998L))
           .build();
+
+  public static final Transaction TEST_TRANSACTION_TWO =
+          Transaction.builder()
+                  .id(TEST_TRANSACTION_DTO_TWO.getId())
+                  .sourceAccountId(TEST_TRANSACTION_DTO_TWO.getSourceAccountId())
+                  .targetAccountId(TEST_TRANSACTION_DTO_TWO.getTargetAccountId())
+                  .amount(TEST_TRANSACTION_DTO_TWO.getAmount())
+                  .currency(TEST_TRANSACTION_DTO_TWO.getCurrency())
+                  .submittedAt(new Date(946083999999L))
+                  .build();
+
+  public static final Transaction TEST_TRANSACTION_THREE =
+          Transaction.builder()
+                  .id(TEST_TRANSACTION_DTO_THREE.getId())
+                  .sourceAccountId(TEST_TRANSACTION_DTO_THREE.getSourceAccountId())
+                  .targetAccountId(TEST_TRANSACTION_DTO_THREE.getTargetAccountId())
+                  .amount(TEST_TRANSACTION_DTO_THREE.getAmount())
+                  .currency(TEST_TRANSACTION_DTO_THREE.getCurrency())
+                  .submittedAt(new Date(946084000000L))
+                  .build();
+
+  public static final Transaction TEST_TRANSACTION_FOUR =
+          Transaction.builder()
+                  .id(TEST_TRANSACTION_DTO_FOUR.getId())
+                  .sourceAccountId(TEST_TRANSACTION_DTO_FOUR.getSourceAccountId())
+                  .targetAccountId(TEST_TRANSACTION_DTO_FOUR.getTargetAccountId())
+                  .amount(TEST_TRANSACTION_DTO_FOUR.getAmount())
+                  .currency(TEST_TRANSACTION_DTO_FOUR.getCurrency())
+                  .submittedAt(new Date(946084000001L))
+                  .build();
   
   /* Entity Models over Transaction DTOs */
+
   public static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE =
       EntityModel.of(
           TEST_TRANSACTION_DTO_ONE,
@@ -148,25 +230,23 @@ public final class TestConstants {
                               TARGET_ACCOUNT_ID,
                               TEST_TRANSACTION_DTO_ONE.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
+          linkTo(
+                  methodOn(TransactionController.class)
+                      .getAllTransactions(
+                          Map.of(
+                              SOURCE_ACCOUNT_ID,
+                              TEST_TRANSACTION_DTO_ONE.getSourceAccountId().toString())))
+              .withRel(ALL_TRANSACTIONS_FROM),
+          linkTo(
+                  methodOn(TransactionController.class)
+                      .getAllTransactions(
+                          Map.of(
+                              TARGET_ACCOUNT_ID,
+                              TEST_TRANSACTION_DTO_ONE.getTargetAccountId().toString())))
+              .withRel(ALL_TRANSACTIONS_TO),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
-  public static final TransactionDto TEST_TRANSACTION_DTO_TWO =
-      TransactionDto.builder()
-          .id(TEST_TRANSACTION_TWO_ID)
-          .sourceAccountId(TEST_ACCOUNT_ONE_ID)
-          .targetAccountId(TEST_ACCOUNT_TWO_ID)
-          .amount(new BigDecimal("19000.80"))
-          .currency(Currency.IDR)
-          .build();
-  public static final Transaction TEST_TRANSACTION_TWO =
-      Transaction.builder()
-          .id(TEST_TRANSACTION_DTO_TWO.getId())
-          .sourceAccountId(TEST_TRANSACTION_DTO_TWO.getSourceAccountId())
-          .targetAccountId(TEST_TRANSACTION_DTO_TWO.getTargetAccountId())
-          .amount(TEST_TRANSACTION_DTO_TWO.getAmount())
-          .currency(TEST_TRANSACTION_DTO_TWO.getCurrency())
-          .submittedAt(new Date(946083999999L))
-          .build();
+  
   public static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_TWO =
       EntityModel.of(
           TEST_TRANSACTION_DTO_TWO,
@@ -183,10 +263,57 @@ public final class TestConstants {
                               TARGET_ACCOUNT_ID,
                               TEST_TRANSACTION_DTO_TWO.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
+          linkTo(
+                  methodOn(TransactionController.class)
+                      .getAllTransactions(
+                          Map.of(
+                              SOURCE_ACCOUNT_ID,
+                              TEST_TRANSACTION_DTO_TWO.getSourceAccountId().toString())))
+              .withRel(ALL_TRANSACTIONS_FROM),
+          linkTo(
+                  methodOn(TransactionController.class)
+                      .getAllTransactions(
+                          Map.of(
+                              TARGET_ACCOUNT_ID,
+                              TEST_TRANSACTION_DTO_TWO.getTargetAccountId().toString())))
+              .withRel(ALL_TRANSACTIONS_TO),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
 
-  /* Transactions */
+  public static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_THREE =
+          EntityModel.of(
+                  TEST_TRANSACTION_DTO_THREE,
+                  linkTo(
+                          methodOn(TransactionController.class)
+                                  .getTransaction(TEST_TRANSACTION_DTO_THREE.getId()))
+                          .withSelfRel(),
+                  linkTo(
+                          methodOn(TransactionController.class)
+                                  .getAllTransactions(
+                                          Map.of(
+                                                  SOURCE_ACCOUNT_ID,
+                                                  TEST_TRANSACTION_DTO_THREE.getSourceAccountId().toString(),
+                                                  TARGET_ACCOUNT_ID,
+                                                  TEST_TRANSACTION_DTO_THREE.getTargetAccountId().toString())))
+                          .withRel(ALL_TRANSACTIONS_BETWEEN),
+                  linkTo(
+                          methodOn(TransactionController.class)
+                                  .getAllTransactions(
+                                          Map.of(
+                                                  SOURCE_ACCOUNT_ID,
+                                                  TEST_TRANSACTION_DTO_THREE.getSourceAccountId().toString())))
+                          .withRel(ALL_TRANSACTIONS_FROM),
+                  linkTo(
+                          methodOn(TransactionController.class)
+                                  .getAllTransactions(
+                                          Map.of(
+                                                  TARGET_ACCOUNT_ID,
+                                                  TEST_TRANSACTION_DTO_THREE.getTargetAccountId().toString())))
+                          .withRel(ALL_TRANSACTIONS_TO),
+                  linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
+                          .withRel(ALL_TRANSACTIONS));
+  
+  /* Collection Models over Entity Models of Transaction DTOs */
   public static final CollectionModel<EntityModel<TransactionDto>>
       TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE_TO_ACCOUNT_TWO =
           CollectionModel.of(
@@ -204,41 +331,7 @@ public final class TestConstants {
                       methodOn(TransactionController.class)
                           .getAllTransactions(Collections.emptyMap()))
                   .withRel(ALL_TRANSACTIONS_BETWEEN));
-  public static final TransactionDto TEST_TRANSACTION_DTO_THREE =
-      TransactionDto.builder()
-          .id(TEST_TRANSACTION_THREE_ID)
-          .sourceAccountId(TEST_ACCOUNT_ONE_ID)
-          .targetAccountId(TEST_ACCOUNT_THREE_ID)
-          .amount(BigDecimal.ZERO) // Invalid value, put here for testing purposes.
-          .currency(Currency.USD)
-          .build();
-  public static final Transaction TEST_TRANSACTION_THREE =
-      Transaction.builder()
-          .id(TEST_TRANSACTION_DTO_THREE.getId())
-          .sourceAccountId(TEST_TRANSACTION_DTO_THREE.getSourceAccountId())
-          .targetAccountId(TEST_TRANSACTION_DTO_THREE.getTargetAccountId())
-          .amount(TEST_TRANSACTION_DTO_THREE.getAmount())
-          .currency(TEST_TRANSACTION_DTO_THREE.getCurrency())
-          .submittedAt(new Date(946084000000L))
-          .build();
-  public static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_THREE =
-      EntityModel.of(
-          TEST_TRANSACTION_DTO_THREE,
-          linkTo(
-                  methodOn(TransactionController.class)
-                      .getTransaction(TEST_TRANSACTION_DTO_THREE.getId()))
-              .withSelfRel(),
-          linkTo(
-                  methodOn(TransactionController.class)
-                      .getAllTransactions(
-                          Map.of(
-                              SOURCE_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_THREE.getSourceAccountId().toString(),
-                              TARGET_ACCOUNT_ID,
-                              TEST_TRANSACTION_DTO_THREE.getTargetAccountId().toString())))
-              .withRel(ALL_TRANSACTIONS_BETWEEN),
-          linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
-              .withRel(ALL_TRANSACTIONS));
+  
   public static final CollectionModel<EntityModel<TransactionDto>>
       TEST_ENTITY_MODEL_COLLECTION_MODEL_FROM_ACCOUNT_ONE =
           CollectionModel.of(
@@ -255,27 +348,7 @@ public final class TestConstants {
                       methodOn(TransactionController.class)
                           .getAllTransactions(Collections.emptyMap()))
                   .withRel(ALL_TRANSACTIONS_BETWEEN));
-  public static final TransactionDto TEST_TRANSACTION_DTO_FOUR =
-      TransactionDto.builder()
-          .id(TEST_TRANSACTION_FOUR_ID)
-          .sourceAccountId(TEST_ACCOUNT_THREE_ID)
-          .targetAccountId(TEST_ACCOUNT_TWO_ID)
-          .amount(new BigDecimal("0.19"))
-          .currency(
-              Currency
-                  .AFA) // Currency different from target account's on purpose, to test for a
-                        // relevant
-          // Exception being thrown.
-          .build();
-  public static final Transaction TEST_TRANSACTION_FOUR =
-      Transaction.builder()
-          .id(TEST_TRANSACTION_DTO_FOUR.getId())
-          .sourceAccountId(TEST_TRANSACTION_DTO_FOUR.getSourceAccountId())
-          .targetAccountId(TEST_TRANSACTION_DTO_FOUR.getTargetAccountId())
-          .amount(TEST_TRANSACTION_DTO_FOUR.getAmount())
-          .currency(TEST_TRANSACTION_DTO_FOUR.getCurrency())
-          .submittedAt(new Date(946084000001L))
-          .build();
+  
   public static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_FOUR =
       EntityModel.of(
           TEST_TRANSACTION_DTO_FOUR,
@@ -292,11 +365,13 @@ public final class TestConstants {
                               TARGET_ACCOUNT_ID,
                               TEST_TRANSACTION_DTO_FOUR.getTargetAccountId().toString())))
               .withRel(ALL_TRANSACTIONS_BETWEEN),
+              linkTo(methodOn(TransactionController.class)
+                      .getAllTransactions(Map.of(SOURCE_ACCOUNT_ID, TEST_TRANSACTION_DTO_FOUR.getSourceAccountId().toString()))).withRel(ALL_TRANSACTIONS_FROM),
+              linkTo(methodOn(TransactionController.class)
+                      .getAllTransactions(Map.of(TARGET_ACCOUNT_ID, TEST_TRANSACTION_DTO_FOUR.getTargetAccountId().toString()))).withRel(ALL_TRANSACTIONS_TO),
           linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
               .withRel(ALL_TRANSACTIONS));
-
-  /* Collection Models over Entity Models of Transaction DTOs */
-
+  
   public static final CollectionModel<EntityModel<TransactionDto>>
       TEST_ENTITY_MODEL_COLLECTION_MODEL_FULL =
           CollectionModel.of(
@@ -325,14 +400,6 @@ public final class TestConstants {
                       methodOn(TransactionController.class)
                           .getAllTransactions(Collections.emptyMap()))
                   .withRel(ALL_TRANSACTIONS_BETWEEN));
-  public static final TransactionDto TEST_TRANSACTION_DTO_FIVE =
-      TransactionDto.builder()
-          .id(TEST_TRANSACTION_FIVE_ID)
-          .sourceAccountId(TEST_ACCOUNT_TWO_ID)
-          .targetAccountId(TEST_ACCOUNT_TWO_ID) // From an account to itself, for testing purposes.
-          .amount(BigDecimal.TEN)
-          .currency(Currency.IDR)
-          .build();
 
   /* Exchange rate Map for mocked CurrencyLedger calls */
 
@@ -344,7 +411,6 @@ public final class TestConstants {
           new CurrencyPair(Currency.USD, Currency.USD), BigDecimal.ONE,
           new CurrencyPair(Currency.GBP, Currency.GBP), BigDecimal.ONE,
           new CurrencyPair(Currency.IDR, Currency.IDR), BigDecimal.ONE);
-
 
   private TestConstants() {}
 }

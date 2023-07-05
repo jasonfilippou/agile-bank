@@ -339,7 +339,7 @@ For details, refer to the implementation of `TransactionService` and the utility
 DELETEs are handled rather naively, merely for lack of time. Sending a `DELETE` at `/bankapi/account/x` hard-deletes the relevant
 account `x` from the database. We do NOT cascade `DELETE`s to transactions that have involved the account `x`. The account `x`
 can NO LONGER be involved in future transactions. As long as the same instance of the application is running,
-the ID generation strategy of `SEQUENC` guarantees that no new account will take the ID of a now deleted account, but of course
+the ID generation strategy of `SEQUENCE` guarantees that no new account will take the ID of a now deleted account, but of course
 in a more realistic application, a more robust treatment of ID maintenance would be required.
 
 Similarly, deleting transactions is rather naive. Doing so does NOT credit or debit the relevant accounts in any way. It is seen merely
@@ -388,7 +388,3 @@ and log the calls there.
 - If you call an endpoint that requires a request parameter (e.g `DELETE` at `/bankapi/account/{id}`) but neglect to pass the request
 parameter `{id}`, you will get a `401 Unauthorized` HTTP Error. This is because of the way that the `commence()` method has been overloaded in
 `JwtAuthenticationEntryPoint` and could probably have been handled better.
-
-- The `TransactionModelAssembler` should also be rendering links for the endpoints of `GET` queries
-from the source account and to the source account. This was discovered right before submitting the exercise at 1am in the morning
-and sleep was prioritized.
