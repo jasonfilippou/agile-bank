@@ -18,6 +18,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for transactions. Supports {@link com.agilebank.controller.TransactionController} by providing methods for
+ * retrieving a single or multiple transactions, storing new transactions, and deleting transactions.
+ * 
+ * @author jason 
+ * 
+ * @see com.agilebank.controller.TransactionController
+ * @see TransactionRepository
+ */
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -27,6 +36,12 @@ public class TransactionService {
   private final TransactionSanityChecker transactionSanityChecker;
   private final CurrencyLedger currencyLedger;
 
+  /**
+   * Store a new transaction in the database.
+   * @param transactionDto The {@link TransactionDto} with the information of the new transaction to persist.
+   * @return A {@link TransactionDto} with the information of the just persisted transaction in the database (if everything goes ok).
+   * @see TransactionSanityChecker
+   */
   @Transactional
   public TransactionDto storeTransaction(TransactionDto transactionDto) {
     Optional<Account> sourceAccount =
@@ -74,6 +89,12 @@ public class TransactionService {
         .build();
   }
 
+  /**
+   * Retrieve a single transaction by its unique ID.
+   * @param id The unique DB id of a transaction.
+   * @return A {@link TransactionDto} describing the transaction identified by {@literal id}.
+   * @throws TransactionNotFoundException If there is no transaction identified by {@literal id} in the database.
+   */
   @Transactional(readOnly = true)
   public TransactionDto getTransaction(Long id) throws TransactionNotFoundException {
     return transactionRepository
@@ -90,6 +111,10 @@ public class TransactionService {
         .orElseThrow(() -> new TransactionNotFoundException(id));
   }
 
+  /**
+   * Retrieve all the transactions in the database.
+   * @return A {@link List} with all the transactions that are stored in the database.
+   */
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactions() {
     return transactionRepository.findAll().stream()
@@ -105,6 +130,11 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Get all the transactions beginning from a given source account.
+   * @param sourceAccountId The unique DB Id of the source account for all the transactions we want.
+   * @return A List of all transactions with the source account corresponding to {@literal sourceAccountId}.
+   */
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsFrom(Long sourceAccountId) {
     return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
@@ -120,6 +150,11 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Get all the transactions to a given target account.
+   * @param targetAccountId The unique DB Id of the target account for all the transactions we want.
+   * @return A List of all transactions with the target account corresponding to {@literal targetAccountId}.
+   */
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsTo(Long targetAccountId) {
     return transactionRepository.findByTargetAccountId(targetAccountId).stream()
@@ -135,6 +170,12 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Get all the transactions beginning from a given source account and to a given target account.
+   * @param sourceAccountId The unique DB id of the source account for all the transactions we want.
+   * @param targetAccountId The unique DB Id of the target account for all the transactions we want.
+   * @return A List of all transactions with the source and target accounts correponding to the IDs provided.
+   */
   @Transactional(readOnly = true)
   public List<TransactionDto> getAllTransactionsBetween(
       Long sourceAccountId, Long targetAccountId) {
@@ -153,8 +194,13 @@ public class TransactionService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Hard-Delete the transaction corresponding to the provided id.
+   * @param id The unique DB id of the transaction to delete.
+   * @throws TransactionNotFoundException If there is no transaction with id {@literal id} in the DB.
+   */
   @Transactional
-  public void deleteTransaction(Long id) {
+  public void deleteTransaction(Long id) throws TransactionNotFoundException{
     Optional<Transaction> transaction = transactionRepository.findById(id);
     if (transaction.isPresent()) {
       transactionRepository.deleteById(id);
@@ -163,6 +209,9 @@ public class TransactionService {
     }
   }
 
+  /**
+   * Hard-delete all the transactions in the database, emptying the relevant table.
+   */
   @Transactional
   public void deleteAllTransactions() {
     transactionRepository.deleteAll();

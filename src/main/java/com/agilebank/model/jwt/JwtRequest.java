@@ -3,6 +3,13 @@ package com.agilebank.model.jwt;
 import java.io.Serializable;
 import lombok.*;
 
+/**
+ * Simple POJO for defining a user request for a JWT token.
+ * 
+ * @author jason 
+ * 
+ * @see JwtResponse
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -2,6 +2,10 @@ package com.agilebank.util.exceptions;
 
 import lombok.Getter;
 
+/**
+ * A {@link RuntimeException} thrown when a transaction from an account to itself is POST-ed.
+ * @author jason
+ */
 @Getter
 public class SameAccountException extends RuntimeException {
 

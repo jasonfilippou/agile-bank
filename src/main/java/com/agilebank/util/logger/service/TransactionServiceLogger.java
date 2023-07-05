@@ -8,6 +8,13 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
+/**
+ * AOP-enabled class that logs all calls to {@literal public} methods of {@link com.agilebank.service.transaction.TransactionService}.
+ * Calls to entrance, exit and exception throwing are all logged.
+ * @author jason
+ * @see com.agilebank.util.logger.controller.TransactionControllerLogger
+ * @see com.agilebank.util.logger.persistence.TransactionRepositoryLogger
+ */
 @Component
 @Aspect
 @Slf4j

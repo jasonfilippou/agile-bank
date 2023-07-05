@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.agilebank.controller.TransactionController;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,15 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * {@link RepresentationModelAssembler} for {@link TransactionDto} instances. Provides methods for transforming a single or multiple
+ * {@link TransactionDto} instance(s) to HAL-formatted JSONs with links to relevant resources.
+ *
+ * @author jason
+ *
+ * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#linkTo(Method)
+ * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#methodOn(Class, Object...)
+ */
 @Component
 public class TransactionModelAssembler
     implements RepresentationModelAssembler<TransactionDto, EntityModel<TransactionDto>> {

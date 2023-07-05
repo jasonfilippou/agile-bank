@@ -14,6 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * {@link RestController} responsible for exposing endpoints related to transactions.
+ * @author jason 
+ * 
+ * @see AccountController
+ */
 @RestController
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
@@ -22,6 +28,12 @@ public class TransactionController {
   private final TransactionService transactionService;
   private final TransactionModelAssembler transactionModelAssembler;
 
+  /**
+   * POST endpoint for a new transaction.
+   * @param transactionDto A {@link TransactionDto} instance.
+   * @return A {@link ResponseEntity} over the HAL-formatted {@link TransactionDto} that was just stored in the database,
+   * and an {@link HttpStatus#OK} status code (if everything goes ok).
+   */
   @PostMapping("/transaction")
   public ResponseEntity<EntityModel<TransactionDto>> postTransaction(
       @RequestBody TransactionDto transactionDto) {
@@ -30,12 +42,32 @@ public class TransactionController {
         HttpStatus.CREATED);
   }
 
+  /**
+   * GET endpoint for a single transaction.
+   * @param id The unique ID of a transaction, generated internally by the database.
+   * @return A {@link ResponseEntity} over a HAL-formatted {@link TransactionDto} instance, alongside a {@link HttpStatus#OK}
+   * status code if everything goes ok.
+   */
   @GetMapping("/transaction/{id}")
-  public ResponseEntity<EntityModel<TransactionDto>> getTransaction(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<TransactionDto>> getTransaction(@PathVariable Long id) {
     return ResponseEntity.ok(
         transactionModelAssembler.toModel(transactionService.getTransaction(id)));
   }
 
+  /**
+   * Aggregate GET endpoint for all transactions in the database.
+   * @param params An optional parameter {@link Map}. The different cases for this parameter are:
+   *               <ul>
+   *               <li>If it is of form &#123;&quot; sourceAccountId &quot; : &lt; source_account_id &gt;&#125;, it returns all transactions that originated from the account with id
+   *               &lt; source_account_id &gt;.</li>
+   *               <li>If it is of form &#123; &quot; targetAccountId &quot; : &lt; target_account_id &gt;&#125;, it returns all transactions that culminated with the account with id
+   *                &lt; target_account_id &gt;.</li>
+   *               <li>If it is of form &#123;&quot; sourceAccountId &quot; : &lt; source_account_id &gt;, &quot; targetAccountId &quot;, &lt; target_account_id &gt;&#125;, it returns all transactions that originated from the account with id
+   *                &lt; source_account_id &gt; and culminated with the account with id &lt; target_account_id &gt;.</li>
+   *               <li>If it is {@literal null}, empty or contains keys different from &quot;sourceAccountId&quot; and &quot;targetAccountId&quot;, it returns all transactions.</li>
+   *               </ul>
+   * @return A {@link ResponseEntity} with a HAL-formatted collection of all transactions that satisfy the parameters.
+   */
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
       @RequestParam Map<String, String> params) {
@@ -64,12 +96,22 @@ public class TransactionController {
             transactionService.getAllTransactions(), params));
   }
 
+
+  /**
+   * Endpoint for DELETE of a specitic transaction.
+   * @param id The unique ID of the transaction to delete.
+   * @return An instance of {@link ResponseEntity} with the status code {@link HttpStatus#NO_CONTENT} if everything goes as planned.
+   */
   @DeleteMapping("/transaction/{id}")
   public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
     transactionService.deleteTransaction(id);
     return ResponseEntity.noContent().build();
   }
 
+  /**
+   * Endpoint for aggregate DELETE of all transactions.
+   * @return An instance of {@link ResponseEntity} with the status code {@link HttpStatus#NO_CONTENT} if everything goes as planned.
+   */
   @DeleteMapping("/transaction")
   public ResponseEntity<?> deleteAllTransactions() {
     transactionService.deleteAllTransactions();

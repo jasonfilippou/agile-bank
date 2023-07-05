@@ -8,15 +8,26 @@ The code has been developed and tested on a Linux Mint 20.2 Uma machine with ker
 We employ a MySQL database for persistence, and an H2 database for tests. The `application.properties` file of the 
 application lets it create all the entities on the database, so minimal database legwork should be required.
 You just need to create the database `agile_bank`, a user named `springuser` with the provided password
-and grant all privileges on `agile_bank` to `springuser`. This is how we did it in our machine:
+and grant all privileges on `agile_bank` to `springuser`. This is how we did it in our machine. Open up a shell and type:
 
+```shell
+sudo mysql --password 
 ```
-$ sudo mysql --password 
-mysql> create database agile_bank; -- Creates the new database
-mysql> create user 'springuser'@'%' identified by 'ThePassword882100##'; -- Same password we have in the application.properties
-mysql> grant all on agile_bank.* to 'springuser'@'%'; -- Gives all privileges to the new user on the newly created database
+Input your `sudo` password, and this should open up the `mysql` prompt, where you should type:
+```mysql
+create database agile_bank; -- Creates the new database
+create user 'springuser'@'%' identified by 'ThePassword882100##'; -- Same password we have in the application.properties
+grant all on agile_bank.* to 'springuser'@'%'; -- Gives all privileges to the new user on the newly created database
 ```
 
+You can now run the Spring Server by running the `SpringBootAgileBankApplication` class. Once the server
+is up - and - running, for security reasons, we recommend downgrading the privileges of `'springuser'` to just the absolutely 
+necessary ones through the `mysql` prompt:
+
+```mysql
+revoke all on agile_bank.* from 'springuser'@'%';
+grant select, insert, delete, update on agile_bank.* to 'springuser'@'%';
+```
 ### Authentication
 
 The API generates JWT tokens for authentication, with the secret stored in `application.properties`. The provided POSTMAN collection

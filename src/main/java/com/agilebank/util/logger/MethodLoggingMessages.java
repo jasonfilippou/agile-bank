@@ -3,6 +3,10 @@ package com.agilebank.util.logger;
 import java.util.Arrays;
 import org.aspectj.lang.JoinPoint;
 
+/**
+ * {@literal final} class whose {@literal static} methods are used by the various *Logger classes to log their messages.
+ * @author jason 
+ */
 public final class MethodLoggingMessages {
 
   private MethodLoggingMessages() {}

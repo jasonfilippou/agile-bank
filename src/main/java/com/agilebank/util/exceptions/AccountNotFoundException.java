@@ -2,6 +2,10 @@ package com.agilebank.util.exceptions;
 
 import lombok.Getter;
 
+/**
+ * A {@link RuntimeException} thrown when an account with a given ID cannot be found in the DB.
+ * @author jason
+ */
 @Getter
 public class AccountNotFoundException extends RuntimeException {
 

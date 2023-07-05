@@ -9,12 +9,26 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+/**
+ * A utility class that generates randomly defined exchange rates between {@link Currency} instances.
+ * 
+ * @author jason 
+ * 
+ * @see Currency
+ */
 @Component
 public class CurrencyLedger {
   private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
   private final Random random =
       new Random(47); // Keep the "randomness" consistent across runs of the app
 
+  /**
+   * Constructs the full list of exchange rates between all pairs of {@link Currency} instances. The exchange rates are 
+   * pseudo-random {@link BigDecimal} instances in the interval (0, 100], except for pairs of a {@link Currency} with itself,
+   * where we force the value of {@link BigDecimal#ONE}.
+   * @return A {@link Map} with {@link CurrencyPair}s as keys and pseudo-random {@link BigDecimal}s as values.
+   * @see CurrencyPair
+   */
   public Map<CurrencyPair, BigDecimal> getCurrencyExchangeRates() {
     if (currencyExchangeRates == null) {
       currencyExchangeRates = createCurrencyExchangeRates();
@@ -37,6 +51,10 @@ public class CurrencyLedger {
     return currencyExchangeRates;
   }
 
+  /**
+   * Simple POJO for defining ordered pairs of {@link Currency} instances.
+   * @see java.util.Currency
+   */
   @AllArgsConstructor
   @EqualsAndHashCode
   @Getter

@@ -9,6 +9,15 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Transaction database object.
+ * 
+ * @author jason 
+ * 
+ * @see TransactionDto
+ * @see com.agilebank.model.account.AccountDto
+ * @see com.agilebank.model.account.Account
+ */
 @Entity
 @Getter
 @Setter

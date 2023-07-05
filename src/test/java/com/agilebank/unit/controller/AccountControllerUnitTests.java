@@ -116,7 +116,7 @@ public class AccountControllerUnitTests {
             .currency(accountDtoPartial.getCurrency())
             .balance(accountDtoPartial.getBalance())
             .build();
-    when(accountService.updateAccount(id, accountDtoPartial)).thenReturn(accountDtoFull);
+    when(accountService.replaceAccount(id, accountDtoPartial)).thenReturn(accountDtoFull);
     when(accountModelAssembler.toModel(accountDtoFull))
         .thenReturn(
             EntityModel.of(
@@ -126,7 +126,7 @@ public class AccountControllerUnitTests {
                 linkTo(methodOn(AccountController.class).getAllAccounts())
                     .withRel("all_accounts")));
     ResponseEntity<EntityModel<AccountDto>> responseEntity =
-        accountController.updateAccount(id, accountDtoPartial);
+        accountController.replaceAccount(id, accountDtoPartial);
     assertEquals(accountDtoFull, Objects.requireNonNull(responseEntity.getBody()).getContent());
     assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
   }
@@ -136,7 +136,7 @@ public class AccountControllerUnitTests {
     final Long id = 1L;
     AccountDto accountDto =
         AccountDto.builder().balance(BigDecimal.TEN).currency(Currency.USD).build();
-    doThrow(new AccountNotFoundException(id)).when(accountService).updateAccount(1L, accountDto);
-    accountController.updateAccount(id, accountDto);
+    doThrow(new AccountNotFoundException(id)).when(accountService).replaceAccount(1L, accountDto);
+    accountController.replaceAccount(id, accountDto);
   }
 }

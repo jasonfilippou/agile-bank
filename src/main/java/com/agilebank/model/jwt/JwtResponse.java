@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Simple POJO that defines the API's response to the user for a JWT token request.
+ */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode

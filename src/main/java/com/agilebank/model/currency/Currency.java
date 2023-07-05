@@ -1,5 +1,10 @@
 package com.agilebank.model.currency;
 
+/**
+ * An enum with approximately 300 <a href = "https://www.iban.com/currency-codes">ISO 4217</a> currency identifiers.
+ * @author jason
+ * @see CurrencyLedger
+ */
 public enum Currency {
   AFN,
   EUR,

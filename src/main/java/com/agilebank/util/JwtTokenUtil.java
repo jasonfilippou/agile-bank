@@ -15,6 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+/**
+ * Various utilities for generating and parsing JWTs.
+ * @author jason 
+ * @see com.agilebank.controller.JwtAuthenticationController
+ * @see com.agilebank.service.jwtauthentication.JwtAuthenticationService
+ */
 @Component
 public class JwtTokenUtil implements Serializable {
   @Serial private static final long serialVersionUID = -2550185165626007488L;
@@ -22,17 +28,25 @@ public class JwtTokenUtil implements Serializable {
   @Value("${jwt.secret}")
   private String secret;
 
-  // retrieve username from jwt token
+  /**
+   * Retrieve the user's username from the provided token.
+   * @param token The JWT to retrieve the username from.
+   * @return The user's username.
+   */
   public String getUsernameFromToken(String token) {
     return getClaimFromToken(token, Claims::getSubject);
   }
 
-  // retrieve expiration date from jwt token
+  /**
+   * Retrieve the expiration date of the token.
+   * @param token The token to retrieve the expiration date from.
+   * @return A {@link Date} instance representing the moment in time that the token will expire.
+   */
   public Date getExpirationDateFromToken(String token) {
     return getClaimFromToken(token, Claims::getExpiration);
   }
 
-  public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+  private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
     final Claims claims = getAllClaimsFromToken(token);
     return claimsResolver.apply(claims);
   }
@@ -47,7 +61,11 @@ public class JwtTokenUtil implements Serializable {
     return expiration.before(new Date());
   }
 
-  // generate token for user
+  /** Generate the token for the provided user.
+   * @param userDetails The {@link UserDetails} of the provided user.
+   * @return The generated JWT.
+   * @see com.agilebank.service.jwtauthentication.JwtUserDetailsService
+   */
   public String generateToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
     return doGenerateToken(claims, userDetails.getUsername());
@@ -70,7 +88,12 @@ public class JwtTokenUtil implements Serializable {
         .compact();
   }
 
-  // validate token
+  /**
+   * Validate the provided token against the details of the provided user.
+    * @param token A JWT.
+   * @param userDetails The {@link UserDetails} to validate the token against.
+   * @return {@literal true} if the token is validated, {@literal false} otherwise.
+   */
   public Boolean validateToken(String token, UserDetails userDetails) {
     final String username = getUsernameFromToken(token);
     return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

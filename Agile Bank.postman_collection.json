@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"balance\" : 100000,\n    \"currency\" : \"INR\"\n}",
+					"raw": "{\n    \"balance\" : 530.01,\n    \"currency\" : \"EUR\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -56,7 +56,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"sourceAccountId\": 53,\n    \"targetAccountId\": 54,\n    \"amount\": 10.00,\n    \"currency\" : \"USD\"\n}",
+					"raw": "{\n    \"sourceAccountId\": 1,\n    \"targetAccountId\": 2,\n    \"amount\": 10.00,\n    \"currency\" : \"INR\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -173,7 +173,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/bankapi/account/100",
+					"raw": "http://localhost:8080/bankapi/account/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -182,7 +182,7 @@
 					"path": [
 						"bankapi",
 						"account",
-						"100"
+						"1"
 					]
 				}
 			},

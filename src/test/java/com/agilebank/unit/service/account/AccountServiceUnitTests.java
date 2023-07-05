@@ -111,7 +111,7 @@ public class AccountServiceUnitTests {
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
-    AccountDto accountDto = accountService.updateAccount(id, updatedAccountDto);
+    AccountDto accountDto = accountService.replaceAccount(id, updatedAccountDto);
     assertEquals(
         accountDto,
         AccountDto.builder()
@@ -125,7 +125,7 @@ public class AccountServiceUnitTests {
   public void whenAttemptingToUpdateANonExistentAccount_thenAccountNotFoundExceptionIsThrown() {
     final Long id = 1L;
     doThrow(new AccountNotFoundException(id)).when(accountRepository).findById(id);
-    accountService.updateAccount(
+    accountService.replaceAccount(
         id,
         AccountDto.builder()
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())

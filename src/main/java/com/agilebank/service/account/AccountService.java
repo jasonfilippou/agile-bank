@@ -13,12 +13,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class for accounts. Supports {@link com.agilebank.controller.AccountController} by providing methods for retrieving,
+ * storing, deleting and updating accounts in the DB.
+ * 
+ * @author jason 
+ * 
+ * @see com.agilebank.controller.AccountController
+ * @see AccountRepository
+ */
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 
   private final AccountRepository accountRepository;
 
+  /**
+   * Store a new account in the DB.
+   * @param accountDto the {@link AccountDto} with the information of the new account to store in the DB.
+   * @return A {@link AccountDto} instance with the information of the account that was stored in the DB, if everything went fine.
+   * @throws InvalidBalanceException if the balance of the account provided is not positive.
+   */
   @Transactional
   public AccountDto storeAccount(AccountDto accountDto) throws InvalidBalanceException {
     if (accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
@@ -37,6 +52,10 @@ public class AccountService {
         .build();
   }
 
+  /**
+   * Get all the accounts that we have stored in the DB.
+   * @return A {@link List} over all the accounts that we have stored in the DB.
+   */
   @Transactional(readOnly = true)
   public List<AccountDto> getAllAccounts() {
     return accountRepository.findAll().stream()
@@ -50,6 +69,12 @@ public class AccountService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieve the account with the provided id.
+   * @param id A unique {@link Long} identifier associated with the account we want to retrieve.
+   * @return A {@link AccountDto} instance corresponding to the account with id {@literal id}.
+   * @throws AccountNotFoundException If there is no account with the id {@literal id}.
+   */
   @Transactional(readOnly = true)
   public AccountDto getAccount(Long id) throws AccountNotFoundException {
     return accountRepository
@@ -64,6 +89,11 @@ public class AccountService {
         .orElseThrow(() -> new AccountNotFoundException(id));
   }
 
+  /**
+   * Hard-delete the account with id {@literal id} from the database.
+   * @param id The unique id of the account to delete.
+   * @throws AccountNotFoundException If the account cannot be found in the database.
+   */
   @Transactional
   public void deleteAccount(Long id) throws AccountNotFoundException {
     Optional<Account> account = accountRepository.findById(id);
@@ -74,13 +104,23 @@ public class AccountService {
     }
   }
 
+  /**
+   * Hard-delete all the accounts from our database, emptying the relevant table.
+   */
   @Transactional
   public void deleteAllAccounts() {
     accountRepository.deleteAll();
   }
 
+  /**
+   * Replace the account with unique id {@literal id} with the provided {@link AccountDto} ({@literal PUT} semantics).
+   * @param id The unique id of the account to replace.
+   * @param accountDto The {@link AccountDto} to replace the account with.
+   * @return The new {@link AccountDto} stored in the database.
+   * @throws AccountNotFoundException if there is no Account with the id {@literal id} in the db.
+   */
   @Transactional
-  public AccountDto updateAccount(Long id, AccountDto accountDto) throws AccountNotFoundException {
+  public AccountDto replaceAccount(Long id, AccountDto accountDto) throws AccountNotFoundException {
     Optional<Account> account = accountRepository.findById(id);
     if (account.isPresent()) {
       Account newAccount =

@@ -1,6 +1,7 @@
 package com.agilebank.model.account;
 
 import com.agilebank.model.currency.Currency;
+import com.agilebank.model.transaction.Transaction;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -9,6 +10,14 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Account database object.
+ *
+ * @author jason
+ * @see Transaction
+ * @see AccountDto
+ * @see com.agilebank.model.transaction.TransactionDto
+ */
 @Entity
 @Getter
 @Setter
@@ -35,7 +44,7 @@ public class Account {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Builder.Default
   private Date createdAt = new Date();
-
+  
   public Account(BigDecimal balance, Currency currency) {
     this.balance = balance;
     this.currency = currency;

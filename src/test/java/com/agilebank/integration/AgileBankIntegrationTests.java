@@ -175,7 +175,7 @@ public class AgileBankIntegrationTests {
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
     ResponseEntity<EntityModel<AccountDto>> putResponseEntity =
-        accountController.updateAccount(postedAccountDto.getId(), updatedAccountDto);
+        accountController.replaceAccount(postedAccountDto.getId(), updatedAccountDto);
     assertEquals(
         AccountDto.builder()
             .id(postedAccountDto.getId())
@@ -200,7 +200,7 @@ public class AgileBankIntegrationTests {
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
-    accountController.updateAccount(postedAccountDto.getId() + 1, updatedAccountDto);
+    accountController.replaceAccount(postedAccountDto.getId() + 1, updatedAccountDto);
   }
 
   /* Now we put transactions in the mix as well. */

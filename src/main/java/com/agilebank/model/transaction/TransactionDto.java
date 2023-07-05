@@ -4,6 +4,14 @@ import com.agilebank.model.currency.Currency;
 import java.math.BigDecimal;
 import lombok.*;
 
+/**
+ * Simple POJO that defines the data transfer object for transactions.
+ * @author jason 
+ * 
+ * @see Transaction
+ * @see com.agilebank.model.account.Account
+ * @see com.agilebank.model.account.AccountDto
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

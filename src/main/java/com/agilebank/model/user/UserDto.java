@@ -7,6 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
+/**
+ * Data Transfer Object for application users.
+ * @author jason 
+ * @see User
+ */
 @Data
 @AllArgsConstructor
 public class UserDto {

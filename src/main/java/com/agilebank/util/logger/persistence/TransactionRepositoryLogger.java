@@ -11,6 +11,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
+/**
+ * AOP-enabled class that logs all calls to {@literal public} methods of {@link com.agilebank.persistence.TransactionRepository}.
+ * Calls to entrance, exit and exception throwing are all logged.
+ * @author jason
+ * @see com.agilebank.util.logger.service.TransactionServiceLogger
+ * @see com.agilebank.util.logger.controller.TransactionControllerLogger
+ */
 @Aspect
 @Component
 @Slf4j

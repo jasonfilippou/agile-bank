@@ -17,6 +17,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * A {@link OncePerRequestFilter} that filters every incoming request to make sure that it is properly authenticated with an unexpired
+ * JWT token.
+ * @author jason 
+ * @see JwtTokenUtil
+ * @see JwtAuthenticationService
+ * @see com.agilebank.config.JwtAuthenticationEntryPoint
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -61,12 +69,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       }
     }
     filterChain.doFilter(request, response);
-  }
-
-  // This just makes easier to test the class since the method above is protected
-  public void doFilterTestEntryPoint(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    doFilterInternal(request, response, filterChain);
   }
 }

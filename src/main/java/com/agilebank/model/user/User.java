@@ -9,6 +9,13 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
+/**
+ * Database object for application users.
+ * 
+ * @author jason 
+ * 
+ * @see UserDto
+ */
 @Entity
 @Getter
 @Setter

@@ -8,13 +8,29 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+/**
+ * A service class that provides a single authentication method for users.
+ *
+ * @author jason
+ *
+ * @see #authenticate(String, String)
+ */
 @Service
 @RequiredArgsConstructor
 public class JwtAuthenticationService {
 
   private final AuthenticationManager authenticationManager;
 
-  public void authenticate(String username, String password) throws Exception {
+  /**
+   * Authenticates the &lt; username, password &gt; pair provided.
+   * @param username The user's username.
+   * @param password The user's password.
+   * @throws BadPasswordLengthException if the password's length is smaller than 8 or greater than 30 characters.
+   * @throws Exception if the underlying {@link AuthenticationManager} throws a {@link DisabledException} or {@link BadCredentialsException}.
+   * @see AuthenticationManager
+   * @see UsernamePasswordAuthenticationToken
+   */
+  public void authenticate(String username, String password) throws BadPasswordLengthException, Exception {
     try {
       // Another check in addition to the check in registration here, just in case somebody
       // injected my DB with a weak password and wants to authenticate with it.

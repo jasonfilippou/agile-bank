@@ -11,6 +11,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
+/**
+ * AOP-enabled class that logs all calls to {@literal public} methods of {@link com.agilebank.controller.AccountController}.
+ * Calls to entrance, exit and exception throwing are all logged.
+ * @author jason 
+ * @see com.agilebank.util.logger.service.AccountServiceLogger
+ * @see com.agilebank.util.logger.persistence.AccountRepositoryLogger
+ */
 @Component
 @Aspect
 @Slf4j
@@ -110,22 +117,22 @@ public class AccountControllerLogger {
     log.warn(msg(jp, ex.getClass()));
   }
 
-  /* Update account */
+  /* Replace account */
 
-  @Before("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
-  public void beforeUpdatingAccount(JoinPoint jp) {
+  @Before("execution(* com.agilebank.controller.AccountController.replaceAccount(..))")
+  public void beforeReplacingAccount(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));
   }
 
-  @AfterReturning("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
-  public void afterUpdatingAccount(JoinPoint jp) {
+  @AfterReturning("execution(* com.agilebank.controller.AccountController.replaceAccount(..))")
+  public void afterReplacingAccount(JoinPoint jp) {
     log.info(msg(Loc.END, jp));
   }
 
   @AfterThrowing(
-      value = "execution(* com.agilebank.controller.AccountController.updateAccount(..))",
+      value = "execution(* com.agilebank.controller.AccountController.replaceAccount(..))",
       throwing = "ex")
-  public void afterUpdatingAccountByIdThrows(JoinPoint jp, Throwable ex) {
+  public void afterReplacingAccountThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
 }
