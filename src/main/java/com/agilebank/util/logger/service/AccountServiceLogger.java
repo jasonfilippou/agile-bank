@@ -3,6 +3,7 @@ package com.agilebank.util.logger.service;
 import static com.agilebank.util.logger.MethodLoggingMessages.msg;
 
 import com.agilebank.util.logger.Loc;
+import com.agilebank.util.logger.persistence.RepositoryLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  * Calls to entrance, exit and exception throwing are all logged.
  * @author jason
  * @see com.agilebank.util.logger.controller.AccountControllerLogger
- * @see com.agilebank.util.logger.persistence.AccountRepositoryLogger
+ * @see RepositoryLogger
  */
 @Component
 @Aspect

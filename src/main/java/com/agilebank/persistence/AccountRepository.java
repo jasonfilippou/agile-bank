@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see TransactionRepository
  * @see UserRepository
  */
-public interface AccountRepository extends JpaRepository<Account, Long> {}
+@CustomRepositoryAnnotation
+public interface AccountRepository extends JpaRepository<Account, Long>{
+}

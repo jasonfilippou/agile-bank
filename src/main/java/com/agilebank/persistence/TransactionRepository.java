@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see AccountRepository
  * @see UserRepository
  */
+
+@CustomRepositoryAnnotation
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
   List<Transaction> findBySourceAccountId(Long sourceAccountId);

@@ -4,9 +4,11 @@ import com.agilebank.model.user.User;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
 import com.agilebank.util.exceptions.BadPasswordLengthException;
+import com.agilebank.util.exceptions.UsernameAlreadyInDatabaseException;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,14 +54,19 @@ public class JwtUserDetailsService implements UserDetailsService {
    * @param newUser A {@link UserDto} with the information of the new user to store in the database.
    * @return A {@link UserDto} corresponding to the just persisted user.
    * @throws BadPasswordLengthException If the password provided is less than 8 or more than 30 characters.
+   * @throws UsernameAlreadyInDatabaseException If the username provided already exists in the database.
    */
-  public UserDto save(UserDto newUser) throws BadPasswordLengthException {
+  public UserDto save(UserDto newUser) throws BadPasswordLengthException, UsernameAlreadyInDatabaseException {
     String newUserPassword = newUser.getPassword();
     if (newUserPassword.length() < 8 || newUserPassword.length() > 30) {
       throw new BadPasswordLengthException(8, 30);
     }
+    try {
     User savedUser =
         userRepository.save(new User(newUser.getUsername(), encoder.encode(newUserPassword)));
     return new UserDto(savedUser.getUsername(), savedUser.getPassword());
+    } catch(DataIntegrityViolationException integrityViolationException){
+      throw new UsernameAlreadyInDatabaseException(newUser.getUsername());
+    }
   }
 }

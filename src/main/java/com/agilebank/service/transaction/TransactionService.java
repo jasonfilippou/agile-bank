@@ -68,7 +68,7 @@ public class TransactionService {
     targetAccount
         .get()
         .setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
-    // Save the updated accounts.
+    // Save the updated accounts. TODO: Make PATCH semantics for the save.
     accountRepository.save(sourceAccount.get());
     accountRepository.save(targetAccount.get());
     // Finally, save and return the transaction.

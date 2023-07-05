@@ -44,4 +44,16 @@ public class ExceptionAdvice {
   public ResponseEntity<String> notFoundStatusMessage(RuntimeException exc) {
     return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_FOUND);
   }
+
+  /**
+   * Handler for all exceptions that should return an HTTP Status Code of {@link HttpStatus#CONFLICT}.
+   * @param exc The {@link RuntimeException} thrown by our application.
+   * @return A {@link ResponseEntity} with the exception's message as the body and {@link HttpStatus#CONFLICT} as the status code.
+   */
+  @ResponseBody
+  @ExceptionHandler({UsernameAlreadyInDatabaseException.class})
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ResponseEntity<String> conflictMessage(RuntimeException exc){
+    return new ResponseEntity<>(exc.getMessage(), HttpStatus.CONFLICT);
+  }
 }
