@@ -15,10 +15,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class JwtRequest implements Serializable {
 
   private static final long serialVersionId = 5926468583005150707L;
 
   @NonNull private String username;
-  @NonNull private String password;
+  @NonNull @ToString.Exclude String password;
 }

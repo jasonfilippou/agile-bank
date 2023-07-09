@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 public class TransactionServiceLogger {
 
   /* Store transaction */
+  
   @Before("execution(* com.agilebank.service.transaction.TransactionService.storeTransaction(..))")
   public void beforeStoringNewTransaction(JoinPoint jp) {
     log.info(msg(Loc.BEGIN, jp));

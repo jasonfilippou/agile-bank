@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Data Transfer Object for application users.
@@ -20,5 +21,6 @@ public class UserDto {
 
   @JsonProperty(access = WRITE_ONLY)
   @NonNull
+  @ToString.Exclude
   private String password;
 }

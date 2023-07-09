@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author jason
  */
 @Getter
-public class UsernameAlreadyInDatabaseException extends RuntimeException{
+public class UsernameAlreadyInDatabaseException extends RuntimeException {
 
     private final String username;
 
