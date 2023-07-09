@@ -63,17 +63,16 @@ public class TransactionSanityChecker {
     BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
-    // Have to divide to find out how many units of the transaction's currency we hold.
     if (transactionDto
-            .getAmount()
+            .getAmount().multiply(sourceToTransactionCurrencyExchangeRate)
             .compareTo(
-                sourceAccount.get().getBalance().multiply(sourceToTransactionCurrencyExchangeRate))
+                sourceAccount.get().getBalance())
         > 0) {
       throw new InsufficientBalanceException(
           transactionDto.getSourceAccountId(),
           sourceAccount.get().getBalance(),
           sourceAccount.get().getCurrency(),
-          transactionDto.getAmount());
+          transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate));
     }
   }
 }

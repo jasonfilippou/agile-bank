@@ -20,7 +20,7 @@ public class InsufficientBalanceException extends RuntimeException {
       Long accountId,
       BigDecimal accountBalanceInCurrency,
       Currency currency,
-      BigDecimal amountRequested) {
+      BigDecimal amountRequestedInSourceCurrency) {
     super(
         "Account "
             + accountId
@@ -29,7 +29,7 @@ public class InsufficientBalanceException extends RuntimeException {
             + " in currency "
             + currency
             + ", but "
-            + amountRequested
+            + amountRequestedInSourceCurrency
             + " was requested.");
     this.accountId = accountId;
     this.accountBalanceInCurrency = accountBalanceInCurrency;

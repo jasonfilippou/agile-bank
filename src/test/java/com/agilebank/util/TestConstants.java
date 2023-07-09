@@ -37,7 +37,7 @@ public final class TestConstants {
   public static final AccountDto TEST_ACCOUNT_DTO_ONE =
           AccountDto.builder()
                   .id(TEST_ACCOUNT_ONE_ID)
-                  .balance(new BigDecimal("120.25"))
+                  .balance(new BigDecimal("220.25"))
                   .currency(Currency.GBP)
                   .build();
 
