@@ -3,7 +3,6 @@ package com.agilebank.config;
 import com.agilebank.service.jwtauthentication.JwtRequestFilter;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +36,6 @@ public class SecurityConfig {
   /**
    * Define {@link AuthenticationManager bean}.
    * @param httpSecurity A {@link HttpSecurity} instance.
-   * @param userDetailsService A {@link UserDetailsService} instance.
    * @return A {@link AuthenticationManager} instance that knows which service to call for obtaining {@link UserDetails}
    * and is aware of the password encryption scheme.
    * @throws Exception If the {@link AuthenticationManagerBuilder} used underneath throws it while setting the {@link UserDetailsService}
@@ -47,11 +45,11 @@ public class SecurityConfig {
    */
   @Bean
   public AuthenticationManager authenticationManager(
-      HttpSecurity httpSecurity, UserDetailsService userDetailsService) throws Exception {
+      HttpSecurity httpSecurity) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder
-        .userDetailsService(userDetailsService)
+        .userDetailsService(jwtUserDetailsService)
         .passwordEncoder(passwordEncoder);
     return authenticationManagerBuilder.build();
   }
@@ -84,12 +82,5 @@ public class SecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
-  }
-
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    // configure AuthenticationManager so that it knows from where to load
-    // user for matching credentials
-    auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
   }
 }

@@ -30,7 +30,6 @@ public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;
   private final JwtUserDetailsService userDetailsService;
-
   private final JwtAuthenticationService jwtAuthenticationService;
 
   /**
