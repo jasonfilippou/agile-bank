@@ -19,7 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Spring Security configuration for API. Defines {@link AuthenticationManager} and {@link SecurityFilterChain} beans.
+ * Spring Security configuration for API. Defines {@link AuthenticationManager} and {@link
+ * SecurityFilterChain} beans.
+ *
  * @author jason
  * @see PasswordEncoderConfig
  */
@@ -36,12 +38,13 @@ public class SecurityConfig {
 
   /**
    * Define {@link AuthenticationManager bean}.
+   *
    * @param httpSecurity A {@link HttpSecurity} instance.
    * @param userDetailsService A {@link UserDetailsService} instance.
-   * @return A {@link AuthenticationManager} instance that knows which service to call for obtaining {@link UserDetails}
-   * and is aware of the password encryption scheme.
-   * @throws Exception If the {@link AuthenticationManagerBuilder} used underneath throws it while setting the {@link UserDetailsService}
-   * to use.
+   * @return A {@link AuthenticationManager} instance that knows which service to call for obtaining
+   *     {@link UserDetails} and is aware of the password encryption scheme.
+   * @throws Exception If the {@link AuthenticationManagerBuilder} used underneath throws it while
+   *     setting the {@link UserDetailsService} to use.
    * @see UserDetailsService
    * @see JwtUserDetailsService
    */
@@ -58,9 +61,10 @@ public class SecurityConfig {
 
   /**
    * Define the {@link SecurityFilterChain}bean.
+   *
    * @param http An instance of {@link HttpSecurity}
-   * @return A fully defined {@link SecurityFilterChain} with endpoints to permit without authentication, defined authentication
-   * entry point, session creation policy, etc.
+   * @return A fully defined {@link SecurityFilterChain} with endpoints to permit without
+   *     authentication, defined authentication entry point, session creation policy, etc.
    * @throws Exception If {@link HttpSecurity#build()} throws it.
    * @see SecurityFilterChain
    */
@@ -72,7 +76,13 @@ public class SecurityConfig {
         .csrf()
         .disable()
         .authorizeRequests()
-        .requestMatchers("/bankapi/register", "/bankapi/authenticate")
+        .requestMatchers(
+            "/bankapi/register",
+            "/bankapi/authenticate",
+            "/swagger-ui/index.html",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html")
         .permitAll()
         .anyRequest()
         .authenticated()
@@ -86,10 +96,14 @@ public class SecurityConfig {
     return http.build();
   }
 
+
   @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    // configure AuthenticationManager so that it knows from where to load
-    // user for matching credentials
+  public void configureGlobal(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder)
+      throws Exception {
     auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
+    auth.inMemoryAuthentication()
+        .withUser("user")
+        .password(passwordEncoder.encode("password"))
+        .roles("USER");
   }
 }

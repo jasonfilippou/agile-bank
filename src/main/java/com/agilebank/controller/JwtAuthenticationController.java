@@ -7,6 +7,8 @@ import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bankapi")
 @CrossOrigin
 @RequiredArgsConstructor
+@OpenAPIDefinition(info = @Info(title = "Authentication API", version = "v1"))
 public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;

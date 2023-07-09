@@ -6,6 +6,8 @@ import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
+@OpenAPIDefinition(info = @Info(title = "Transaction API", version = "v1"))
 public class TransactionController {
 
   private final TransactionService transactionService;

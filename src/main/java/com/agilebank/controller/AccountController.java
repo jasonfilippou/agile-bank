@@ -3,6 +3,8 @@ package com.agilebank.controller;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
+@OpenAPIDefinition(info = @Info(title = "Account API", version = "v1"))
 public class AccountController {
 
   private final AccountService accountService;
