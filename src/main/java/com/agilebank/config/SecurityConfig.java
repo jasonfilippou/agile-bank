@@ -77,10 +77,8 @@ public class SecurityConfig {
         .requestMatchers(
             "/bankapi/register",
             "/bankapi/authenticate",
-            "/swagger-ui/index.html",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html")
+                "/swagger-ui-custom.html" ,"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**",
+                "/swagger-ui/index.html","/api-docs/**")
         .permitAll()
         .anyRequest()
         .authenticated()
