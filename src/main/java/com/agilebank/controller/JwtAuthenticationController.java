@@ -7,8 +7,13 @@ import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
+import com.agilebank.util.exceptions.UsernameAlreadyInDatabaseException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bankapi")
 @CrossOrigin
 @RequiredArgsConstructor
-@OpenAPIDefinition(info = @Info(title = "Authentication API", version = "v1"))
+@Tag(name = "1. Authentication API")
 public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;
@@ -42,6 +47,26 @@ public class JwtAuthenticationController {
    * @return A {@link ResponseEntity} over {@link JwtResponse} instances.
    * @throws Exception if the {@link JwtAuthenticationService} throws it.
    */
+  @Operation(summary = "Authenticate with your username and password")
+  @ApiResponses(
+          value = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Authentication successful, JWT returned.",
+                          content = {
+                                  @Content(
+                                          mediaType = "application/json",
+                                          schema = @Schema(implementation = JwtResponse.class))
+                          }),
+                  @ApiResponse(
+                          responseCode = "401",
+                          description = "Bad password.",
+                          content = @Content),
+                  @ApiResponse(
+                          responseCode = "404",
+                          description = "Username not found.",
+                          content = @Content)
+          })
   @PostMapping(value = "/authenticate")
   public ResponseEntity<JwtResponse> createAuthenticationToken(
       @RequestBody JwtRequest authenticationRequest) throws Exception {
@@ -60,8 +85,32 @@ public class JwtAuthenticationController {
    *             encrypted format in the database.
    * @return An instance of {@link ResponseEntity} over a {@link UserDto} instance.
    */
+  @Operation(summary = "Register with your username and password")
+  @ApiResponses(
+          value = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Registration successful.",
+                          content = {
+                                  @Content(
+                                          mediaType = "application/json",
+                                          schema = @Schema(implementation = UserDto.class))
+                          }),
+                  @ApiResponse(
+                          responseCode = "409",
+                          description = "Username already taken.",
+                          content = @Content)
+          })
   @PostMapping(value = "/register")
   public ResponseEntity<UserDto> registerUser(@RequestBody UserDto user) {
     return new ResponseEntity<>(userDetailsService.save(user), HttpStatus.CREATED);
   }
+
+  @ResponseBody
+  @ExceptionHandler({UsernameAlreadyInDatabaseException.class})
+  @ResponseStatus(HttpStatus.CONFLICT)
+  private ResponseEntity<String> conflictMessage(RuntimeException exc){
+    return new ResponseEntity<>(exc.getMessage(), HttpStatus.CONFLICT);
+  }
+
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * Calls to entrance, exit and exception throwing are all logged.
  * @author jason
  * @see com.agilebank.util.logger.service.TransactionServiceLogger
- * @see com.agilebank.util.logger.persistence.TransactionRepositoryLogger
+ * @see com.agilebank.util.logger.persistence.RepositoryLogger
  */
 @Aspect
 @Slf4j
