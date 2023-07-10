@@ -204,6 +204,62 @@ public class AgileBankIntegrationTests {
   }
 
   /* Now we put transactions in the mix as well. */
+
+  @Test
+  public void
+      whenPostingAValidTransactionBetweenTwoAccounts_thenTheSourceAccountIsDebitedAndTheTargetAccountIsCredited() {
+    // Post the accounts
+    ResponseEntity<EntityModel<AccountDto>> responseEntityAccountOne =
+        accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    ResponseEntity<EntityModel<AccountDto>> responseEntityAccountTwo =
+        accountController.postAccount(TEST_ACCOUNT_DTO_TWO);
+    AccountDto accountDtoOne =
+        Objects.requireNonNull(responseEntityAccountOne.getBody()).getContent();
+    AccountDto accountDtoTwo =
+        Objects.requireNonNull(responseEntityAccountTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
+    BigDecimal accountOneBalanceBeforeTransaction = accountDtoOne.getBalance();
+    BigDecimal accountTwoBalanceBeforeTransaction = accountDtoTwo.getBalance();
+
+    // Build and Post the transaction
+    TransactionDto transactionDto =
+        TransactionDto.builder()
+            .id(accountDtoOne.getId())
+            .sourceAccountId(accountDtoOne.getId())
+            .targetAccountId(accountDtoTwo.getId())
+            .amount(BigDecimal.ONE)
+            .currency(accountDtoTwo.getCurrency())
+            .build();
+    transactionController.postTransaction(transactionDto);
+
+    // Get the exchange rate between the source and target account currencies:
+    ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForExchangeRate =
+        currencyLedgerController.getCurrencyExchangeRate(
+            accountDtoOne.getCurrency(), accountDtoTwo.getCurrency());
+    BigDecimal exchangeRate =
+        Objects.requireNonNull(responseEntityForExchangeRate.getBody())
+            .get(new CurrencyPair(accountDtoOne.getCurrency(), accountDtoTwo.getCurrency()));
+
+    // Get the accounts:
+    responseEntityAccountOne = accountController.getAccount(accountDtoOne.getId());
+    responseEntityAccountTwo = accountController.getAccount(accountDtoTwo.getId());
+    accountDtoOne = Objects.requireNonNull(responseEntityAccountOne.getBody()).getContent();
+    accountDtoTwo = Objects.requireNonNull(responseEntityAccountTwo.getBody()).getContent();
+    assert accountDtoOne != null && accountDtoTwo != null;
+    BigDecimal accountOneBalanceAfterTransaction = accountDtoOne.getBalance();
+    BigDecimal accountTwoBalanceAfterTransaction = accountDtoTwo.getBalance();
+
+    // Make sure the source account has been appropriately debited and the target account
+    // appropriately debited.
+    assertEquals(
+        accountOneBalanceAfterTransaction,
+        accountOneBalanceBeforeTransaction.subtract(
+            exchangeRate.multiply(transactionDto.getAmount())));
+    assertEquals(
+        accountTwoBalanceAfterTransaction,
+        accountTwoBalanceBeforeTransaction.add(transactionDto.getAmount()));
+  }
+
   @Test
   public void
       whenPostingAValidTransactionBetweenTwoAccounts_thenWeCanFindTheTransactionInMultipleWays() {
@@ -278,9 +334,12 @@ public class AgileBankIntegrationTests {
             .sourceAccountId(accountDto.getId())
             .targetAccountId(accountDto.getId() + 1)
             .amount(BigDecimal.ONE)
-            .currency(accountDto.getCurrency())
-            .build()); // Currency doesn't matter here; the NonExistentAccountException should be
-    // thrown first.
+            .currency(
+                accountDto
+                    .getCurrency()) // Currency doesn't matter here; the NonExistentAccountException
+                                    // should be
+            // thrown first.
+            .build());
   }
 
   @Test(expected = TransactionNotFoundException.class)
@@ -485,7 +544,7 @@ public class AgileBankIntegrationTests {
         Objects.requireNonNull(responseEntityForAccountTwo.getBody()).getContent();
     assert accountOne != null && accountTwo != null;
 
-    // Now post three transactions ... 
+    // Now post three transactions ...
 
     ResponseEntity<EntityModel<TransactionDto>> responseEntityForTransactionOne =
         transactionController.postTransaction(

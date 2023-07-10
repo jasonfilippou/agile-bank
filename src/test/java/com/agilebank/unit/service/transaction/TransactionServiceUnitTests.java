@@ -55,8 +55,8 @@ public class TransactionServiceUnitTests {
             Optional.of(TEST_ACCOUNT_ONE),
             Optional.of(TEST_ACCOUNT_TWO),
             TEST_EXCHANGE_RATES);
-    when(accountRepository.save(TEST_ACCOUNT_ONE)).thenReturn(TEST_ACCOUNT_ONE);
-    when(accountRepository.save(TEST_ACCOUNT_TWO)).thenReturn(TEST_ACCOUNT_TWO);
+    doNothing().when(accountRepository).updateBalance(TEST_ACCOUNT_ONE.getId(), TEST_ACCOUNT_ONE.getBalance());
+    doNothing().when(accountRepository).updateBalance(TEST_ACCOUNT_TWO.getId(), TEST_ACCOUNT_TWO.getBalance());
     when(transactionRepository.save(any(Transaction.class))).thenReturn(TEST_TRANSACTION_ONE);
     assertEquals(
         TEST_TRANSACTION_DTO_ONE, transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE));
