@@ -1,5 +1,8 @@
 package com.agilebank.config;
 
+import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
+import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -9,6 +12,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import java.util.Map;
@@ -42,7 +46,9 @@ public class OpenAPI30Configuration {
                 .addSchemas(
                     "ExchangeRate",
                     new Schema<Map<String, Object>>()
-                        .addProperty("<USD, GBP >", new NumberSchema().example(1.20)))
+                        .addProperty("<USD, GBP>", new NumberSchema().example(1.20)))
+                .addSchemas("ParameterMap", new Schema<Map<String, String>>().addProperty(SOURCE_ACCOUNT_ID, 
+                                new StringSchema().example("1")).addProperty(TARGET_ACCOUNT_ID, new StringSchema().example("2")))
                 .addSecuritySchemes(
                     securitySchemeName,
                     new SecurityScheme()

@@ -7,6 +7,10 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -155,7 +159,14 @@ public class TransactionController {
       })
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
-      @RequestParam Map<String, String> params) {
+          @Parameter(name = "params",
+                  in = ParameterIn.QUERY,
+                  required = true,
+                  schema = @Schema(type = "object", additionalProperties = Schema.AdditionalPropertiesValue.TRUE, 
+                  ref = "#/components/schemas/ParameterMap"),
+                  style = ParameterStyle.FORM,
+                  explode = Explode.TRUE)
+          @RequestParam Map<String, String> params) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(
           transactionModelAssembler.toCollectionModel(
