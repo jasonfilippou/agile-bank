@@ -18,10 +18,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class UserDto {
 
-  @Schema(example = "memeuser")
+  @Schema(example = "agileuser")
   @NonNull private String username;
 
-  @Schema(example = "memepassword")
+  @Schema(example = "agilepassword")
   @JsonProperty(access = WRITE_ONLY)
   @NonNull
   @ToString.Exclude
