@@ -33,7 +33,7 @@ public class Account {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "balance", scale = 2)
+  @Column(name = "balance", scale = 2) // Constraint for negative values?
   private BigDecimal balance;
 
   @Column(name = "currency")
