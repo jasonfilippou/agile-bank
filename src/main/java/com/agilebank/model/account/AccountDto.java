@@ -22,7 +22,7 @@ public class AccountDto {
   @Schema(example = "1", hidden = true)
   private Long id;
   @Schema(example = "100")
-  @NonNull private BigDecimal balance;
+  private BigDecimal balance;
   @Schema(example = "USD")
-  @NonNull private Currency currency;
+  private Currency currency;
 }

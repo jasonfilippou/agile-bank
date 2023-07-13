@@ -52,6 +52,20 @@ public class CurrencyLedger {
   }
 
   /**
+   * A utility that converts a given amount from a given source {@link Currency} to a target {@link Currency}
+   * @param sourceCurrency The source {@link Currency}.
+   * @param targetCurrency The target {@link Currency}
+   * @param amount The amount to convert.
+   * @return The amount in the new {@link Currency}, based on what {@link  CurrencyLedger} has stored.
+   */
+  public BigDecimal convertAmountToTargetCurrency(Currency sourceCurrency, Currency targetCurrency, BigDecimal amount){
+    if (currencyExchangeRates == null) {
+      currencyExchangeRates = createCurrencyExchangeRates();
+    }
+    return currencyExchangeRates.get(CurrencyPair.of(sourceCurrency, targetCurrency)).multiply(amount);
+  }
+
+  /**
    * Simple POJO for defining ordered pairs of {@link Currency} instances.
    * @see java.util.Currency
    */
@@ -65,6 +79,10 @@ public class CurrencyLedger {
     @Override
     public String toString() {
       return "<" + currencyOne + ", " + currencyTwo + ">";
+    }
+
+    public static CurrencyPair of(Currency first, Currency second){
+      return new CurrencyPair(first, second);
     }
   }
 }

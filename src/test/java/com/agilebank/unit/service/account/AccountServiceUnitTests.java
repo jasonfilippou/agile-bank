@@ -9,8 +9,10 @@ import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
+import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.InvalidBalanceException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +28,9 @@ public class AccountServiceUnitTests {
   @InjectMocks private AccountService accountService;
 
   @Mock private AccountRepository accountRepository;
-
+  
+  @Mock private UpdateMapper updateMapper;
+  
   @Test
   public void whenRepoSavesANewAccount_thenTheAccountIsReturned() {
     when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ONE);
@@ -95,7 +99,7 @@ public class AccountServiceUnitTests {
   }
 
   @Test
-  public void whenUpdatingAccount_thenUpdatedObjectIsReturned() {
+  public void whenReplacingAccount_thenReplacedObjectIsReturned() {
     final Long id = 1L;
     when(accountRepository.findById(id)).thenReturn(Optional.ofNullable(TEST_ACCOUNT_ONE));
     when(accountRepository.save(any(Account.class)))
@@ -122,7 +126,7 @@ public class AccountServiceUnitTests {
   }
 
   @Test(expected = AccountNotFoundException.class)
-  public void whenAttemptingToUpdateANonExistentAccount_thenAccountNotFoundExceptionIsThrown() {
+  public void whenAttemptingToReplaceANonExistentAccount_thenAccountNotFoundExceptionIsThrown() {
     final Long id = 1L;
     doThrow(new AccountNotFoundException(id)).when(accountRepository).findById(id);
     accountService.replaceAccount(
@@ -131,5 +135,28 @@ public class AccountServiceUnitTests {
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build());
+  }
+  
+  @Test
+  public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned(){
+    AccountDto newAccountInfo = AccountDto.builder()
+            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .balance(TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
+            .build();
+    when(accountRepository.findById(newAccountInfo.getId())).thenReturn(Optional.of(TEST_ACCOUNT_ONE));
+    Account patchedAccount =
+        Account.builder()
+            .id(newAccountInfo.getId())
+            .balance(newAccountInfo.getBalance())
+            .currency(TEST_ACCOUNT_ONE.getCurrency())
+            .createdAt(TEST_ACCOUNT_ONE.getCreatedAt())
+            .build();
+    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE)).thenReturn(patchedAccount);
+    when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
+    assertEquals(AccountDto.builder().id(TEST_ACCOUNT_DTO_ONE.getId())
+            .balance(newAccountInfo.getBalance())
+            .currency(TEST_ACCOUNT_ONE.getCurrency())
+            .build(), 
+            accountService.patchAccount(newAccountInfo.getId(), newAccountInfo));
   }
 }

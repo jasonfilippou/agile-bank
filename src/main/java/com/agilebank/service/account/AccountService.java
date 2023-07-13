@@ -3,6 +3,7 @@ package com.agilebank.service.account;
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
+import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
 
   private final AccountRepository accountRepository;
+  private final UpdateMapper updateMapper;
 
   /**
    * Store a new account in the DB.
@@ -137,6 +139,28 @@ public class AccountService {
           .currency(newAccount.getCurrency())
           .balance(newAccount.getBalance())
           .build();
+    }
+    throw new AccountNotFoundException(id);
+  }
+
+  /**
+   * Patch (update) an account.
+   * @param id The unique ID of the account.
+   * @param accountDto An {@link AccountDto} containing the fields to update the account with.
+   * @return The updated {@link AccountDto} describing the new state of the account.
+   */
+  @Transactional
+  public AccountDto patchAccount(Long id, AccountDto accountDto){
+    Optional<Account> accountOptional = accountRepository.findById(id);
+    if(accountOptional.isPresent()){
+      Account account = accountOptional.get();
+      account = updateMapper.updateAccountFromDto(accountDto, account);
+      Account patchedAccount = accountRepository.save(account);
+      return AccountDto.builder()
+              .id(patchedAccount.getId())
+              .currency(patchedAccount.getCurrency())
+              .balance(patchedAccount.getBalance())
+              .build();
     }
     throw new AccountNotFoundException(id);
   }
