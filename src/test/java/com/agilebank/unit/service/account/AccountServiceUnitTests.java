@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
+import com.agilebank.model.currency.Currency;
+import com.agilebank.model.currency.CurrencyLedger;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.UpdateMapper;
@@ -28,9 +30,9 @@ public class AccountServiceUnitTests {
   @InjectMocks private AccountService accountService;
 
   @Mock private AccountRepository accountRepository;
-  
+
   @Mock private UpdateMapper updateMapper;
-  
+
   @Test
   public void whenRepoSavesANewAccount_thenTheAccountIsReturned() {
     when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ONE);
@@ -136,14 +138,17 @@ public class AccountServiceUnitTests {
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build());
   }
-  
+
   @Test
-  public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned(){
-    AccountDto newAccountInfo = AccountDto.builder()
+  public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned() {
+    AccountDto newAccountInfo =
+        AccountDto.builder()
             .id(TEST_ACCOUNT_DTO_ONE.getId())
-            .balance(TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
+            .balance(
+                TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
             .build();
-    when(accountRepository.findById(newAccountInfo.getId())).thenReturn(Optional.of(TEST_ACCOUNT_ONE));
+    when(accountRepository.findById(newAccountInfo.getId()))
+        .thenReturn(Optional.of(TEST_ACCOUNT_ONE));
     Account patchedAccount =
         Account.builder()
             .id(newAccountInfo.getId())
@@ -151,12 +156,57 @@ public class AccountServiceUnitTests {
             .currency(TEST_ACCOUNT_ONE.getCurrency())
             .createdAt(TEST_ACCOUNT_ONE.getCreatedAt())
             .build();
-    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE)).thenReturn(patchedAccount);
+    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
+        .thenReturn(patchedAccount);
     when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
-    assertEquals(AccountDto.builder().id(TEST_ACCOUNT_DTO_ONE.getId())
+    assertEquals(
+        AccountDto.builder()
+            .id(TEST_ACCOUNT_DTO_ONE.getId())
             .balance(newAccountInfo.getBalance())
             .currency(TEST_ACCOUNT_ONE.getCurrency())
-            .build(), 
-            accountService.patchAccount(newAccountInfo.getId(), newAccountInfo));
+            .build(),
+        accountService.updateAccount(newAccountInfo.getId(), newAccountInfo));
+  }
+
+  @Test
+  public void whenUpdatingAnExistingAccountWithANewCurrency_thenNewAccountInfoIsReturned() {
+    AccountDto newAccountInfo =
+        AccountDto.builder()
+            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .currency(Currency.AMD) // TEST_ACCOUNT_ONE has GBP
+            .build();
+    when(accountRepository.findById(newAccountInfo.getId()))
+        .thenReturn(Optional.of(TEST_ACCOUNT_ONE));
+    CurrencyLedger currencyLedger = new CurrencyLedger();
+    Account patchedAccount =
+        Account.builder()
+            .id(newAccountInfo.getId())
+            .balance(
+                currencyLedger.convertAmountToTargetCurrency(
+                    TEST_ACCOUNT_ONE.getCurrency(), Currency.AMD, TEST_ACCOUNT_ONE.getBalance()))
+            .currency(newAccountInfo.getCurrency())
+            .createdAt(TEST_ACCOUNT_ONE.getCreatedAt())
+            .build();
+    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
+        .thenReturn(patchedAccount);
+    when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
+    assertEquals(
+        AccountDto.builder()
+            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .balance(
+                currencyLedger.convertAmountToTargetCurrency(
+                    TEST_ACCOUNT_ONE.getCurrency(), Currency.AMD, TEST_ACCOUNT_ONE.getBalance()))
+            .currency(newAccountInfo.getCurrency())
+            .build(),
+        accountService.updateAccount(newAccountInfo.getId(), newAccountInfo));
+  }
+
+  @Test(expected = AccountNotFoundException.class)
+  public void whenAttemptingToUpdateANonExistentAccount_thenAccountNotFoundExceptionIsThrown() {
+    AccountDto accountDto =
+        AccountDto.builder().id(0L).currency(Currency.IDR).balance(BigDecimal.ONE).build();
+    doThrow(new AccountNotFoundException(accountDto.getId()))
+        .when(accountRepository).findById(accountDto.getId());
+    accountService.updateAccount(accountDto.getId(), accountDto);
   }
 }

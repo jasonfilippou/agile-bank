@@ -139,4 +139,58 @@ public class AccountControllerUnitTests {
     doThrow(new AccountNotFoundException(id)).when(accountService).replaceAccount(1L, accountDto);
     accountController.replaceAccount(id, accountDto);
   }
+
+  @Test
+  public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned() {
+    AccountDto newAccountInfo =
+            AccountDto.builder()
+                    .id(TEST_ACCOUNT_DTO_ONE.getId())
+                    .balance(
+                            TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
+                    .build();
+    AccountDto patchedAccountDto =
+            AccountDto.builder()
+                    .id(newAccountInfo.getId())
+                    .balance(newAccountInfo.getBalance())
+                    .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
+                    .build();
+    EntityModel<AccountDto> patchedAccountDtoEntityModel = EntityModel.of(
+            patchedAccountDto,
+            linkTo(methodOn(AccountController.class).getAccount(patchedAccountDto.getId()))
+                    .withSelfRel(),
+            linkTo(methodOn(AccountController.class).getAllAccounts())
+                    .withRel("all_accounts"));
+    when(accountService.updateAccount(newAccountInfo.getId(), newAccountInfo)).thenReturn(patchedAccountDto);
+    when(accountModelAssembler.toModel(patchedAccountDto)).thenReturn(patchedAccountDtoEntityModel);
+    assertEquals(
+            ResponseEntity.ok(patchedAccountDtoEntityModel),
+            accountController.updateAccount(newAccountInfo.getId(), newAccountInfo));
+  }
+
+  @Test
+  public void whenUpdatingAnExistingAccountWithANewCurrency_thenNewAccountInfoIsReturned() {
+    AccountDto newAccountInfo =
+            AccountDto.builder()
+                    .id(TEST_ACCOUNT_DTO_ONE.getId())
+                    .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                    .currency(Currency.AMD) // TEST_ACCOUNT_DTO_ONE has GBP
+                    .build();
+    AccountDto patchedAccountDto =
+            AccountDto.builder()
+                    .id(newAccountInfo.getId())
+                    .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                    .currency(newAccountInfo.getCurrency())
+                    .build();
+    EntityModel<AccountDto> patchedAccountDtoEntityModel = EntityModel.of(
+            patchedAccountDto,
+            linkTo(methodOn(AccountController.class).getAccount(patchedAccountDto.getId()))
+                    .withSelfRel(),
+            linkTo(methodOn(AccountController.class).getAllAccounts())
+                    .withRel("all_accounts"));
+    when(accountService.updateAccount(newAccountInfo.getId(), newAccountInfo)).thenReturn(patchedAccountDto);
+    when(accountModelAssembler.toModel(patchedAccountDto)).thenReturn(patchedAccountDtoEntityModel);
+    assertEquals(
+            ResponseEntity.ok(patchedAccountDtoEntityModel),
+            accountController.updateAccount(newAccountInfo.getId(), newAccountInfo));
+  }
 }

@@ -163,7 +163,7 @@ public class AccountController {
    * Endpoint for PUT of a specific account.
    *
    * @param id The unique ID of the account to replace.
-   * @param account The {@link AccountDto} to replace the existing account with.
+   * @param accountDto The {@link AccountDto} to replace the existing account with.
    * @return A {@link ResponseEntity} over a HAL-formatted {@link EntityModel} with the new account
    *     data.
    */
@@ -172,7 +172,7 @@ public class AccountController {
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Accounts successfully updated",
+            description = "Account successfully replaced",
             content = @Content),
         @ApiResponse(
             responseCode = "401",
@@ -182,8 +182,36 @@ public class AccountController {
       })
   @PutMapping("/account/{id}")
   public ResponseEntity<EntityModel<AccountDto>> replaceAccount(
-      @PathVariable Long id, @RequestBody AccountDto account) {
+      @PathVariable Long id, @RequestBody AccountDto accountDto) {
     return ResponseEntity.ok(
-        accountModelAssembler.toModel(accountService.replaceAccount(id, account)));
+        accountModelAssembler.toModel(accountService.replaceAccount(id, accountDto)));
+  }
+
+  /**
+   * Endpoint for PATCH of a specific account.
+   *
+   * @param id The unique ID of the account to update.
+   * @param accountDto The {@link AccountDto} to replace certain fields of the existing account with. Any {@link null}
+   *                   or missing fields are avoided; if you wish to persist {@literal null} fields, please use the PUT
+   *                   endpoint instead.
+   * @return A {@link ResponseEntity} over a HAL-formatted {@link EntityModel} with the new account data.
+   */
+  @Operation(summary = "Replace an account")
+  @ApiResponses(
+          value = {
+                  @ApiResponse(
+                          responseCode = "200",
+                          description = "Account successfully updated",
+                          content = @Content),
+                  @ApiResponse(
+                          responseCode = "401",
+                          description = "Unauthenticated user",
+                          content = @Content),
+                  @ApiResponse(responseCode = "404", description = "Account not found", content = @Content)
+          })
+  @PatchMapping("/account/{id}")
+  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id, @RequestBody AccountDto accountDto){
+    return ResponseEntity.ok(
+            accountModelAssembler.toModel(accountService.updateAccount(id, accountDto)));
   }
 }

@@ -150,7 +150,7 @@ public class AccountService {
    * @return The updated {@link AccountDto} describing the new state of the account.
    */
   @Transactional
-  public AccountDto patchAccount(Long id, AccountDto accountDto){
+  public AccountDto updateAccount(Long id, AccountDto accountDto){
     Optional<Account> accountOptional = accountRepository.findById(id);
     if(accountOptional.isPresent()){
       Account account = accountOptional.get();
