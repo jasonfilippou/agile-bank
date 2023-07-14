@@ -76,7 +76,7 @@ public class AccountController {
               @Content(
                   mediaType = "application/json",
                   array = @ArraySchema(schema = @Schema(implementation = AccountDto.class)))
-            }), // TODO: Fix this
+            }),
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })
   @GetMapping("/account")
@@ -173,7 +173,9 @@ public class AccountController {
         @ApiResponse(
             responseCode = "200",
             description = "Account successfully replaced",
-            content = @Content),
+            content =  @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AccountDto.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthenticated user",
@@ -202,7 +204,9 @@ public class AccountController {
                   @ApiResponse(
                           responseCode = "200",
                           description = "Account successfully updated",
-                          content = @Content),
+                          content = @Content(
+                                  mediaType = "application/json",
+                                  schema = @Schema(implementation = AccountDto.class))),
                   @ApiResponse(
                           responseCode = "401",
                           description = "Unauthenticated user",
