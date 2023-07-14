@@ -154,7 +154,7 @@ public class AccountService {
     Optional<Account> accountOptional = accountRepository.findById(id);
     if(accountOptional.isPresent()){
       Account account = accountOptional.get();
-      account = updateMapper.updateAccountFromDto(accountDto, account);
+      account = updateMapper.updateEntityFromDto(accountDto, account);
       Account patchedAccount = accountRepository.save(account);
       return AccountDto.builder()
               .id(patchedAccount.getId())

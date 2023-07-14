@@ -26,13 +26,14 @@ public abstract class UpdateMapper {
 
     @Mapping(target = "balance", expression = "java(updateBalanceIfNecessary(entity.getCurrency(), dto.getCurrency(), " +
             "entity.getBalance(), dto.getBalance()))")
-    @Mapping(source = "dto.id", target = "id")
-    @Mapping(source = "dto.currency", target = "currency")
-    public abstract Account updateAccountFromDto(AccountDto dto, Account entity);
+    @Mapping(target = "id", source = "dto.id", defaultExpression = "java(entity.getId())")
+    @Mapping(target = "currency", source = "dto.currency", defaultExpression = "java(entity.getCurrency())")
+    public abstract Account updateEntityFromDto(AccountDto dto, Account entity);
     
     protected BigDecimal updateBalanceIfNecessary(Currency entityCurrency, Currency dtoCurrency, BigDecimal entityBalance,
                                                   BigDecimal dtoBalance){
-        if(dtoBalance != null){ // If the dto provides a balance, just use it and be done with it.
+        // If the dto provides a balance, just use it and be done with it.
+        if(dtoBalance != null){ 
             return dtoBalance;
         }
         // Otherwise, if the dto provides a currency that is different from the entity's, perform the appropriate conversion.

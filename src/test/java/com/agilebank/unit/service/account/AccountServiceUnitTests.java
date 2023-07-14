@@ -156,7 +156,7 @@ public class AccountServiceUnitTests {
             .currency(TEST_ACCOUNT_ONE.getCurrency())
             .createdAt(TEST_ACCOUNT_ONE.getCreatedAt())
             .build();
-    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
+    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
         .thenReturn(patchedAccount);
     when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
     assertEquals(
@@ -187,7 +187,7 @@ public class AccountServiceUnitTests {
             .currency(newAccountInfo.getCurrency())
             .createdAt(TEST_ACCOUNT_ONE.getCreatedAt())
             .build();
-    when(updateMapper.updateAccountFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
+    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ONE))
         .thenReturn(patchedAccount);
     when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
     assertEquals(

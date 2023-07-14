@@ -160,7 +160,7 @@ public class AgileBankIntegrationTests {
   }
 
   @Test
-  public void whenUpdatingAnExistingAccount_thenUpdatedAccountIsReturned() {
+  public void whenReplacingAnExistingAccount_thenReplacedAccountIsReturned() {
     ResponseEntity<EntityModel<AccountDto>> postResponseEntity =
         accountController.postAccount(
             AccountDto.builder()
@@ -169,13 +169,13 @@ public class AgileBankIntegrationTests {
                 .build());
     AccountDto postedAccountDto = Objects.requireNonNull(postResponseEntity.getBody()).getContent();
     assert postedAccountDto != null;
-    AccountDto updatedAccountDto =
+    AccountDto replacedAccountDto =
         AccountDto.builder()
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
     ResponseEntity<EntityModel<AccountDto>> putResponseEntity =
-        accountController.replaceAccount(postedAccountDto.getId(), updatedAccountDto);
+        accountController.replaceAccount(postedAccountDto.getId(), replacedAccountDto);
     assertEquals(
         AccountDto.builder()
             .id(postedAccountDto.getId())
@@ -186,7 +186,7 @@ public class AgileBankIntegrationTests {
   }
 
   @Test(expected = AccountNotFoundException.class)
-  public void whenUpdatingANonExistingAccount_thenAnAccountNotFoundExceptionIsThrown() {
+  public void whenReplacingANonExistingAccount_thenAnAccountNotFoundExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> postResponseEntity =
         accountController.postAccount(
             AccountDto.builder()
@@ -195,14 +195,81 @@ public class AgileBankIntegrationTests {
                 .build());
     AccountDto postedAccountDto = Objects.requireNonNull(postResponseEntity.getBody()).getContent();
     assert postedAccountDto != null;
-    AccountDto updatedAccountDto =
+    AccountDto replacedAccountDto =
         AccountDto.builder()
             .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
             .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
             .build();
-    accountController.replaceAccount(postedAccountDto.getId() + 1, updatedAccountDto);
+    accountController.replaceAccount(postedAccountDto.getId() + 1, replacedAccountDto);
   }
 
+  @Test
+  public void whenUpdatingAnAccountWithANewBalance_thenUpdatedAccountIsReturned(){
+    // POST the first test account
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForPost = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto postedAccountDto = Objects.requireNonNull(responseEntityForPost.getBody()).getContent();
+    assert postedAccountDto != null;
+    
+    // Now PATCH it
+    AccountDto patch = AccountDto.builder()
+            .id(postedAccountDto.getId())
+            .balance(postedAccountDto.getBalance().add(BigDecimal.TEN))
+            .build();
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForPatch = accountController.updateAccount(patch.getId(), patch);
+    AccountDto patchedAccountDto = Objects.requireNonNull(responseEntityForPatch.getBody()).getContent();
+    assert patchedAccountDto != null;
+    
+    // And see if what is returned makes sense.
+    assertEquals(AccountDto.builder()
+            .id(patch.getId())
+            .balance(patch.getBalance())
+            .currency(postedAccountDto.getCurrency())
+            .build(), patchedAccountDto);
+  }
+
+  @Test
+  public void whenUpdatingAnAccountWithANewCurrency_thenUpdatedAccountIsReturned(){
+    // POST the first test account
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForPost = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto postedAccountDto = Objects.requireNonNull(responseEntityForPost.getBody()).getContent();
+    assert postedAccountDto != null;
+
+    // Now PATCH it
+    AccountDto patch = AccountDto.builder()
+            .id(postedAccountDto.getId())
+            .currency(Currency.AMD) // TEST_ACCOUNT_DTO_ONE has GBP
+            .build();
+    ResponseEntity<EntityModel<AccountDto>> responseEntityForPatch = accountController.updateAccount(patch.getId(), patch);
+    AccountDto patchedAccountDto = Objects.requireNonNull(responseEntityForPatch.getBody()).getContent();
+    assert patchedAccountDto != null;
+
+    // And see if what is returned makes sense. Remember to bring the currency exchange rate into the mix
+    // since we are updating the currency in this test.
+    ResponseEntity<Map<CurrencyPair, BigDecimal>> currencyResponseEntity = currencyLedgerController.getCurrencyExchangeRate(
+            TEST_ACCOUNT_DTO_ONE.getCurrency(), patch.getCurrency());
+    BigDecimal exchangeRate = Objects.requireNonNull(currencyResponseEntity.getBody()).get(
+            CurrencyPair.of(TEST_ACCOUNT_DTO_ONE.getCurrency(), patch.getCurrency()));
+    
+    assertEquals(AccountDto.builder()
+            .id(patch.getId())
+            .balance(TEST_ACCOUNT_DTO_ONE.getBalance().multiply(exchangeRate))
+            .currency(patch.getCurrency())
+            .build(), patchedAccountDto);
+  }
+  
+  @Test(expected = AccountNotFoundException.class)
+  public void whenUpdatingATransactionThatHasNotBeenPosted_thenAccountNotFoundExceptionIsThrown(){
+    ResponseEntity<EntityModel<AccountDto>> postResponseEntity = accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
+    AccountDto postedAccountDto = Objects.requireNonNull(postResponseEntity.getBody()).getContent();
+    assert postedAccountDto != null;
+    Long postedAccountDtoId = postedAccountDto.getId();
+    AccountDto patchToNonExistentAccount = AccountDto.builder()
+            .id(postedAccountDtoId + 1)
+            .currency(Currency.USD)
+            .build();
+    accountController.updateAccount(patchToNonExistentAccount.getId(), patchToNonExistentAccount);
+  }
+  
   /* Now we put transactions in the mix as well. */
 
   @Test
@@ -337,8 +404,7 @@ public class AgileBankIntegrationTests {
             .currency(
                 accountDto
                     .getCurrency()) // Currency doesn't matter here; the NonExistentAccountException
-                                    // should be
-            // thrown first.
+                                    // should be thrown first.
             .build());
   }
 

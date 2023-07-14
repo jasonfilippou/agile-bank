@@ -196,7 +196,7 @@ public class AccountController {
    *                   endpoint instead.
    * @return A {@link ResponseEntity} over a HAL-formatted {@link EntityModel} with the new account data.
    */
-  @Operation(summary = "Replace an account")
+  @Operation(summary = "Update an account")
   @ApiResponses(
           value = {
                   @ApiResponse(
