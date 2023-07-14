@@ -461,10 +461,7 @@ public class AgileBankIntegrationTests {
         TransactionDto.builder()
             .sourceAccountId(accountDtoOne.getId())
             .targetAccountId(accountDtoTwo.getId())
-            .amount(
-                new BigDecimal(
-                    "19000.80")) // Specially crafted to be too much for account one, even with
-            // the real ledger values.
+            .amount(TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) 
             .currency(accountDtoTwo.getCurrency())
             .build());
   }
