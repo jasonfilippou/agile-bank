@@ -2,6 +2,7 @@ package com.agilebank.model.transaction;
 
 import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -40,6 +41,7 @@ public class Transaction {
   private Long targetAccountId;
 
   @Column(name = "amount", scale = 2)
+  @DecimalMin(value = "0.0", inclusive = false)
   private BigDecimal amount;
 
   @Column(name = "currency")
