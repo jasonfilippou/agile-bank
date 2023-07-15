@@ -3,7 +3,7 @@ package com.agilebank.model.account;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.Transaction;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class Account {
   private Long id;
 
   @Column(name = "balance", scale = 2)
-  @DecimalMin(value = "0.0", inclusive = false)
+  @Positive
   private BigDecimal balance;
 
   @Column(name = "currency")

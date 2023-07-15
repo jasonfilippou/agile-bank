@@ -2,6 +2,7 @@ package com.agilebank.model.account;
 
 import com.agilebank.model.currency.Currency;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class AccountDto {
   @Schema(example = "1", hidden = true)
   private Long id;
   @Schema(example = "100")
+  @Positive
   private BigDecimal balance;
   @Schema(example = "USD")
   private Currency currency;

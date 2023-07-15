@@ -25,7 +25,6 @@ public class TransactionSanityChecker {
    * @param targetAccount The target account of the transaction (might not exist).
    * @param currencyExchangeRates A {@link Map} of exchange rates for {@link com.agilebank.model.currency.Currency} pairs.
    * @throws AccountNotFoundException If either {@literal sourceAccountId} or {@literal targetAccountId} are empty {@link Optional}s (i.e do not exist in the DB).
-   * @throws InvalidAmountException If the amount of the transaction is non-positive, irrespective of currency.
    * @throws InvalidTransactionCurrencyException If the {@link com.agilebank.model.currency.Currency} of the transaction is different from the one used by the account {@literal targetAccount}.
    * @throws SameAccountException If {@literal sourceAccount} and {@literal targetAccount} correspond to the same account.
    * @throws InsufficientBalanceException If there is an insufficient balance in the source account (in the transaction's currency) to satisfy the amount of the transaction.
@@ -36,7 +35,6 @@ public class TransactionSanityChecker {
       Optional<Account> targetAccount,
       Map<CurrencyPair, BigDecimal> currencyExchangeRates)
       throws AccountNotFoundException,
-          InvalidAmountException,
           InvalidTransactionCurrencyException,
           SameAccountException,
           InsufficientBalanceException {
@@ -49,10 +47,6 @@ public class TransactionSanityChecker {
     }
     if (sourceAccount.get().getId().equals(targetAccount.get().getId())) {
       throw new SameAccountException(sourceAccount.get().getId());
-    }
-    // If the amount of the transaction was non-positive, throw an exception.
-    if (transactionDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-      throw new InvalidAmountException(transactionDto.getAmount());
     }
     // A transaction in a currency different from the target account's is considered invalid.
     if (transactionDto.getCurrency() != targetAccount.get().getCurrency()) {

@@ -29,18 +29,7 @@ public class TransactionSanityCheckerUnitTests {
         Optional.empty(),
         TEST_EXCHANGE_RATES);
   }
-
-  @Test(expected = InvalidAmountException.class)
-  public void
-      whenTransactionIsOverANonPositiveAmountOfCurrency_thenInvalidAmountExceptionIsThrown() {
-    // Transaction 3 is over zero USD.
-    transactionSanityChecker.checkTransaction(
-        TEST_TRANSACTION_DTO_THREE,
-        Optional.of(TEST_ACCOUNT_ONE),
-        Optional.of(TEST_ACCOUNT_THREE),
-        TEST_EXCHANGE_RATES);
-  }
-
+  
   @Test(expected = InvalidTransactionCurrencyException.class)
   public void
       whenTransactionCurrencyIsNotTargetAccountCurrency_thenInvalidTransactionCurrencyExceptionIsThrown() {

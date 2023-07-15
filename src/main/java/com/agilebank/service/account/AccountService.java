@@ -5,8 +5,6 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
-import com.agilebank.util.exceptions.InvalidBalanceException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,13 +32,9 @@ public class AccountService {
    * Store a new account in the DB.
    * @param accountDto the {@link AccountDto} with the information of the new account to store in the DB.
    * @return A {@link AccountDto} instance with the information of the account that was stored in the DB, if everything went fine.
-   * @throws InvalidBalanceException if the balance of the account provided is not positive.
    */
   @Transactional
-  public AccountDto storeAccount(AccountDto accountDto) throws InvalidBalanceException {
-    if (accountDto.getBalance().compareTo(BigDecimal.ZERO) <= 0) {
-      throw new InvalidBalanceException(accountDto.getBalance());
-    }
+  public AccountDto storeAccount(AccountDto accountDto){
     Account savedAccount =
         accountRepository.save(
             Account.builder()

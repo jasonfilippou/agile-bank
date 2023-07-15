@@ -13,7 +13,6 @@ import com.agilebank.persistence.AccountRepository;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -37,12 +36,6 @@ public class AccountServiceUnitTests {
   public void whenRepoSavesANewAccount_thenTheAccountIsReturned() {
     when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ONE);
     assertEquals(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE), TEST_ACCOUNT_DTO_ONE);
-  }
-
-  @Test(expected = InvalidBalanceException.class)
-  public void whenAccountHasANonPositiveBalance_thenInvalidBalanceExceptionIsThrown() {
-    // Test account 3 is created with a negative balance.
-    accountService.storeAccount(TEST_ACCOUNT_DTO_THREE);
   }
 
   @Test

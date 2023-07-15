@@ -12,7 +12,6 @@ import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.exceptions.AccountNotFoundException;
 import com.agilebank.util.exceptions.InsufficientBalanceException;
-import com.agilebank.util.exceptions.InvalidAmountException;
 import com.agilebank.util.exceptions.TransactionNotFoundException;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -62,16 +61,7 @@ public class TransactionControllerUnitTests {
         .storeTransaction(TEST_TRANSACTION_DTO_ONE);
     transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
   }
-
-  @Test(expected = InvalidAmountException.class)
-  public void
-      whenPostingANewTransaction_andServiceThrowsInvalidAmountException_thenExceptionBubblesUp() {
-    doThrow(new InvalidAmountException(BigDecimal.TEN))
-        .when(transactionService)
-        .storeTransaction(TEST_TRANSACTION_DTO_ONE);
-    transactionController.postTransaction(TEST_TRANSACTION_DTO_ONE);
-  }
-
+  
   @Test(expected = InsufficientBalanceException.class)
   public void
       whenPostingANewTransaction_andServicethrowsInsufficientBalanceException_thenExceptionBubblesUp() {

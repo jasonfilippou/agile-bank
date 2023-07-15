@@ -22,12 +22,10 @@ public class ExceptionAdvice {
   @ExceptionHandler({
     HttpMessageNotReadableException.class,
     InsufficientBalanceException.class,
-    InvalidAmountException.class,
     SameAccountException.class,
     InvalidTransactionCurrencyException.class,
     OneOfTwoCurrenciesMissingException.class,
     BadPasswordLengthException.class,
-    InvalidBalanceException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc) {

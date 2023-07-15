@@ -77,22 +77,6 @@ public class TransactionServiceUnitTests {
     transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE);
   }
 
-  @Test(expected = InvalidAmountException.class)
-  public void whenSanityCheckerThrowsInvalidAmountException_thenExceptionBubblesUp() {
-    when(accountRepository.findById(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_ONE));
-    when(accountRepository.findById(TEST_TRANSACTION_DTO_ONE.getTargetAccountId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_TWO));
-    doThrow(new InvalidAmountException(BigDecimal.ZERO))
-        .when(transactionSanityChecker)
-        .checkTransaction(
-            TEST_TRANSACTION_DTO_ONE,
-            Optional.of(TEST_ACCOUNT_ONE),
-            Optional.of(TEST_ACCOUNT_TWO),
-            TEST_EXCHANGE_RATES);
-    transactionService.storeTransaction(TEST_TRANSACTION_DTO_ONE);
-  }
-
   @Test(expected = InsufficientBalanceException.class)
   public void whenSanityCheckerThrowsInsufficientBalanceException_thenExceptionBubblesUp() {
     when(accountRepository.findById(TEST_TRANSACTION_DTO_ONE.getSourceAccountId()))

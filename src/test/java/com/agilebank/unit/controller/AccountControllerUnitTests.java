@@ -12,7 +12,6 @@ import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.exceptions.AccountNotFoundException;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -47,15 +46,6 @@ public class AccountControllerUnitTests {
     assertEquals(
         new ResponseEntity<>(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE, HttpStatus.CREATED),
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
-  }
-
-  @Test(expected = InvalidBalanceException.class)
-  public void
-      whenPostingNewAccountWithNonPositiveBalance_andServiceThrowsInvalidBalanceException_thenExceptionBubblesUp() {
-    doThrow(new InvalidBalanceException(BigDecimal.ZERO))
-        .when(accountService)
-        .storeAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
   }
 
   @Test

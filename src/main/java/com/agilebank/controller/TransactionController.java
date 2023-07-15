@@ -23,6 +23,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
 @Tag(name = "3. Transactions API")
+@Validated
 public class TransactionController {
 
   private final TransactionService transactionService;

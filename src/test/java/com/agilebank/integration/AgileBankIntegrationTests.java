@@ -101,11 +101,6 @@ public class AgileBankIntegrationTests {
         accountController.getAllAccounts());
   }
 
-  @Test(expected = InvalidBalanceException.class)
-  public void whenPostingAnAccountWithABadBalance_thenInvalidBalanceExceptionIsThrown() {
-    accountController.postAccount(TEST_ACCOUNT_DTO_THREE);
-  }
-
   @Test(expected = AccountNotFoundException.class)
   public void whenGettingAnAccountThatWeHaveNotPosted_thenNonExistentAccountExceptionIsThrown() {
     ResponseEntity<EntityModel<AccountDto>> responseEntity =

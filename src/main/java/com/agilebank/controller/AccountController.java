@@ -15,6 +15,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
 @Tag(name = "2. Accounts API")
+@Validated
 public class AccountController {
 
   private final AccountService accountService;
@@ -52,6 +54,10 @@ public class AccountController {
                   mediaType = "application/json",
                   schema = @Schema(implementation = AccountDto.class))
             }),
+        @ApiResponse(
+                  responseCode = "400",
+                  description = "Non-positive balance supplied",
+                  content = @Content),
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })
   @PostMapping("/account")
