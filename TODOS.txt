@@ -1,0 +1,5 @@
+- Add pagination and sorting.
+
+- Make entities extend Auditable interface to automatically add audit fields.
+
+- Make CurrencyPair constructor private and only exposes instances through of().
