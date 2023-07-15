@@ -3,6 +3,7 @@ package com.agilebank.controller;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
+import com.agilebank.util.SortOrder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,12 +11,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * {@link RestController} for {@link AccountDto} instances. Offers endpoints for POST, GET, DELETE
@@ -61,9 +65,13 @@ public class AccountController {
   }
 
   /**
-   * Endpoint for aggregate GET of all accounts.
+   * Endpoint for aggregate GET of all accounts. Implemented with pagination and sorting.
    *
-   * @return A {@link ResponseEntity} over a HAL-formatted collection of all accounts with a status
+   * @param page The page of data we want (zero-indexed).
+   * @param size The number of data records in the page.
+   * @param sortByField The field of {@link AccountDto} that we want to sort by, in camelCase.
+   * @param sortOrder &quot;ASC&quot; or &quot;DESC&quot;.
+   * @return A {@link ResponseEntity} over a HAL-formatted collection of all accounts in one {@link Page} with a status
    *     of {@link HttpStatus#OK} if everything went well.
    */
   @Operation(summary = "Get all accounts")
@@ -80,9 +88,24 @@ public class AccountController {
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })
   @GetMapping("/account")
-  public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts() {
+  public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts(
+          @RequestParam(name = "page", defaultValue = "0") final Integer page, 
+          @RequestParam(name = "items_in_page", defaultValue = "5") final Integer size,
+          @RequestParam(name = "sort_by_field", defaultValue = "id") final String sortByField,
+          @RequestParam(name = "sort_order", defaultValue = "ASC") final SortOrder sortOrder) {
     return ResponseEntity.ok(
-        accountModelAssembler.toCollectionModel(accountService.getAllAccounts()));
+        accountModelAssembler.toCollectionModel(accountService.getAllAccounts(page, size, sortByField, sortOrder)));
+  }
+
+
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  private ResponseEntity<String> badSortOrderProvided() {
+    return new ResponseEntity<>(
+            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + ".",
+            HttpStatus.BAD_REQUEST);
   }
 
   /**
