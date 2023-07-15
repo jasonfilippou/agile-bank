@@ -2,11 +2,9 @@ package com.agilebank.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
@@ -32,12 +30,13 @@ public class User {
   private Long id;
 
   @Column(name = "username", unique = true)
-  private String username;
+  @NonNull
+    @NotBlank private String username;
 
   @Column(name = "password")
   @JsonIgnore
   @ToString.Exclude
-  private String password;
+  @NonNull @NotBlank private String password;
 
   public User(String username, String password) {
     this.username = username;

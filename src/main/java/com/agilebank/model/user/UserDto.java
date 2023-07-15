@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,8 @@ import lombok.ToString;
 public class UserDto {
 
   @Schema(example = "agileuser")
-  @NonNull private String username;
+  @NonNull
+  @NotBlank private String username;
 
   @Schema(example = "agilepassword")
   @JsonProperty(access = WRITE_ONLY)
