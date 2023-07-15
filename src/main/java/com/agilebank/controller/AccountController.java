@@ -1,5 +1,7 @@
 package com.agilebank.controller;
 
+import static com.agilebank.util.Constants.*;
+
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
@@ -89,16 +91,15 @@ public class AccountController {
       })
   @GetMapping("/account")
   public ResponseEntity<CollectionModel<EntityModel<AccountDto>>> getAllAccounts(
-          @RequestParam(name = "page", defaultValue = "0") final Integer page, 
-          @RequestParam(name = "items_in_page", defaultValue = "5") final Integer size,
-          @RequestParam(name = "sort_by_field", defaultValue = "id") final String sortByField,
-          @RequestParam(name = "sort_order", defaultValue = "ASC") final SortOrder sortOrder) {
+          @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) Integer page, 
+          @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) Integer size,
+          @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
+          @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
     return ResponseEntity.ok(
         accountModelAssembler.toCollectionModel(accountService.getAllAccounts(page, size, sortByField, sortOrder)));
   }
 
-
-
+  // Exception handler for handling the case of a bad sort order string provided by the user.
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody

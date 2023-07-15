@@ -1,11 +1,11 @@
 package com.agilebank.controller;
 
-import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
-import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
+import static com.agilebank.util.Constants.*;
 
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
+import com.agilebank.util.SortOrder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -166,30 +166,35 @@ public class TransactionController {
                   ref = "#/components/schemas/ParameterMap"),
                   style = ParameterStyle.FORM,
                   explode = Explode.TRUE)
-          @RequestParam Map<String, String> params) {
+          @RequestParam Map<String, String> params,
+          @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) Integer page,
+          @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) Integer size,
+          @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
+          @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(
           transactionModelAssembler.toCollectionModel(
               transactionService.getAllTransactionsBetween(
                   Long.valueOf(params.get(SOURCE_ACCOUNT_ID)),
-                  Long.valueOf(params.get(TARGET_ACCOUNT_ID))),
+                  Long.valueOf(params.get(TARGET_ACCOUNT_ID)),
+                      page, size, sortByField, sortOrder),
               params));
     } else if (params.containsKey(SOURCE_ACCOUNT_ID)) {
       return ResponseEntity.ok(
           transactionModelAssembler.toCollectionModel(
               transactionService.getAllTransactionsFrom(
-                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID))),
+                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID)), page, size, sortByField, sortOrder),
               params));
     } else if (params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(
           transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID))),
+              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID)), page, size, sortByField, sortOrder),
               params));
     }
-    // params is null, empty, or contains irrelevant keys; just return all transactions
+    // params is null, empty, or contains irrelevant keys; just return all transactions in page
     return ResponseEntity.ok(
         transactionModelAssembler.toCollectionModel(
-            transactionService.getAllTransactions(), params));
+            transactionService.getAllTransactions(page, size, sortByField, sortOrder)));
   }
 
   /**

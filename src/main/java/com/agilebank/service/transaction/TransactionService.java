@@ -8,6 +8,7 @@ import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
+import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +16,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,8 +121,10 @@ public class TransactionService {
    * @return A {@link List} with all the transactions that are stored in the database.
    */
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactions() {
-    return transactionRepository.findAll().stream()
+  public Page<TransactionDto> getAllTransactions(Integer page, Integer pageSize,
+                                                 String sortByField, SortOrder sortOrder) {
+    Sort sorter = (sortOrder == SortOrder.ASC) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
+    List<TransactionDto> transactions = transactionRepository.findAll(PageRequest.of(page, pageSize, sorter)).stream()
         .map(
             transaction ->
                 TransactionDto.builder()
@@ -127,7 +134,8 @@ public class TransactionService {
                     .currency(transaction.getCurrency())
                     .amount(transaction.getAmount())
                     .build())
-        .collect(Collectors.toList());
+        .toList();
+    return new PageImpl<>(transactions);
   }
 
   /**
@@ -136,8 +144,11 @@ public class TransactionService {
    * @return A List of all transactions with the source account corresponding to {@literal sourceAccountId}.
    */
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsFrom(Long sourceAccountId) {
-    return transactionRepository.findBySourceAccountId(sourceAccountId).stream()
+  public Page<TransactionDto> getAllTransactionsFrom(Long sourceAccountId, Integer page, Integer pageSize,
+                                                     String sortByField, SortOrder sortOrder) {
+    Sort sorter = (sortOrder == SortOrder.ASC) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
+    List<TransactionDto> transactions = transactionRepository.findBySourceAccountId(sourceAccountId, 
+                    PageRequest.of(page, pageSize, sorter)).stream()
         .map(
             transaction ->
                 TransactionDto.builder()
@@ -147,7 +158,8 @@ public class TransactionService {
                     .currency(transaction.getCurrency())
                     .amount(transaction.getAmount())
                     .build())
-        .collect(Collectors.toList());
+        .toList();
+    return new PageImpl<>(transactions);
   }
 
   /**
@@ -156,8 +168,10 @@ public class TransactionService {
    * @return A List of all transactions with the target account corresponding to {@literal targetAccountId}.
    */
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsTo(Long targetAccountId) {
-    return transactionRepository.findByTargetAccountId(targetAccountId).stream()
+  public List<TransactionDto> getAllTransactionsTo(Long targetAccountId, Integer page, Integer pageSize,
+                                                   String sortByField, SortOrder sortOrder) {
+    Sort sorter = (sortOrder == SortOrder.ASC) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
+    return transactionRepository.findByTargetAccountId(targetAccountId, PageRequest.of(page, pageSize, sorter)).stream()
         .map(
             transaction ->
                 TransactionDto.builder()
@@ -177,10 +191,12 @@ public class TransactionService {
    * @return A List of all transactions with the source and target accounts correponding to the IDs provided.
    */
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsBetween(
-      Long sourceAccountId, Long targetAccountId) {
-    return transactionRepository
-        .findBySourceAccountIdAndTargetAccountId(sourceAccountId, targetAccountId)
+  public Page<TransactionDto> getAllTransactionsBetween(
+      Long sourceAccountId, Long targetAccountId, Integer page, Integer pageSize,
+      String sortByField, SortOrder sortOrder) {
+    Sort sorter = (sortOrder == SortOrder.ASC) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
+    List<TransactionDto> transactions = transactionRepository
+        .findBySourceAccountIdAndTargetAccountId(sourceAccountId, targetAccountId, PageRequest.of(page, pageSize, sorter))
         .stream()
         .map(
             transaction ->
@@ -191,7 +207,8 @@ public class TransactionService {
                     .currency(transaction.getCurrency())
                     .amount(transaction.getAmount())
                     .build())
-        .collect(Collectors.toList());
+        .toList();
+    return new PageImpl<>(transactions);
   }
 
   /**
