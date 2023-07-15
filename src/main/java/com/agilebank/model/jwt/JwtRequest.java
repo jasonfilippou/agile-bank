@@ -1,6 +1,7 @@
 package com.agilebank.model.jwt;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import lombok.*;
 
@@ -24,5 +25,6 @@ public class JwtRequest implements Serializable {
   @Schema(example = "agileuser")
   @NonNull private String username;
   @Schema(example = "agilepassword")
+  @Size(min = 8, max = 30)
   @NonNull @ToString.Exclude String password;
 }

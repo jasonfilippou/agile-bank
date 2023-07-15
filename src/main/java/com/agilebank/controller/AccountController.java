@@ -56,7 +56,7 @@ public class AccountController {
             }),
         @ApiResponse(
                   responseCode = "400",
-                  description = "Non-positive balance supplied",
+                  description = "Non-positive balance or invalid currency supplied",
                   content = @Content),
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })

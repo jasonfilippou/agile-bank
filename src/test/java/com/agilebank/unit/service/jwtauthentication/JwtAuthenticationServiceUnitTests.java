@@ -6,7 +6,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
-import com.agilebank.util.exceptions.BadPasswordLengthException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,16 +39,6 @@ public class JwtAuthenticationServiceUnitTests {
       exc = thrown;
     }
     assertNull(exc, "Did not expect authentication method to throw.");
-  }
-
-  @Test(expected = BadPasswordLengthException.class)
-  public void whenPasswordLengthTooShort_thenThrowsBadPasswordLengthException() throws Exception {
-    jwtAuthenticationService.authenticate(USERNAME, PASSWORD_TOO_SMALL);
-  }
-
-  @Test(expected = BadPasswordLengthException.class)
-  public void whenPasswordLengthTooLong_thenThrowsBadPasswordLengthException() throws Exception {
-    jwtAuthenticationService.authenticate(USERNAME, PASSWORD_TOO_LARGE);
   }
 
   @Test(expected = Exception.class)

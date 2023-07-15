@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -25,5 +26,6 @@ public class UserDto {
   @JsonProperty(access = WRITE_ONLY)
   @NonNull
   @ToString.Exclude
+  @Size(min = 8, max = 30)
   private String password;
 }

@@ -12,7 +12,6 @@ import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
 import com.agilebank.util.TestUserDetailsImpl;
-import com.agilebank.util.exceptions.BadPasswordLengthException;
 import java.util.Objects;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,11 +62,5 @@ public class JwtAuthenticationControllerUnitTests {
         .when(userDetailsService)
         .loadUserByUsername(anyString());
     jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
-  }
-
-  @Test(expected = BadPasswordLengthException.class)
-  public void whenUserDetailsServiceThrowsBadPasswordLengthException_thenExceptionBubblesUp() {
-    doThrow(new BadPasswordLengthException(8, 30)).when(userDetailsService).save(TEST_USER_DTO);
-    jwtAuthenticationController.registerUser(TEST_USER_DTO);
   }
 }
