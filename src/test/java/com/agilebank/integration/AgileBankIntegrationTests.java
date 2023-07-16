@@ -3,7 +3,6 @@ package com.agilebank.integration;
 import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
-import static com.agilebank.util.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

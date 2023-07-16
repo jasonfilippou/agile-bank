@@ -2,7 +2,7 @@ package com.agilebank.unit.controller;
 
 import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
-import static com.agilebank.util.TestConstants.*;
+import static com.agilebank.util.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 

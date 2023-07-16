@@ -1,7 +1,7 @@
 package com.agilebank.unit.controller;
 
 import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
-import static com.agilebank.util.TestConstants.TEST_EXCHANGE_RATES;
+import static com.agilebank.util.TestUtils.TEST_EXCHANGE_RATES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 

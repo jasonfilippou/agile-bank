@@ -1,6 +1,6 @@
 package com.agilebank.unit.service.transaction;
 
-import static com.agilebank.util.TestConstants.*;
+import static com.agilebank.util.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
