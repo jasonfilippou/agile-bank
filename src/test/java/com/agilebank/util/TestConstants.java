@@ -13,142 +13,146 @@ import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
 public final class TestConstants {
 
+  /* A Random instance used in constants */
+
+  public static final Random RANDOM = new Random(47);
+
   /* A string that is used a lot in ModelAssembler calls */
 
   public static final String ALL_ACCOUNTS = "all_accounts";
 
+  /* Utilities */
+
+  private static BigDecimal randomPositiveAmount(){
+    return BigDecimal.valueOf(Double.parseDouble(String.format("%.2f", RANDOM.nextDouble() + 0.01))); // Minimum of a cent of whatever currency we are in.
+  }
+
+  private static final Long INTERVAL_LENGTH = 10L;
+
+  private static final Long LOW_INITIALLY = 1L;
+
+  private static final Long HIGH_INITIALLY = LOW_INITIALLY + (INTERVAL_LENGTH - 1);
+  private static Long low = LOW_INITIALLY;
+  private static Long high = HIGH_INITIALLY;
+
+  private static List<Long> generateIntervalAndAdvanceEndpoints(){
+    List<Long> retVal = LongStream.rangeClosed(low, high).boxed().toList();
+    low = high + 1;
+    high += INTERVAL_LENGTH;
+    return retVal;
+  }
+
+  private static List<Long> generateIntervalAndResetEndpoints(){
+    List<Long> retVal = LongStream.rangeClosed(low, high).boxed().toList();
+    resetEndpoints();
+    return retVal;
+  }
+
+  private static void resetEndpoints(){
+    low = LOW_INITIALLY;
+    high = HIGH_INITIALLY;
+  }
+
   /* Account IDs */
-  
-  public static final Long TEST_ACCOUNT_ONE_ID = 1L;
-  public static final Long TEST_ACCOUNT_TWO_ID = 2L;
-  public static final Long TEST_ACCOUNT_THREE_ID = 3L;
+
+  public static final Map<Currency, List<Long>> TEST_GIVEN_CURRENCY_ACCOUNT_IDS = Map.of(
+          Currency.USD, generateIntervalAndAdvanceEndpoints(),
+          Currency.GBP, generateIntervalAndAdvanceEndpoints(),
+          Currency.EUR, generateIntervalAndAdvanceEndpoints(),
+          Currency.INR, generateIntervalAndResetEndpoints()
+  );
+
 
   /* Account DTOs */
-  
-  public static final AccountDto TEST_ACCOUNT_DTO_ONE =
-          AccountDto.builder()
-                  .id(TEST_ACCOUNT_ONE_ID)
-                  .balance(new BigDecimal("220.25"))
-                  .currency(Currency.GBP)
-                  .build();
-
-  public static final AccountDto TEST_ACCOUNT_DTO_TWO =
-          AccountDto.builder()
-                  .id(TEST_ACCOUNT_TWO_ID)
-                  .balance(new BigDecimal("801.01"))
-                  .currency(Currency.IDR)
-                  .build();
-
-  public static final AccountDto TEST_ACCOUNT_DTO_THREE =
-          AccountDto.builder()
-                  .id(TEST_ACCOUNT_THREE_ID)
-                  .balance(new BigDecimal("-51.00")) // Invalid value put here for testing.
-                  .currency(Currency.USD)
-                  .build();
+  public static final Map<Currency, List<AccountDto>> ACCOUNT_DTOS_OF_GIVEN_CURRENCIES =
+          TEST_GIVEN_CURRENCY_ACCOUNT_IDS
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().stream()
+                            .map(id -> AccountDto.builder()
+                                    .id(id)
+                                    .balance(randomPositiveAmount())
+                                    .currency(entry.getKey())
+                                    .build())
+                            .toList()));
   
   /* Accounts */
-  
-  public static final Account TEST_ACCOUNT_ONE =
-      Account.builder()
-          .id(TEST_ACCOUNT_DTO_ONE.getId())
-          .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
-          .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
-          .createdAt(new Date(946083999988L))
-          .build();
-  
-  public static final Account TEST_ACCOUNT_TWO =
-      Account.builder()
-          .id(TEST_ACCOUNT_DTO_TWO.getId())
-          .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
-          .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
-          .createdAt(new Date(946083999989L))
-          .build();
-  
-  public static final Account TEST_ACCOUNT_THREE =
-      Account.builder()
-          .id(TEST_ACCOUNT_DTO_THREE.getId())
-          .balance(TEST_ACCOUNT_DTO_THREE.getBalance())
-          .currency(TEST_ACCOUNT_DTO_THREE.getCurrency())
-          .createdAt(new Date(946083999990L))
-          .build();
+  public static final Map<Currency, List<Account>> ACCOUNT_ENTITIES_OF_GIVEN_CURRENCIES =
+          ACCOUNT_DTOS_OF_GIVEN_CURRENCIES
+              .entrySet().stream()
+              .collect(Collectors.toMap(Map.Entry::getKey,
+                      entry -> entry.getValue().stream()
+                              .map(accountDto ->
+                                      Account.builder()
+                                              .id(accountDto.getId())
+                                              .balance(accountDto.getBalance())
+                                              .currency(accountDto.getCurrency())
+                                              .createdAt(new Date())
+                                              .build())
+                              .toList()));
 
   /* Entity Models for Account DTOs */
-  
-  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE =
-          EntityModel.of(
-                  TEST_ACCOUNT_DTO_ONE,
-                  linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_ONE.getId()))
-                          .withSelfRel(),
-                  linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
-  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_TWO =
-          EntityModel.of(
-                  TEST_ACCOUNT_DTO_TWO,
-                  linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_TWO.getId()))
-                          .withSelfRel(),
-                  linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
-  public static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_THREE =
-      EntityModel.of(
-          TEST_ACCOUNT_DTO_THREE,
-          linkTo(methodOn(AccountController.class).getAccount(TEST_ACCOUNT_DTO_THREE.getId()))
-              .withSelfRel(),
-          linkTo(methodOn(AccountController.class).getAllAccounts()).withRel(ALL_ACCOUNTS));
+
+  public static final Map<Currency, List<EntityModel<AccountDto>>> TEST_ACCOUNT_DTO_ENTITY_MODELS =
+          ACCOUNT_DTOS_OF_GIVEN_CURRENCIES
+                  .entrySet().stream()
+                  .collect(Collectors.toMap(Map.Entry::getKey,
+                          entry -> entry.getValue().stream()
+                                  .map(accountDto ->
+                                          EntityModel.of(accountDto,
+                                            linkTo(methodOn(AccountController.class).getAccount(accountDto.getId()))
+                                                    .withSelfRel(),
+                                            linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                                                    Integer.parseInt(DEFAULT_PAGE_SIZE), DEFAULT_SORT_BY_FIELD, SortOrder.ASC)).withRel(ALL_ACCOUNTS)))
+                                  .toList()));
 
   /* Collection Model for Entity Models of Account DTOs */
-  
-  public static final CollectionModel<EntityModel<AccountDto>> TEST_ENTITY_MODEL_COLLECTION_MODEL =
-      CollectionModel.of(
-          List.of(
-              TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE,
-              TEST_ACCOUNT_DTO_ENTITY_MODEL_TWO,
-              TEST_ACCOUNT_DTO_ENTITY_MODEL_THREE),
-          linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel());
+
+  public static final Map<Currency, CollectionModel<EntityModel<AccountDto>>> TEST_ACCOUNT_DTO_ENTITY_MODEL_COLLECTION_MODELS =
+          TEST_ACCOUNT_DTO_ENTITY_MODELS
+                  .entrySet().stream()
+                  .collect(Collectors.toMap(Map.Entry::getKey,
+                          entry->CollectionModel.of(
+                                  entry.getValue(),
+                                  linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                                          Integer.parseInt(DEFAULT_PAGE_SIZE), DEFAULT_SORT_BY_FIELD, SortOrder.ASC)).withSelfRel())));
 
   /* Transaction IDs */
-  public static final Long TEST_TRANSACTION_ONE_ID = 1L;
-  public static final Long TEST_TRANSACTION_TWO_ID = 2L;
-  public static final Long TEST_TRANSACTION_THREE_ID = 3L;
-  public static final Long TEST_TRANSACTION_FOUR_ID = 4L;
-  public static final Long TEST_TRANSACTION_FIVE_ID = 5L;
+
+  public static final Map<CurrencyPair, List<Long>> TEST_GIVEN_CURRENCY_TRANSACTION_IDS =
+          TEST_GIVEN_CURRENCY_ACCOUNT_IDS.keySet().stream()
+          .flatMap(currencyOne -> TEST_GIVEN_CURRENCY_ACCOUNT_IDS.keySet().stream()
+                  .map(currencyTwo -> CurrencyPair.of(currencyOne, currencyTwo)))
+          .map(currencyPair -> Map.entry(currencyPair, generateIntervalAndAdvanceEndpoints()))
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
   /* Transaction DTOs */
 
-  public static final TransactionDto TEST_TRANSACTION_DTO_ONE =
-      TransactionDto.builder()
-          .id(TEST_TRANSACTION_ONE_ID)
-          .sourceAccountId(TEST_ACCOUNT_ONE_ID)
-          .targetAccountId(TEST_ACCOUNT_TWO_ID)
-          .amount(new BigDecimal("20.01"))
-          .currency(Currency.IDR)
-          .build();
+  public static final List<TransactionDto> TEST_TRANSACTION_DTOS =
+          TEST_GIVEN_CURRENCY_TRANSACTION_IDS.entrySet().stream()
+                  .collect(Collectors.toMap(Map.Entry::getKey,
+                                  entry -> entry.getValue().stream()
+                                          .map(id -> TransactionDto.builder()))
 
-  public static final TransactionDto TEST_TRANSACTION_DTO_TWO =
-          TransactionDto.builder()
-                  .id(TEST_TRANSACTION_TWO_ID)
-                  .sourceAccountId(TEST_ACCOUNT_ONE_ID)
-                  .targetAccountId(TEST_ACCOUNT_TWO_ID)
-                  .amount(new BigDecimal("19000.80"))
-                  .currency(Currency.IDR)
-                  .build();
-
-
-  public static final TransactionDto TEST_TRANSACTION_DTO_THREE =
-          TransactionDto.builder()
-                  .id(TEST_TRANSACTION_THREE_ID)
-                  .sourceAccountId(TEST_ACCOUNT_ONE_ID)
-                  .targetAccountId(TEST_ACCOUNT_THREE_ID)
-                  .amount(BigDecimal.ZERO) // Invalid value, put here for testing purposes.
-                  .currency(Currency.USD)
-                  .build();
-
+                  /*  public static final Map<Currency, List<AccountDto>> ACCOUNT_DTOS_OF_GIVEN_CURRENCIES =
+          TEST_GIVEN_CURRENCY_ACCOUNT_IDS
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().stream()
+                            .map(id -> AccountDto.builder()
+                                    .id(id)
+                                    .balance(randomPositiveAmount())
+                                    .currency(entry.getKey())
+                                    .build())
+                            .toList())); */
   public static final TransactionDto TEST_TRANSACTION_DTO_FOUR =
           TransactionDto.builder()
                   .id(TEST_TRANSACTION_FOUR_ID)
