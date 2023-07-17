@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,13 +41,11 @@ public class AccountControllerUnitTests {
 
   @Mock private AccountService accountService;
 
-  @Mock private static AccountModelAssembler accountModelAssembler = new AccountModelAssembler();
-
-  private static final AccountDto TEST_ACCOUNT_DTO_ONE = TEST_ACCOUNT_DTOS.get(0);
-  private static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE = TEST_ACCOUNT_DTO_ENTITY_MODELS.get(0);
-
-  @BeforeAll
-  public static void setUp() {
+  @Mock private AccountModelAssembler accountModelAssembler = new AccountModelAssembler();
+  
+  
+  @Before
+  public void setUp() {
     for(int i = 0; i < TEST_ACCOUNT_DTOS.size(); i++){
       when(accountModelAssembler.toModel(TEST_ACCOUNT_DTOS.get(i)))
               .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODELS.get(i));
@@ -58,10 +56,10 @@ public class AccountControllerUnitTests {
 
   @Test
   public void whenPostingNewAccount_andServiceStoresSuccessfully_accountIsReturned() {
-    when(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE)).thenReturn(TEST_ACCOUNT_DTO_ONE);
+    when(accountService.storeAccount(TEST_ACCOUNT_DTOS.get(0))).thenReturn(TEST_ACCOUNT_DTOS.get(0));
     assertEquals(
-        new ResponseEntity<>(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE, HttpStatus.CREATED),
-        accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
+        new ResponseEntity<>(TEST_ACCOUNT_DTO_ENTITY_MODELS.get(0), HttpStatus.CREATED),
+        accountController.postAccount(TEST_ACCOUNT_DTOS.get(0)));
   }
 
   /* GET ALL tests */
@@ -128,10 +126,10 @@ public class AccountControllerUnitTests {
   /* GET by ID tests */
   @Test
   public void whenGettingAnAccountThatExists_thenAccountIsReturned() {
-    when(accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(TEST_ACCOUNT_DTO_ONE);
+    when(accountService.getAccount(TEST_ACCOUNT_ENTITIES.get(0).getId())).thenReturn(TEST_ACCOUNT_DTOS.get(0));
     assertEquals(
-        ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE),
-        accountController.getAccount(TEST_ACCOUNT_DTO_ONE.getId()));
+        ResponseEntity.ok(TEST_ACCOUNT_DTO_ENTITY_MODELS.get(0)),
+        accountController.getAccount(TEST_ACCOUNT_ENTITIES.get(0).getId()));
   }
 
   @Test(expected = AccountNotFoundException.class)
@@ -144,18 +142,18 @@ public class AccountControllerUnitTests {
 
   @Test
   public void whenDeletingAnAccountThatExists_thenNoContentIsReturned() {
-    doNothing().when(accountService).deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    doNothing().when(accountService).deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId());
     assertEquals(
         ResponseEntity.noContent().build(),
-        accountController.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId()));
+        accountController.deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId()));
   }
 
   @Test(expected = AccountNotFoundException.class)
   public void whenDeletingAnAccountThatDoesNotExist_thenAccountNotFoundExceptionIsThrown() {
-    doThrow(new AccountNotFoundException(TEST_ACCOUNT_DTO_ONE.getId()))
+    doThrow(new AccountNotFoundException(TEST_ACCOUNT_DTOS.get(0).getId()))
         .when(accountService)
-        .deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
-    accountController.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+        .deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId());
+    accountController.deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId());
   }
 
   /* PUT tests */
@@ -201,15 +199,15 @@ public class AccountControllerUnitTests {
   public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned() {
     AccountDto newAccountInfo =
             AccountDto.builder()
-                    .id(TEST_ACCOUNT_DTO_ONE.getId())
+                    .id(TEST_ACCOUNT_ENTITIES.get(0).getId())
                     .balance(
-                            TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
+                            TEST_ACCOUNT_DTOS.get(0).getBalance().add(BigDecimal.TEN)) // Ensuring balance different
                     .build();
     AccountDto patchedAccountDto =
             AccountDto.builder()
                     .id(newAccountInfo.getId())
                     .balance(newAccountInfo.getBalance())
-                    .currency(TEST_ACCOUNT_DTO_ONE.getCurrency())
+                    .currency(TEST_ACCOUNT_DTOS.get(0).getCurrency())
                     .build();
     EntityModel<AccountDto> patchedAccountDtoEntityModel = EntityModel.of(
             patchedAccountDto,
@@ -231,14 +229,14 @@ public class AccountControllerUnitTests {
   public void whenUpdatingAnExistingAccountWithANewCurrency_thenNewAccountInfoIsReturned() {
     AccountDto newAccountInfo =
             AccountDto.builder()
-                    .id(TEST_ACCOUNT_DTO_ONE.getId())
-                    .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                    .id(TEST_ACCOUNT_ENTITIES.get(0).getId())
+                    .balance(TEST_ACCOUNT_DTOS.get(0).getBalance())
                     .currency(Currency.AMD) // TEST_ACCOUNT_DTO_ONE has GBP
                     .build();
     AccountDto patchedAccountDto =
             AccountDto.builder()
                     .id(newAccountInfo.getId())
-                    .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
+                    .balance(TEST_ACCOUNT_DTOS.get(0).getBalance())
                     .currency(newAccountInfo.getCurrency())
                     .build();
     EntityModel<AccountDto> patchedAccountDtoEntityModel = EntityModel.of(
