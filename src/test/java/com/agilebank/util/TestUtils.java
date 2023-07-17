@@ -41,7 +41,7 @@ public final class TestUtils {
 
   /* Account DTOs */
 
-  private static AccountDto accountDtoOfCurrencyAndBalance(Currency currency, BigDecimal balance) {
+  private static AccountDto accountDtoOfGivenParams(Currency currency, BigDecimal balance) {
     return AccountDto.builder().balance(balance).currency(currency).build();
   }
 
@@ -49,32 +49,32 @@ public final class TestUtils {
       List.of(
 
           // 5 USD accounts
-          accountDtoOfCurrencyAndBalance(Currency.USD, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.USD, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.USD, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.USD, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.USD, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.USD, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.USD, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.USD, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.USD, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.USD, STANDARD_ACCOUNT_BALANCE),
 
           // 5 GBP accounts
-          accountDtoOfCurrencyAndBalance(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.GBP, STANDARD_ACCOUNT_BALANCE),
 
           // 5 EUR accounts
-          accountDtoOfCurrencyAndBalance(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.EUR, STANDARD_ACCOUNT_BALANCE),
 
           // 5 INR accounts
-          accountDtoOfCurrencyAndBalance(Currency.INR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.INR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.INR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.INR, STANDARD_ACCOUNT_BALANCE),
-          accountDtoOfCurrencyAndBalance(Currency.INR, STANDARD_ACCOUNT_BALANCE));
+          accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE),
+          accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE));
 
   /* Accounts */
 

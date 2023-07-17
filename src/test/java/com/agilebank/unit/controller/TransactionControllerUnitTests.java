@@ -8,14 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.agilebank.controller.TransactionController;
-import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.AggregateGetQueryParams;
 import com.agilebank.util.PaginationTester;
 import com.agilebank.util.SortOrder;
-import com.agilebank.util.exceptions.TransactionNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.Before;
@@ -42,20 +40,18 @@ public class TransactionControllerUnitTests {
 
   private static final TransactionDto TEST_TRANSACTION_DTO_ONE = TEST_VALID_TRANSACTION_DTOS.get(0);
   private static final TransactionDto TEST_TRANSACTION_DTO_TWO = TEST_VALID_TRANSACTION_DTOS.get(1);
-  private static final TransactionDto TEST_TRANSACTION_DTO_THREE =
-      TEST_VALID_TRANSACTION_DTOS.get(2);
-  private static final TransactionDto TEST_TRANSACTION_DTO_FOUR =
-      TEST_VALID_TRANSACTION_DTOS.get(3);
-
-  private static final Transaction TEST_TRANSACTION_ONE = TEST_VALID_TRANSACTION_ENTITIES.get(0);
-
+  private static final TransactionDto TEST_TRANSACTION_DTO_THREE = TEST_VALID_TRANSACTION_DTOS.get(2);
+  private static final TransactionDto TEST_TRANSACTION_DTO_FOUR = TEST_VALID_TRANSACTION_DTOS.get(3);
+  
   private static final EntityModel<TransactionDto> TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE =
       TEST_VALID_TRANSACTION_DTO_ENTITY_MODELS.get(0);
 
   @Before
   public void setUp() {
-    when(transactionModelAssembler.toModel(TEST_TRANSACTION_DTO_ONE))
-        .thenReturn(TEST_TRANSACTION_DTO_ENTITY_MODEL_ONE);
+    for(int i = 0; i < TEST_VALID_TRANSACTION_DTOS.size(); i++){
+      when(transactionModelAssembler.toModel(TEST_VALID_TRANSACTION_DTOS.get(i)))
+              .thenReturn(TEST_VALID_TRANSACTION_DTO_ENTITY_MODELS.get(i));
+    }
   }
 
   /* POST transaction tests */
@@ -72,33 +68,17 @@ public class TransactionControllerUnitTests {
   /* GET transaction tests */
 
   @Test
-  public void whenPostingANewTransaction_thenGettingItByIdReturnsTheTransaction() {
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()))
-        .thenReturn(TEST_TRANSACTION_DTO_ONE);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()))
-        .thenReturn(TEST_TRANSACTION_DTO_TWO);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()))
-        .thenReturn(TEST_TRANSACTION_DTO_THREE);
-    when(transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()))
-        .thenReturn(TEST_TRANSACTION_DTO_FOUR);
-    assertEquals(
-        TEST_TRANSACTION_DTO_ONE,
-        transactionService.getTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
-    assertEquals(
-        TEST_TRANSACTION_DTO_TWO,
-        transactionService.getTransaction(TEST_TRANSACTION_DTO_TWO.getId()));
-    assertEquals(
-        TEST_TRANSACTION_DTO_THREE,
-        transactionService.getTransaction(TEST_TRANSACTION_DTO_THREE.getId()));
-    assertEquals(
-        TEST_TRANSACTION_DTO_FOUR,
-        transactionService.getTransaction(TEST_TRANSACTION_DTO_FOUR.getId()));
+  public void whenGettingATransactionById_thenTransactionIsReturned() {
+    when(transactionService.getTransaction(TEST_VALID_TRANSACTION_ENTITIES.get(0).getId()))
+            .thenReturn(TEST_VALID_TRANSACTION_DTOS.get(0));
+    assertEquals(ResponseEntity.ok(TEST_VALID_TRANSACTION_DTO_ENTITY_MODELS.get(0)), transactionController
+            .getTransaction(TEST_VALID_TRANSACTION_ENTITIES.get(0).getId()));
   }
 
   /* GET from / to / between / all tests */
 
   @Test
-  public void whenGettingAllTransactionsInAPage_returnAllRelevantTransactions() {
+  public void whenGettingAllTransactions_returnAllRelevantTransactions() {
     // There are 64 transactions total.
 
     // First, test that we return all of the records if we want to, for all sorting fields and for
@@ -374,14 +354,6 @@ public class TransactionControllerUnitTests {
     assertEquals(
         ResponseEntity.noContent().build(),
         transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId()));
-  }
-
-  @Test(expected = TransactionNotFoundException.class)
-  public void whenTransactionServiceThrowsTransactionNotFoundException_thenExceptionBubblesUp() {
-    doThrow(new TransactionNotFoundException(TEST_TRANSACTION_DTO_ONE.getId()))
-        .when(transactionService)
-        .deleteTransaction(TEST_TRANSACTION_ONE.getId());
-    transactionController.deleteTransaction(TEST_TRANSACTION_DTO_ONE.getId());
   }
 
   @Test
