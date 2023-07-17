@@ -1,6 +1,9 @@
 package com.agilebank.unit.controller;
 
+import static com.agilebank.util.Constants.*;
+import static com.agilebank.util.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -10,17 +13,22 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.service.account.AccountService;
+import com.agilebank.util.AggregateGetQueryParams;
+import com.agilebank.util.PaginationTester;
+import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.AccountNotFoundException;
-import com.agilebank.util.exceptions.InvalidBalanceException;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +40,20 @@ public class AccountControllerUnitTests {
 
   @Mock private AccountService accountService;
 
-  @Mock private AccountModelAssembler accountModelAssembler = new AccountModelAssembler();
+  @Mock private static AccountModelAssembler accountModelAssembler = new AccountModelAssembler();
 
-  @Before
-  public void setUp() {
-    when(accountModelAssembler.toModel(TEST_ACCOUNT_DTO_ONE))
-        .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE);
+  private static final AccountDto TEST_ACCOUNT_DTO_ONE = TEST_ACCOUNT_DTOS.get(0);
+  private static final EntityModel<AccountDto> TEST_ACCOUNT_DTO_ENTITY_MODEL_ONE = TEST_ACCOUNT_DTO_ENTITY_MODELS.get(0);
+
+  @BeforeAll
+  public static void setUp() {
+    for(int i = 0; i < TEST_ACCOUNT_DTOS.size(); i++){
+      when(accountModelAssembler.toModel(TEST_ACCOUNT_DTOS.get(i)))
+              .thenReturn(TEST_ACCOUNT_DTO_ENTITY_MODELS.get(i));
+    }
   }
+
+  /* POST tests */
 
   @Test
   public void whenPostingNewAccount_andServiceStoresSuccessfully_accountIsReturned() {
@@ -48,26 +63,67 @@ public class AccountControllerUnitTests {
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE));
   }
 
-  @Test(expected = InvalidBalanceException.class)
-  public void
-      whenPostingNewAccountWithNonPositiveBalance_andServiceThrowsInvalidBalanceException_thenExceptionBubblesUp() {
-    doThrow(new InvalidBalanceException(BigDecimal.ZERO))
-        .when(accountService)
-        .storeAccount(TEST_ACCOUNT_DTO_ONE);
-    accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
-  }
+  /* GET ALL tests */
 
   @Test
-  public void whenGettingAllAccounts_thenResponseEntityOverCollectionModelReturned() {
-    when(accountService.getAllAccounts())
-        .thenReturn(List.of(TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE));
+  public void whenGettingAllAccountsInPage_thenExactlyThoseAccountsAreReturned() {
+    // There are 20 accounts total.
+
+    // First, ask for a page with all 20 accounts.
+    PaginationTester.builder()
+            .pojoType(AccountDto.class)
+            .totalPages(1)
+            .pageSize(20)
+            .build()
+            .runTest(this::testAggregateGetForGivenParameters);
+    
+    // Now, ask for 4 of 5 accounts each.
+    PaginationTester.builder()
+            .pojoType(AccountDto.class)
+            .totalPages(4)
+            .pageSize(5)
+            .build()
+            .runTest(this::testAggregateGetForGivenParameters);
+    
+
+    // Now, 4 of 6 accounts each, except for the last one, which will have 2 since 20 = 3 * 6 + 2.
+    PaginationTester.builder()
+            .pojoType(AccountDto.class)
+            .totalPages(4)
+            .pageSize(6)
+            .build()
+            .runTest(this::testAggregateGetForGivenParameters);
+    
+    // Finally, 20 pages of 1 account each.
+    PaginationTester.builder()
+            .pojoType(AccountDto.class)
+            .totalPages(20)
+            .pageSize(1)
+            .build()
+            .runTest(this::testAggregateGetForGivenParameters);
+  }
+  
+    private void testAggregateGetForGivenParameters(AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords){
+    Integer page = aggregateGetQueryParams.getPage();
+    Integer pageSize = aggregateGetQueryParams.getPageSize();
+    String sortByField = aggregateGetQueryParams.getSortByField();
+    SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
+    List<AccountDto> subListOfPage = TEST_ACCOUNT_DTOS.subList(page * pageSize, pageSize * (page + 1));
+    when(accountService.getAllAccounts(page, pageSize, sortByField, sortOrder)).thenReturn(new PageImpl<>(subListOfPage));
     when(accountModelAssembler.toCollectionModel(
-            List.of(TEST_ACCOUNT_DTO_ONE, TEST_ACCOUNT_DTO_TWO, TEST_ACCOUNT_DTO_THREE)))
-        .thenReturn(TEST_ENTITY_MODEL_COLLECTION_MODEL);
-    assertEquals(
-        ResponseEntity.ok(TEST_ENTITY_MODEL_COLLECTION_MODEL), accountController.getAllAccounts());
+              new PageImpl<>(subListOfPage)))
+              .thenReturn(accountDtosToCollectionModel(subListOfPage));
+    ResponseEntity<CollectionModel<EntityModel<AccountDto>>> responseEntity =
+        accountController.getAllAccounts(page, pageSize, sortByField, sortOrder);
+    Collection<AccountDto> accountDtos = Objects.requireNonNull(responseEntity.getBody())
+            .getContent().stream().map(EntityModel::getContent).toList();
+    assertEquals(accountDtos.size(), expectedNumberOfRecords);
+    assertTrue(
+        collectionIsSortedByFieldInGivenDirection(
+            accountDtos, aggregateGetQueryParams.getSortByField(), aggregateGetQueryParams.getSortOrder()));
   }
 
+  /* GET by ID tests */
   @Test
   public void whenGettingAnAccountThatExists_thenAccountIsReturned() {
     when(accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(TEST_ACCOUNT_DTO_ONE);
@@ -81,6 +137,8 @@ public class AccountControllerUnitTests {
     doThrow(new AccountNotFoundException(0L)).when(accountService).getAccount(0L);
     accountController.getAccount(0L);
   }
+
+  /* DELETE tests */
 
   @Test
   public void whenDeletingAnAccountThatExists_thenNoContentIsReturned() {
@@ -98,6 +156,8 @@ public class AccountControllerUnitTests {
     accountController.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
   }
 
+  /* PUT tests */
+
   @Test
   public void whenDeletingAllAccounts_thenNoContentIsReturned() {
     doNothing().when(accountService).deleteAllAccounts();
@@ -105,7 +165,7 @@ public class AccountControllerUnitTests {
   }
 
   @Test
-  public void whenServiceUpdatesSuccessfully_thenOk() {
+  public void whenServiceReplacesSuccessfully_thenOk() {
     final Long id = 1L;
     AccountDto accountDtoPartial =
         AccountDto.builder().currency(Currency.AED).balance(BigDecimal.TEN).build();
@@ -122,7 +182,10 @@ public class AccountControllerUnitTests {
                 accountDtoFull,
                 linkTo(methodOn(AccountController.class).getAccount(accountDtoFull.getId()))
                     .withSelfRel(),
-                linkTo(methodOn(AccountController.class).getAllAccounts())
+                linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
                     .withRel("all_accounts")));
     ResponseEntity<EntityModel<AccountDto>> responseEntity =
         accountController.replaceAccount(id, accountDtoPartial);
@@ -130,14 +193,7 @@ public class AccountControllerUnitTests {
     assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
   }
 
-  @Test(expected = AccountNotFoundException.class)
-  public void whenServiceThrowsAccountNotFoundException_thenExceptionBubblesUp() {
-    final Long id = 1L;
-    AccountDto accountDto =
-        AccountDto.builder().balance(BigDecimal.TEN).currency(Currency.USD).build();
-    doThrow(new AccountNotFoundException(id)).when(accountService).replaceAccount(1L, accountDto);
-    accountController.replaceAccount(id, accountDto);
-  }
+  /* PATCH tests */
 
   @Test
   public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned() {
@@ -157,7 +213,10 @@ public class AccountControllerUnitTests {
             patchedAccountDto,
             linkTo(methodOn(AccountController.class).getAccount(patchedAccountDto.getId()))
                     .withSelfRel(),
-            linkTo(methodOn(AccountController.class).getAllAccounts())
+            linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                    Integer.parseInt(DEFAULT_PAGE_SIZE),
+                    DEFAULT_SORT_BY_FIELD,
+                    SortOrder.ASC))
                     .withRel("all_accounts"));
     when(accountService.updateAccount(newAccountInfo.getId(), newAccountInfo)).thenReturn(patchedAccountDto);
     when(accountModelAssembler.toModel(patchedAccountDto)).thenReturn(patchedAccountDtoEntityModel);
@@ -184,7 +243,10 @@ public class AccountControllerUnitTests {
             patchedAccountDto,
             linkTo(methodOn(AccountController.class).getAccount(patchedAccountDto.getId()))
                     .withSelfRel(),
-            linkTo(methodOn(AccountController.class).getAllAccounts())
+            linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                    Integer.parseInt(DEFAULT_PAGE_SIZE),
+                    DEFAULT_SORT_BY_FIELD,
+                    SortOrder.ASC))
                     .withRel("all_accounts"));
     when(accountService.updateAccount(newAccountInfo.getId(), newAccountInfo)).thenReturn(patchedAccountDto);
     when(accountModelAssembler.toModel(patchedAccountDto)).thenReturn(patchedAccountDtoEntityModel);

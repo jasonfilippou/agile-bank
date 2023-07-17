@@ -12,6 +12,11 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
+import com.google.common.collect.Comparators;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -372,7 +377,7 @@ public final class TestUtils {
   /* Generate a Collection Model for Entity Models of Account DTOs on demand, depending on how many
    * entities your pagination returned. */
 
-  public static CollectionModel<EntityModel<TransactionDto>> toCollectionModel(
+  public static CollectionModel<EntityModel<TransactionDto>> transactionDtosToCollectionModel(
       List<TransactionDto> entities) {
     return CollectionModel.of(
         IterableUtils.toList(entities).stream()
@@ -382,7 +387,7 @@ public final class TestUtils {
 
   public static CollectionModel<EntityModel<TransactionDto>> transactionDtosToCollectionModel(
       List<TransactionDto> entities, Map<String, String> params) {
-    CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
+    CollectionModel<EntityModel<TransactionDto>> collectionModel = transactionDtosToCollectionModel(entities);
     collectionModel.add(
         linkTo(
                 methodOn(TransactionController.class)
@@ -427,7 +432,36 @@ public final class TestUtils {
           Map.entry(CurrencyPair.of(Currency.INR, Currency.USD), BigDecimal.ONE),
           Map.entry(CurrencyPair.of(Currency.INR, Currency.GBP), BigDecimal.ONE),
           Map.entry(CurrencyPair.of(Currency.INR, Currency.EUR), BigDecimal.ONE),
-          Map.entry(CurrencyPair.of(Currency.INR, Currency.INR), BigDecimal.ONE));
+          Map.entry(CurrencyPair.of(Currency.INR, Currency.INR), BigDecimal.ONE));  
+          // TODO: add some non-1 entries to test for InsufficientBalanceExceptions.
+  
+  
+  /* Some utilities for comparing fields of arbitrary POJOs */
 
+  public static boolean collectionIsSortedByFieldInGivenDirection(Collection<?> pojos,
+                                                            String sortByField, SortOrder sortOrder){
+    // Using a Guava dependency here
+    return Comparators.isInOrder(pojos, (p1, p2) -> compareFieldsInGivenOrder(p1.getClass(), p2.getClass(), 
+            sortByField, sortOrder));
+  }
+
+  private static <T extends Comparable<T>> int compareFieldsInGivenOrder(Class<?> pojoOne, Class<?> pojoTwo,
+                                                                  String sortByField, SortOrder sortOrder){
+    try {
+      PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, TransactionDto.class);
+      Method appropriateGetter = propertyDescriptor.getReadMethod();
+      @SuppressWarnings("unchecked")
+      T pojoOneFieldValue = (T) appropriateGetter.invoke(pojoOne);
+      @SuppressWarnings("unchecked")
+      T pojoTwoFieldValue = (T) appropriateGetter.invoke(pojoTwo);
+      return sortOrder == SortOrder.ASC ? pojoOneFieldValue.compareTo(pojoTwoFieldValue) :
+              pojoTwoFieldValue.compareTo(pojoOneFieldValue);
+    } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+      throw new RuntimeException(e.getMessage());
+    } catch(ClassCastException exc){
+      throw new RuntimeException("Field " + sortByField + " of " + pojoOne.getSimpleName()
+              + " is not Comparable.");
+    }
+  }
   private TestUtils() {}
 }

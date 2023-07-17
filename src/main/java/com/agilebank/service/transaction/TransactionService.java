@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -168,10 +167,10 @@ public class TransactionService {
    * @return A List of all transactions with the target account corresponding to {@literal targetAccountId}.
    */
   @Transactional(readOnly = true)
-  public List<TransactionDto> getAllTransactionsTo(Long targetAccountId, Integer page, Integer pageSize,
+  public Page<TransactionDto> getAllTransactionsTo(Long targetAccountId, Integer page, Integer pageSize,
                                                    String sortByField, SortOrder sortOrder) {
     Sort sorter = (sortOrder == SortOrder.ASC) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
-    return transactionRepository.findByTargetAccountId(targetAccountId, PageRequest.of(page, pageSize, sorter)).stream()
+    List<TransactionDto> transactions = transactionRepository.findByTargetAccountId(targetAccountId, PageRequest.of(page, pageSize, sorter)).stream()
         .map(
             transaction ->
                 TransactionDto.builder()
@@ -181,7 +180,8 @@ public class TransactionService {
                     .currency(transaction.getCurrency())
                     .amount(transaction.getAmount())
                     .build())
-        .collect(Collectors.toList());
+        .toList();
+    return new PageImpl<>(transactions);
   }
 
   /**
