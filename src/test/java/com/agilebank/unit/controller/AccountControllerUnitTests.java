@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
@@ -108,7 +109,8 @@ public class AccountControllerUnitTests {
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
-    List<AccountDto> subListOfPage = TEST_ACCOUNT_DTOS.subList(page * pageSize, pageSize * (page + 1));
+    List<AccountDto> subListOfPage = TEST_ACCOUNT_DTOS.stream().sorted((a1, a2) -> compareFieldsInGivenOrder(a1.getClass(), a2.getClass(),
+            sortByField, sortOrder)).collect(Collectors.toList()).subList(page * pageSize, pageSize * (page + 1));
     when(accountService.getAllAccounts(page, pageSize, sortByField, sortOrder)).thenReturn(new PageImpl<>(subListOfPage));
     when(accountModelAssembler.toCollectionModel(
               new PageImpl<>(subListOfPage)))

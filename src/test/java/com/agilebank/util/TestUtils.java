@@ -433,7 +433,6 @@ public final class TestUtils {
           Map.entry(CurrencyPair.of(Currency.INR, Currency.GBP), BigDecimal.ONE),
           Map.entry(CurrencyPair.of(Currency.INR, Currency.EUR), BigDecimal.ONE),
           Map.entry(CurrencyPair.of(Currency.INR, Currency.INR), BigDecimal.ONE));  
-          // TODO: add some non-1 entries to test for InsufficientBalanceExceptions.
   
   
   /* Some utilities for comparing fields of arbitrary POJOs */
@@ -445,7 +444,7 @@ public final class TestUtils {
             sortByField, sortOrder));
   }
 
-  private static <T extends Comparable<T>> int compareFieldsInGivenOrder(Class<?> pojoOne, Class<?> pojoTwo,
+  public static <T extends Comparable<T>> int compareFieldsInGivenOrder(Class<?> pojoOne, Class<?> pojoTwo,
                                                                   String sortByField, SortOrder sortOrder){
     try {
       PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, TransactionDto.class);
