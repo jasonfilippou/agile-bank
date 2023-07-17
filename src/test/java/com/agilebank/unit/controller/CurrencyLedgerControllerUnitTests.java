@@ -42,8 +42,8 @@ public class CurrencyLedgerControllerUnitTests {
   public void whenRequestingASpecificExchangeRate_thenWeGetTheCorrectExchangeRate() {
     assertEquals(
         ResponseEntity.ok(
-            Map.of(new CurrencyPair(Currency.USD, Currency.IDR), new BigDecimal("5.65"))),
-        currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.IDR));
+            Map.of(new CurrencyPair(Currency.USD, Currency.INR), BigDecimal.ONE)),
+        currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.INR));
   }
 
   @Test(expected = OneOfTwoCurrenciesMissingException.class)

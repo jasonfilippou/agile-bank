@@ -60,6 +60,13 @@ public class TransactionServiceUnitTests {
         .thenReturn(sourceAccountEntity);
     when(accountRepository.findById(transactionDto.getTargetAccountId()))
         .thenReturn(targetAccountEntity);
+   
+    // Keep the source and target account balances on the side
+    // because this set will affect the variables from TestUtils
+    // and we should reset them to avoid other tests failing.
+    final BigDecimal sourceAccountBalanceBeforeTransaction = sourceAccountEntity.get().getBalance();
+    final BigDecimal targetAccountBalanceBeforeTransaction = targetAccountEntity.get().getBalance();
+    
     // We don't really care about the balances checking out for this test,
     // the transactionSanityChecker can do nothing.
     doNothing()
@@ -71,9 +78,18 @@ public class TransactionServiceUnitTests {
             TEST_EXCHANGE_RATES);
     doNothing().when(accountRepository).updateBalance(any(Long.class), any(BigDecimal.class));
     when(transactionRepository.save(any(Transaction.class))).thenReturn(transactionEntity);
-    assertEquals(transactionDto, transactionService.storeTransaction(transactionDto));
+    assertEquals(TransactionDto.builder()
+            .id(TEST_VALID_TRANSACTION_ENTITIES.get(0).getId())
+            .currency(transactionDto.getCurrency())
+            .amount(transactionDto.getAmount())
+            .sourceAccountId(transactionDto.getSourceAccountId())
+            .targetAccountId(transactionDto.getTargetAccountId())
+            .build(), transactionService.storeTransaction(transactionDto));
+    sourceAccountEntity.get().setBalance(sourceAccountBalanceBeforeTransaction);
+    targetAccountEntity.get().setBalance(targetAccountBalanceBeforeTransaction);
+
   }
-  
+
 
   /* Getting transaction tests */
 
@@ -84,7 +100,13 @@ public class TransactionServiceUnitTests {
     when(transactionRepository.findById(transactionEntity.getId()))
         .thenReturn(Optional.of(transactionEntity));
     assertEquals(
-            transactionDto,
+            TransactionDto.builder()
+                    .id(TEST_VALID_TRANSACTION_ENTITIES.get(0).getId())
+                    .currency(transactionDto.getCurrency())
+                    .amount(transactionDto.getAmount())
+                    .sourceAccountId(transactionDto.getSourceAccountId())
+                    .targetAccountId(transactionDto.getTargetAccountId())
+                    .build(),
         transactionService.getTransaction(transactionEntity.getId()));
   }
 
@@ -168,7 +190,7 @@ public class TransactionServiceUnitTests {
     assertEquals(transactionDtos.size(), expectedNumberOfRecords);
     assertTrue(collectionIsSortedByFieldInGivenDirection(transactionDtos, sortByField, sortOrder));
   }
-  
+
   @Test
   public void whenGettingAllTransactionsFromASourceAccount_thenOnlyThoseAreReturned() {
     // There are 4 transactions coming out of the first account.
@@ -321,7 +343,7 @@ public class TransactionServiceUnitTests {
     assertTrue(collectionIsSortedByFieldInGivenDirection(transactionDtos, sortByField, sortOrder));
   }
   /* Delete by ID tests */
-  
+
   @Test
   public void whenDeletingATransactionThatExistsInRepo_thenOk() {
     Transaction transactionEntity = TEST_VALID_TRANSACTION_ENTITIES.get(0);
@@ -347,7 +369,7 @@ public class TransactionServiceUnitTests {
   }
 
   /* Delete ALL tests */
-  
+
   @Test
   public void whenDeletingAllTransactions_thenOk() {
     doNothing().when(transactionRepository).deleteAll();

@@ -38,37 +38,36 @@ public class AccountServiceUnitTests {
 
   @Mock private UpdateMapper updateMapper;
   
-  private static final AccountDto TEST_ACCOUNT_DTO_ONE = TEST_ACCOUNT_DTOS.get(0);
-  private static final AccountDto TEST_ACCOUNT_DTO_TWO = TEST_ACCOUNT_DTOS.get(1);
-  private static final AccountDto TEST_ACCOUNT_DTO_THREE = TEST_ACCOUNT_DTOS.get(2);
-
-  private static final Account TEST_ACCOUNT_ENTITY_ONE = TEST_ACCOUNT_ENTITIES.get(0);
-  private static final Account TEST_ACCOUNT_ENTITY_TWO = TEST_ACCOUNT_ENTITIES.get(1);
-  private static final Account TEST_ACCOUNT_ENTITY_THREE = TEST_ACCOUNT_ENTITIES.get(2);
-
-
-
   /* Store account tests */
   @Test
   public void whenRepoSavesANewAccount_thenTheAccountIsReturned() {
-    when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ENTITY_ONE);
-    assertEquals(accountService.storeAccount(TEST_ACCOUNT_DTO_ONE), TEST_ACCOUNT_DTO_ONE);
+    when(accountRepository.save(any(Account.class))).thenReturn(TEST_ACCOUNT_ENTITIES.get(0));
+    assertEquals(accountService.storeAccount(TEST_ACCOUNT_DTOS.get(0)), 
+            AccountDto.builder()
+              .id(TEST_ACCOUNT_ENTITIES.get(0).getId())
+              .balance(TEST_ACCOUNT_DTOS.get(0).getBalance())
+              .currency(TEST_ACCOUNT_DTOS.get(0).getCurrency())
+              .build());
   }
 
   /* Retrieve account by ID tests */
   
   @Test
   public void whenRequestingSpecificAccount_andRepoFindsIt_thenTheAccountIsReturned() {
-    when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITY_ONE));
-    assertEquals(accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId()), TEST_ACCOUNT_DTO_ONE);
+    when(accountRepository.findById(TEST_ACCOUNT_DTOS.get(0).getId()))
+        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITIES.get(0)));
+    assertEquals(accountService.getAccount(TEST_ACCOUNT_DTOS.get(0).getId()), AccountDto.builder()
+            .id(TEST_ACCOUNT_ENTITIES.get(0).getId())
+            .balance(TEST_ACCOUNT_DTOS.get(0).getBalance())
+            .currency(TEST_ACCOUNT_DTOS.get(0).getCurrency())
+            .build());
   }
 
   @Test(expected = AccountNotFoundException.class)
   public void
       whenRequestingSpecificAccount_andRepoDoesNotFindIt_thenThrowNonExistentAccountException() {
-    when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.empty());
-    accountService.getAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    when(accountRepository.findById(TEST_ACCOUNT_DTOS.get(0).getId())).thenReturn(Optional.empty());
+    accountService.getAccount(TEST_ACCOUNT_DTOS.get(0).getId());
   }
 
   /* Retrieve all accounts tests */
@@ -133,11 +132,11 @@ public class AccountServiceUnitTests {
   
   @Test
   public void whenDeletingAnAccountThatIsFoundInRepo_thenOk() {
-    when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITY_ONE));
+    when(accountRepository.findById(TEST_ACCOUNT_DTOS.get(0).getId()))
+        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITIES.get(0)));
     Throwable expected = null;
     try {
-      accountService.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+      accountService.deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId());
     } catch (Throwable thrown) {
       expected = thrown;
     }
@@ -146,8 +145,8 @@ public class AccountServiceUnitTests {
 
   @Test(expected = AccountNotFoundException.class)
   public void whenDeletingAnAccountThatIsNotFoundInRepo_thenAccountNotFoundExceptionIsThrown() {
-    when(accountRepository.findById(TEST_ACCOUNT_DTO_ONE.getId())).thenReturn(Optional.empty());
-    accountService.deleteAccount(TEST_ACCOUNT_DTO_ONE.getId());
+    when(accountRepository.findById(TEST_ACCOUNT_DTOS.get(0).getId())).thenReturn(Optional.empty());
+    accountService.deleteAccount(TEST_ACCOUNT_DTOS.get(0).getId());
   }
 
   /* Delete all accounts tests */
@@ -169,27 +168,27 @@ public class AccountServiceUnitTests {
   @Test
   public void whenReplacingAccount_thenReplacedObjectIsReturned() {
     final Long id = 1L;
-    when(accountRepository.findById(id)).thenReturn(Optional.ofNullable(TEST_ACCOUNT_ENTITY_ONE));
+    when(accountRepository.findById(id)).thenReturn(Optional.of(TEST_ACCOUNT_ENTITIES.get(0)));
     when(accountRepository.save(any(Account.class)))
         .thenReturn(
             Account.builder()
                 .id(id)
-                .balance(TEST_ACCOUNT_ENTITY_TWO.getBalance())
-                .createdAt(TEST_ACCOUNT_ENTITY_TWO.getCreatedAt())
-                .currency(TEST_ACCOUNT_ENTITY_TWO.getCurrency())
+                .balance(TEST_ACCOUNT_ENTITIES.get(1).getBalance())
+                .createdAt(TEST_ACCOUNT_ENTITIES.get(1).getCreatedAt())
+                .currency(TEST_ACCOUNT_ENTITIES.get(1).getCurrency())
                 .build());
     AccountDto updatedAccountDto =
         AccountDto.builder()
-            .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
-            .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+            .balance(TEST_ACCOUNT_DTOS.get(1).getBalance())
+            .currency(TEST_ACCOUNT_DTOS.get(1).getCurrency())
             .build();
     AccountDto accountDto = accountService.replaceAccount(id, updatedAccountDto);
     assertEquals(
         accountDto,
         AccountDto.builder()
             .id(id)
-            .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
-            .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+            .balance(TEST_ACCOUNT_DTOS.get(1).getBalance())
+            .currency(TEST_ACCOUNT_DTOS.get(1).getCurrency())
             .build());
   }
 
@@ -200,8 +199,8 @@ public class AccountServiceUnitTests {
     accountService.replaceAccount(
         id,
         AccountDto.builder()
-            .balance(TEST_ACCOUNT_DTO_TWO.getBalance())
-            .currency(TEST_ACCOUNT_DTO_TWO.getCurrency())
+            .balance(TEST_ACCOUNT_DTOS.get(1).getBalance())
+            .currency(TEST_ACCOUNT_DTOS.get(1).getCurrency())
             .build());
   }
 
@@ -211,27 +210,27 @@ public class AccountServiceUnitTests {
   public void whenUpdatingAnExistingAccountWithANewBalance_thenNewAccountInfoIsReturned() {
     AccountDto newAccountInfo =
         AccountDto.builder()
-            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .id(TEST_ACCOUNT_DTOS.get(0).getId())
             .balance(
-                TEST_ACCOUNT_DTO_ONE.getBalance().add(BigDecimal.TEN)) // Ensuring balance different
+                TEST_ACCOUNT_DTOS.get(0).getBalance().add(BigDecimal.TEN)) // Ensuring balance different
             .build();
     when(accountRepository.findById(newAccountInfo.getId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITY_ONE));
+        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITIES.get(0)));
     Account patchedAccount =
         Account.builder()
             .id(newAccountInfo.getId())
             .balance(newAccountInfo.getBalance())
-            .currency(TEST_ACCOUNT_ENTITY_ONE.getCurrency())
-            .createdAt(TEST_ACCOUNT_ENTITY_ONE.getCreatedAt())
+            .currency(TEST_ACCOUNT_ENTITIES.get(0).getCurrency())
+            .createdAt(TEST_ACCOUNT_ENTITIES.get(0).getCreatedAt())
             .build();
-    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITY_ONE))
+    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITIES.get(0)))
         .thenReturn(patchedAccount);
     when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
     assertEquals(
         AccountDto.builder()
-            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .id(TEST_ACCOUNT_DTOS.get(0).getId())
             .balance(newAccountInfo.getBalance())
-            .currency(TEST_ACCOUNT_ENTITY_ONE.getCurrency())
+            .currency(TEST_ACCOUNT_ENTITIES.get(0).getCurrency())
             .build(),
         accountService.updateAccount(newAccountInfo.getId(), newAccountInfo));
   }
@@ -240,30 +239,30 @@ public class AccountServiceUnitTests {
   public void whenUpdatingAnExistingAccountWithANewCurrency_thenNewAccountInfoIsReturned() {
     AccountDto newAccountInfo =
         AccountDto.builder()
-            .id(TEST_ACCOUNT_DTO_ONE.getId())
-            .currency(Currency.AMD) // TEST_ACCOUNT_ENTITY_ONE has GBP
+            .id(TEST_ACCOUNT_DTOS.get(0).getId())
+            .currency(Currency.AMD) // TEST_ACCOUNT_ENTITIES.get(0) has GBP
             .build();
     when(accountRepository.findById(newAccountInfo.getId()))
-        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITY_ONE));
+        .thenReturn(Optional.of(TEST_ACCOUNT_ENTITIES.get(0)));
     CurrencyLedger currencyLedger = new CurrencyLedger();
     Account patchedAccount =
         Account.builder()
             .id(newAccountInfo.getId())
             .balance(
                 currencyLedger.convertAmountToTargetCurrency(
-                    TEST_ACCOUNT_ENTITY_ONE.getCurrency(), Currency.AMD, TEST_ACCOUNT_ENTITY_ONE.getBalance()))
+                    TEST_ACCOUNT_ENTITIES.get(0).getCurrency(), Currency.AMD, TEST_ACCOUNT_ENTITIES.get(0).getBalance()))
             .currency(newAccountInfo.getCurrency())
-            .createdAt(TEST_ACCOUNT_ENTITY_ONE.getCreatedAt())
+            .createdAt(TEST_ACCOUNT_ENTITIES.get(0).getCreatedAt())
             .build();
-    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITY_ONE))
+    when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITIES.get(0)))
         .thenReturn(patchedAccount);
     when(accountRepository.save(patchedAccount)).thenReturn(patchedAccount);
     assertEquals(
         AccountDto.builder()
-            .id(TEST_ACCOUNT_DTO_ONE.getId())
+            .id(TEST_ACCOUNT_DTOS.get(0).getId())
             .balance(
                 currencyLedger.convertAmountToTargetCurrency(
-                    TEST_ACCOUNT_ENTITY_ONE.getCurrency(), Currency.AMD, TEST_ACCOUNT_ENTITY_ONE.getBalance()))
+                    TEST_ACCOUNT_ENTITIES.get(0).getCurrency(), Currency.AMD, TEST_ACCOUNT_ENTITIES.get(0).getBalance()))
             .currency(newAccountInfo.getCurrency())
             .build(),
         accountService.updateAccount(newAccountInfo.getId(), newAccountInfo));
