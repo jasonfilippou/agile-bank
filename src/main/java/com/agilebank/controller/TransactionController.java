@@ -19,10 +19,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -178,8 +180,9 @@ public class TransactionController {
           @RequestParam Map<String, String> params,
           @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) @Min(0) Integer page,
           @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1) Integer size,
-          @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
-          @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
+          @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) @NonNull @NotBlank String sortByField,
+          @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) @NonNull SortOrder sortOrder)
+          throws InvalidSortByFieldSpecifiedException{
     List<String> transactionFieldNames = Arrays.stream(TransactionDto.class.getDeclaredFields()).
             map(Field::getName).toList();
     if(!transactionFieldNames.contains(sortByField)){
