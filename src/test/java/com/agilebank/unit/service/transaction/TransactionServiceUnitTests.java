@@ -60,13 +60,6 @@ public class TransactionServiceUnitTests {
         .thenReturn(sourceAccountEntity);
     when(accountRepository.findById(transactionDto.getTargetAccountId()))
         .thenReturn(targetAccountEntity);
-   
-    // Keep the source and target account balances on the side
-    // because this set will affect the variables from TestUtils
-    // and we should reset them to avoid other tests failing.
-    final BigDecimal sourceAccountBalanceBeforeTransaction = sourceAccountEntity.get().getBalance();
-    final BigDecimal targetAccountBalanceBeforeTransaction = targetAccountEntity.get().getBalance();
-    
     // We don't really care about the balances checking out for this test,
     // the transactionSanityChecker can do nothing.
     doNothing()
@@ -85,12 +78,8 @@ public class TransactionServiceUnitTests {
             .sourceAccountId(transactionDto.getSourceAccountId())
             .targetAccountId(transactionDto.getTargetAccountId())
             .build(), transactionService.storeTransaction(transactionDto));
-    sourceAccountEntity.get().setBalance(sourceAccountBalanceBeforeTransaction);
-    targetAccountEntity.get().setBalance(targetAccountBalanceBeforeTransaction);
-
   }
-
-
+  
   /* Getting transaction tests */
 
   @Test

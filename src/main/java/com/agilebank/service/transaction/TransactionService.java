@@ -60,21 +60,14 @@ public class TransactionService {
         currencyExchangeRates.get(
             new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
     // Debit the source account in its own currency.
-    sourceAccount
-        .get()
-        .setBalance(
-            sourceAccount
-                .get()
-                .getBalance()
-                .subtract(
+    accountRepository.updateBalance(sourceAccount.get().getId(), sourceAccount
+            .get()
+            .getBalance()
+            .subtract(
                     transactionDto.getAmount().multiply(sourceToTransactionCurrencyExchangeRate)));
     // Credit the target account in its own currency.
-    targetAccount
-        .get()
-        .setBalance(targetAccount.get().getBalance().add(transactionDto.getAmount()));
-    // Save the updated accounts. 
-    accountRepository.updateBalance(sourceAccount.get().getId(), sourceAccount.get().getBalance());
-    accountRepository.updateBalance(targetAccount.get().getId(), targetAccount.get().getBalance());
+    accountRepository.updateBalance(targetAccount.get().getId(),targetAccount.get().getBalance()
+            .add(transactionDto.getAmount()));
     // Finally, save and return the transaction.
     Transaction storedTransaction =
         transactionRepository.save(

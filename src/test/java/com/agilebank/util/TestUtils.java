@@ -41,8 +41,12 @@ public final class TestUtils {
 
   /* Account DTOs */
 
+  // We will give an ID to the AccountDto instances we create because it will make our tests
+  // for sorting by ID cleaner to write.
+  private static Long currentTransactionId = 1L;
+  
   private static AccountDto accountDtoOfGivenParams(Currency currency, BigDecimal balance) {
-    return AccountDto.builder().balance(balance).currency(currency).build();
+    return AccountDto.builder().id(currentTransactionId++).balance(balance).currency(currency).build();
   }
 
   public static final List<AccountDto> TEST_ACCOUNT_DTOS =
@@ -301,11 +305,9 @@ public final class TestUtils {
 
   /* Valid Transaction Entities */
 
-  private static Long currentTransactionId = 1L;
-
   private static Transaction transactionDtoToEntity(TransactionDto transactionDto) {
     return Transaction.builder()
-        .id(currentTransactionId++)
+        .id(transactionDto.getId())
         .sourceAccountId(transactionDto.getSourceAccountId())
         .targetAccountId(transactionDto.getTargetAccountId())
         .amount(transactionDto.getAmount())
