@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * Data Transfer Object for application users.
@@ -18,6 +15,7 @@ import lombok.ToString;
  */
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UserDto {
 
   @Schema(example = "agileuser")

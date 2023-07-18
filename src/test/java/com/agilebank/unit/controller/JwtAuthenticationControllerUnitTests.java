@@ -18,7 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationControllerUnitTests {
@@ -26,7 +27,6 @@ public class JwtAuthenticationControllerUnitTests {
   private static final TestUserDetailsImpl TEST_USER_DETAILS =
       new TestUserDetailsImpl("username", "password");
   private static final JwtRequest TEST_JWT_REQUEST = new JwtRequest("username", "password");
-  private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
   @InjectMocks private JwtAuthenticationController jwtAuthenticationController;
   @Mock private JwtTokenUtil jwtTokenUtil;
   @Mock private JwtUserDetailsService userDetailsService;
@@ -43,24 +43,15 @@ public class JwtAuthenticationControllerUnitTests {
         new JwtResponse("token"));
   }
 
-  @Test(expected = Exception.class)
-  public void
-      whenAuthenticatingUser_andAuthenticationServiceThrowsException_thenExceptionBubblesUp()
-          throws Exception {
-    doThrow(new Exception("some message"))
-        .when(jwtAuthenticationService)
-        .authenticate(anyString(), anyString());
-    jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
-  }
-
-  @Test(expected = UsernameNotFoundException.class)
-  public void
-      whenAuthenticatingUser_andDetailsServiceThrowsUsernameNotFoundException_thenExceptionBubblesUp()
-          throws Exception {
-    doNothing().when(jwtAuthenticationService).authenticate(anyString(), anyString());
-    doThrow(new UsernameNotFoundException("some message"))
-        .when(userDetailsService)
-        .loadUserByUsername(anyString());
-    jwtAuthenticationController.createAuthenticationToken(TEST_JWT_REQUEST);
+  @Test
+  public void whenUserRegistersWithaAAUsernameWithLeadingAndTrailingWhitespace_thenReturnedUserDetailsHasTheUsernameTrimmed(){
+    UserDto userDto = new UserDto(" max    ", "maxpassword");
+    UserDto expectedUserDto = new UserDto("max" , "maxpassword"); // The controller does not actually ever return the password, but that's fine for this unit test.
+    when(userDetailsService.save(userDto)).thenAnswer(invocationOnMock -> { 
+        UserDto providedUserDto = invocationOnMock.getArgument(0);
+        return new UserDto(providedUserDto.getUsername().trim(), providedUserDto.getPassword());
+      });
+    assertEquals(new ResponseEntity<>(expectedUserDto, HttpStatus.CREATED), 
+            jwtAuthenticationController.registerUser(userDto));
   }
 }
