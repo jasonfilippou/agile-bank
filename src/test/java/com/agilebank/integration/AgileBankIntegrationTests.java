@@ -4,6 +4,7 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 import static com.agilebank.util.Constants.*;
 import static com.agilebank.util.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -339,7 +340,8 @@ public class AgileBankIntegrationTests {
   public void whenUpdatingAnAccountWithANewCurrency_thenUpdatedAccountIsReturned() {
     when(currencyLedger.getRandom()).thenReturn(RANDOM);
     when(currencyLedger.getCurrencyExchangeRates()).thenCallRealMethod();
-    
+    when(currencyLedger.convertAmountToTargetCurrency(any(Currency.class), any(Currency.class), any(BigDecimal.class)))
+            .thenCallRealMethod();
     // POST the first test account
     ResponseEntity<EntityModel<AccountDto>> responseEntityForPost =
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
@@ -351,7 +353,7 @@ public class AgileBankIntegrationTests {
     AccountDto patch =
         AccountDto.builder()
             .id(postedAccountDto.getId())
-            .currency(Currency.AMD) // TEST_ACCOUNT_DTO_ONE has GBP
+            .currency(Currency.AMD) // TEST_ACCOUNT_DTO_ONE has USD
             .build();
     ResponseEntity<EntityModel<AccountDto>> responseEntityForPatch =
         accountController.updateAccount(patch.getId(), patch);
