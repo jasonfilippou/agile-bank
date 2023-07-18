@@ -1,9 +1,11 @@
 package com.agilebank.model.account;
 
+import static com.agilebank.util.Constants.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.agilebank.controller.AccountController;
+import com.agilebank.util.SortOrder;
 import java.lang.reflect.Method;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -32,7 +34,8 @@ public class AccountModelAssembler
     return EntityModel.of(
         accountDto,
         linkTo(methodOn(AccountController.class).getAccount(accountDto.getId())).withSelfRel(),
-        linkTo(methodOn(AccountController.class).getAllAccounts()).withRel("all_accounts"));
+        linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX),
+                Integer.parseInt(DEFAULT_PAGE_SIZE), DEFAULT_SORT_BY_FIELD, SortOrder.ASC)).withRel(ALL_ACCOUNTS));
   }
 
   @Override
@@ -40,6 +43,7 @@ public class AccountModelAssembler
       @NonNull Iterable<? extends AccountDto> entities) {
     return CollectionModel.of(
         IterableUtils.toList(entities).stream().map(this::toModel).collect(Collectors.toList()),
-        linkTo(methodOn(AccountController.class).getAllAccounts()).withSelfRel());
+        linkTo(methodOn(AccountController.class).getAllAccounts(Integer.parseInt(DEFAULT_PAGE_IDX), 
+                Integer.parseInt(DEFAULT_PAGE_SIZE), DEFAULT_SORT_BY_FIELD, SortOrder.ASC)).withSelfRel());
   }
 }

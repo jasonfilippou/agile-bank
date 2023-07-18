@@ -24,7 +24,8 @@ public class ExceptionAdvice {
     InsufficientBalanceException.class,
     SameAccountException.class,
     InvalidTransactionCurrencyException.class,
-    OneOfTwoCurrenciesMissingException.class
+    OneOfTwoCurrenciesMissingException.class,
+    InvalidSortByFieldSpecifiedException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> badRequestStatusMessage(RuntimeException exc) {

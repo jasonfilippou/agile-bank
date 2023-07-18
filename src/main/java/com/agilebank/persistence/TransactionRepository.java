@@ -1,7 +1,8 @@
 package com.agilebank.persistence;
 
 import com.agilebank.model.transaction.Transaction;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,10 +15,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @CustomRepositoryAnnotation
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-  List<Transaction> findBySourceAccountId(Long sourceAccountId);
+  Page<Transaction> findBySourceAccountId(Long sourceAccountId, Pageable pageable);
 
-  List<Transaction> findByTargetAccountId(Long targetAccountId);
+  Page<Transaction> findByTargetAccountId(Long targetAccountId, Pageable pageable);
 
-  List<Transaction> findBySourceAccountIdAndTargetAccountId(
-      Long sourceAccountId, Long targetAccountId);
+  Page<Transaction> findBySourceAccountIdAndTargetAccountId(
+      Long sourceAccountId, Long targetAccountId, Pageable pageable);
 }

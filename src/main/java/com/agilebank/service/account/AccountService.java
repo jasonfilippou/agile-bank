@@ -3,12 +3,21 @@ package com.agilebank.service.account;
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
+import com.agilebank.util.SortOrder;
 import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
+
+import com.agilebank.util.exceptions.InvalidPaginationParametersSpecifiedException;
+import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,11 +59,25 @@ public class AccountService {
 
   /**
    * Get all the accounts that we have stored in the DB.
-   * @return A {@link List} over all the accounts that we have stored in the DB.
+   *  @param page The page of data we want (zero-indexed).
+   * @param pageSize The number of data records in the page.
+   * @param sortByField The field of {@link AccountDto} that we want to sort by, in camelCase.
+   * @param sortOrder The value of {@link SortOrder} that dictates ascending or descending order.
+   * @return A {@link List} over all the accounts in the DB of the specified page and in the given sort order.
    */
   @Transactional(readOnly = true)
-  public List<AccountDto> getAllAccounts() {
-    return accountRepository.findAll().stream()
+  public Page<AccountDto> getAllAccounts(Integer page, Integer pageSize, String sortByField, SortOrder sortOrder) 
+  throws InvalidSortByFieldSpecifiedException, InvalidPaginationParametersSpecifiedException{
+    if(page < 0 || pageSize < 1){
+      throw new InvalidPaginationParametersSpecifiedException(page, pageSize);
+    }
+    List<String> accountFieldNames = Arrays.stream(AccountDto.class.getDeclaredFields()).
+            map(Field::getName).toList();
+    if(!accountFieldNames.contains(sortByField)){
+      throw new InvalidSortByFieldSpecifiedException(sortByField, accountFieldNames);
+    }
+    Sort sorter = (sortOrder == SortOrder.ASC ) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
+    List<AccountDto> accounts = accountRepository.findAll(PageRequest.of(page, pageSize, sorter)).stream()
         .map(
             account ->
                 AccountDto.builder()
@@ -62,7 +85,8 @@ public class AccountService {
                     .balance(account.getBalance())
                     .currency(account.getCurrency())
                     .build())
-        .collect(Collectors.toList());
+        .toList();
+    return new PageImpl<>(accounts);
   }
 
   /**

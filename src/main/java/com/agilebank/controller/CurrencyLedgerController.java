@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -53,28 +54,38 @@ public class CurrencyLedgerController {
             content = {
               @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/ExchangeRate"))
             }),
-              @ApiResponse(
-                      responseCode = "401",
-                      description = "Unauthenticated.",
-                      content = @Content
-              )
+        @ApiResponse(
+                responseCode = "400",
+                description = "Bad pagination parameters specified.",
+                content = @Content
+        ),      
+        @ApiResponse(
+                responseCode = "401",
+                description = "Unauthenticated.",
+                content = @Content
+        )
       })
   @GetMapping("/exchangerate")
   public ResponseEntity<Map<CurrencyPair, BigDecimal>> getCurrencyExchangeRate(
-      @RequestParam(name = "currencyOne", required = false) Currency currencyOne,
-      @RequestParam(name = "currencyTwo", required = false) Currency currencyTwo)
-      throws MethodArgumentTypeMismatchException, OneOfTwoCurrenciesMissingException {
-    if (currencyOne == null && currencyTwo == null) {
-      return ResponseEntity.ok(currencyLedger.getCurrencyExchangeRates());
-    } else if (exactlyOneOfParamsIsNull(currencyOne, currencyTwo)) {
+          @RequestParam(name = "currencyOne", required = false) Currency currencyOne,
+          @RequestParam(name = "currencyTwo", required = false) Currency currencyTwo,
+          @RequestParam(name = "page", required = false, defaultValue = "0") @Min(0) Integer page, 
+      @RequestParam(name = "page_size", required = false, defaultValue = "10") @Min(1) Integer pageSize)
+        throws MethodArgumentTypeMismatchException, OneOfTwoCurrenciesMissingException {
+    if (exactlyOneOfCurrenciesIsNull(currencyOne, currencyTwo)) {
       throw new OneOfTwoCurrenciesMissingException();
     }
-    CurrencyPair currencyPair = new CurrencyPair(currencyOne, currencyTwo);
-    return ResponseEntity.ok(
-        Map.of(currencyPair, currencyLedger.getCurrencyExchangeRates().get(currencyPair)));
+    if(currencyOne != null && currencyTwo != null){
+      CurrencyPair currencyPair = CurrencyPair.of(currencyOne, currencyTwo);
+      return ResponseEntity.ok(Map.of(currencyPair, currencyLedger.getCurrencyExchangeRates().get(currencyPair)));
+    } else { // Both currencies null, give me everything
+      return ResponseEntity.ok( (page != null && pageSize != null) ? currencyLedger.getCurrencyExchangeRates(page, pageSize) : 
+              currencyLedger.getCurrencyExchangeRates());
+    }
+    
   }
 
-  private boolean exactlyOneOfParamsIsNull(Object one, Object two) {
+  private boolean exactlyOneOfCurrenciesIsNull(Object one, Object two) {
     return (one == null && two != null) || (one != null && two == null);
   }
 

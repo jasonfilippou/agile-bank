@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,9 +19,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CurrencyLedger {
-  private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
-  private final Random random =
-      new Random(47); // Keep the "randomness" consistent across runs of the app
+  private Map<CurrencyPair, BigDecimal> currencyExchangeRates;
+  private final Random random = new Random(47);
+
+
+  /**
+   * Standard getter for the {@link Random} instance used by {@literal this}.
+   * @return A {@link Random} instance.
+   */
+  public Random getRandom(){
+    return random;
+  }
 
   /**
    * Constructs the full list of exchange rates between all pairs of {@link Currency} instances. The exchange rates are 
@@ -35,6 +44,18 @@ public class CurrencyLedger {
     }
     return currencyExchangeRates;
   }
+  
+  /**
+   * Paginated version of {@link #getCurrencyExchangeRates()}.
+   * @param slice The slice of the map to return.
+   * @param sliceSize The size of the slice.
+   * @return A {@link Map} with {@link CurrencyPair}s as keys and pseudo-random {@link BigDecimal}s as values.
+   * @see CurrencyPair
+   */
+  public Map<CurrencyPair, BigDecimal> getCurrencyExchangeRates(Integer slice, Integer sliceSize) {
+    return getCurrencyExchangeRates().entrySet().stream().skip((long) slice * sliceSize).limit(sliceSize).collect(Collectors.toMap(
+            Map.Entry::getKey, Map.Entry::getValue));
+  }
 
   private Map<CurrencyPair, BigDecimal> createCurrencyExchangeRates() {
     Map<CurrencyPair, BigDecimal> currencyExchangeRates = new HashMap<>();
@@ -45,7 +66,7 @@ public class CurrencyLedger {
             currencyOne == currencyTwo
                 ? BigDecimal.ONE
                 : BigDecimal.valueOf(
-                    Double.parseDouble(String.format("%.2f", random.nextDouble(0.01, 100)))));
+                    Double.parseDouble(String.format("%.2f", getRandom().nextDouble(0.01, 100)))));
       }
     }
     return currencyExchangeRates;

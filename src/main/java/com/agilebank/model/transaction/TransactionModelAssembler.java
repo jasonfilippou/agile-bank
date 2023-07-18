@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.agilebank.controller.TransactionController;
+import com.agilebank.util.SortOrder;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
@@ -38,12 +39,20 @@ public class TransactionModelAssembler
         linkTo(
                 methodOn(TransactionController.class)
                     .getAllTransactions(
-                        Map.of(SOURCE_ACCOUNT_ID, transactionDto.getSourceAccountId().toString())))
+                        Map.of(SOURCE_ACCOUNT_ID, transactionDto.getSourceAccountId().toString()),
+                        Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
             .withRel(ALL_TRANSACTIONS_FROM),
         linkTo(
                 methodOn(TransactionController.class)
                     .getAllTransactions(
-                        Map.of(TARGET_ACCOUNT_ID, transactionDto.getTargetAccountId().toString())))
+                        Map.of(TARGET_ACCOUNT_ID, transactionDto.getTargetAccountId().toString()),
+                        Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
             .withRel(ALL_TRANSACTIONS_TO),
         linkTo(
                 methodOn(TransactionController.class)
@@ -52,9 +61,20 @@ public class TransactionModelAssembler
                             SOURCE_ACCOUNT_ID,
                             Long.toString(transactionDto.getSourceAccountId()),
                             TARGET_ACCOUNT_ID,
-                            Long.toString(transactionDto.getTargetAccountId()))))
+                            Long.toString(transactionDto.getTargetAccountId())),
+                        Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
             .withRel(ALL_TRANSACTIONS_BETWEEN),
-        linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
+        linkTo(
+                methodOn(TransactionController.class)
+                    .getAllTransactions(
+                        Collections.emptyMap(),
+                        Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
             .withRel(ALL_TRANSACTIONS));
   }
 
@@ -69,10 +89,25 @@ public class TransactionModelAssembler
       Iterable<? extends TransactionDto> entities, Map<String, String> params) {
     CollectionModel<EntityModel<TransactionDto>> collectionModel = toCollectionModel(entities);
     collectionModel.add(
-        linkTo(methodOn(TransactionController.class).getAllTransactions(params)).withSelfRel());
+        linkTo(
+                methodOn(TransactionController.class)
+                    .getAllTransactions(
+                        params,
+                        Integer.parseInt(DEFAULT_PAGE_IDX),
+                        Integer.parseInt(DEFAULT_PAGE_SIZE),
+                        DEFAULT_SORT_BY_FIELD,
+                        SortOrder.ASC))
+            .withSelfRel());
     if (params.size() > 0) {
       collectionModel.add(
-          linkTo(methodOn(TransactionController.class).getAllTransactions(Collections.emptyMap()))
+          linkTo(
+                  methodOn(TransactionController.class)
+                      .getAllTransactions(
+                          Collections.emptyMap(),
+                          Integer.parseInt(DEFAULT_PAGE_IDX),
+                          Integer.parseInt(DEFAULT_PAGE_SIZE),
+                          DEFAULT_SORT_BY_FIELD,
+                          SortOrder.ASC))
               .withRel(ALL_TRANSACTIONS));
     }
     return collectionModel;
