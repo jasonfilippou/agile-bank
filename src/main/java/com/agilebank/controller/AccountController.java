@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
- * {@link RestController} for {@link AccountDto} instances. Offers endpoints for POST, GET, DELETE
- * and PUT REST verbs.
+ * {@link RestController} for {@link AccountDto} instances. Offers endpoints for POST, GET, DELETE, PUT
+ * and PATCH REST verbs.
  *
  * @author jason
  * @see TransactionController
@@ -87,6 +87,7 @@ public class AccountController {
                   mediaType = "application/json",
                   array = @ArraySchema(schema = @Schema(implementation = AccountDto.class)))
             }),
+        @ApiResponse(responseCode = "400", description = "Bad sorting / pagination parameters specified", content = @Content),
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })
   @GetMapping("/account")
@@ -217,7 +218,7 @@ public class AccountController {
    * Endpoint for PATCH of a specific account.
    *
    * @param id The unique ID of the account to update.
-   * @param accountDto The {@link AccountDto} to replace certain fields of the existing account with. Any {@link null}
+   * @param accountDto The {@link AccountDto} to replace certain fields of the existing account with. Any {@literal null}
    *                   or missing fields are avoided; if you wish to persist {@literal null} fields, please use the PUT
    *                   endpoint instead.
    * @return A {@link ResponseEntity} over a HAL-formatted {@link EntityModel} with the new account data.

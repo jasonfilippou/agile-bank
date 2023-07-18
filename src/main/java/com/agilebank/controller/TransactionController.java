@@ -148,13 +148,14 @@ public class TransactionController {
                   mediaType = "application/json",
                   array = @ArraySchema(schema = @Schema(implementation = TransactionDto.class)))
             }),
-        @ApiResponse(
+              @ApiResponse(responseCode = "400", description = "Bad sorting / pagination parameters specified", content = @Content),
+              @ApiResponse(
             responseCode = "401",
             description = "Unauthenticated user",
             content = @Content),
         @ApiResponse(
             responseCode = "404",
-            description = "Transaction not found",
+            description = "Source or destination account(s) not found",
             content = @Content)
       })
   @GetMapping("/transactions")
