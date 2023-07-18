@@ -18,10 +18,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CurrencyLedger {
-  private static Map<CurrencyPair, BigDecimal> currencyExchangeRates;
-  private final Random random =
-      new Random(47); // Keep the "randomness" consistent across runs of the app
+  private Map<CurrencyPair, BigDecimal> currencyExchangeRates;
+  private final Random random = new Random(47);
 
+  
+  public Random getRandom(){
+    return random;
+  }
+  
   /**
    * Constructs the full list of exchange rates between all pairs of {@link Currency} instances. The exchange rates are 
    * pseudo-random {@link BigDecimal} instances in the interval (0, 100], except for pairs of a {@link Currency} with itself,
@@ -45,7 +49,7 @@ public class CurrencyLedger {
             currencyOne == currencyTwo
                 ? BigDecimal.ONE
                 : BigDecimal.valueOf(
-                    Double.parseDouble(String.format("%.2f", random.nextDouble(0.01, 100)))));
+                    Double.parseDouble(String.format("%.2f", getRandom().nextDouble(0.01, 100)))));
       }
     }
     return currencyExchangeRates;

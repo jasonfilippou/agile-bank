@@ -131,20 +131,20 @@ public class TransactionControllerUnitTests {
 
   private void testAggregateGetForGivenParameters(
       AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords) {
-    Map<String, String> accountParams = aggregateGetQueryParams.getTransactionQueryParams();
-    if (accountParams.containsKey(SOURCE_ACCOUNT_ID)
-        && accountParams.containsKey(TARGET_ACCOUNT_ID)) {
+    Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+    if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)
+        && transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
       mocksForGetAllTransactionsBetweenAccounts(aggregateGetQueryParams);
-    } else if (accountParams.containsKey(SOURCE_ACCOUNT_ID)) {
+    } else if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)) {
       mocksForGetAllTransactionsFromAccount(aggregateGetQueryParams);
-    } else if (accountParams.containsKey(TARGET_ACCOUNT_ID)) {
+    } else if (transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
       mocksForGetAllTransactionToAccount(aggregateGetQueryParams);
     } else {
       mocksForGetAllTransactions(aggregateGetQueryParams);
     }
     ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
         transactionController.getAllTransactions(
-            accountParams,
+            transactionParams,
             aggregateGetQueryParams.getPage(),
             aggregateGetQueryParams.getPageSize(),
             aggregateGetQueryParams.getSortByField(),
@@ -167,11 +167,11 @@ public class TransactionControllerUnitTests {
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
-    Map<String, String> accountParams = aggregateGetQueryParams.getTransactionQueryParams();
-    assert accountParams.containsKey(SOURCE_ACCOUNT_ID)
-        && accountParams.containsKey(TARGET_ACCOUNT_ID);
-    Long sourceAccountId = Long.valueOf(accountParams.get(SOURCE_ACCOUNT_ID));
-    Long targetAccountId = Long.valueOf(accountParams.get(TARGET_ACCOUNT_ID));
+    Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+    assert transactionParams.containsKey(SOURCE_ACCOUNT_ID)
+        && transactionParams.containsKey(TARGET_ACCOUNT_ID);
+    Long sourceAccountId = Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID));
+    Long targetAccountId = Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID));
     List<TransactionDto> subListOfPage =
         TEST_VALID_TRANSACTION_DTOS.stream()
             .filter(
@@ -186,8 +186,8 @@ public class TransactionControllerUnitTests {
     when(transactionService.getAllTransactionsBetween(
             sourceAccountId, targetAccountId, page, pageSize, sortByField, sortOrder))
         .thenReturn(new PageImpl<>(subListOfPage));
-    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), accountParams))
-        .thenReturn(transactionDtosToCollectionModel(subListOfPage, accountParams));
+    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), transactionParams))
+        .thenReturn(transactionDtosToCollectionModel(subListOfPage, transactionParams));
   }
 
   private void mocksForGetAllTransactionsFromAccount(
@@ -196,10 +196,10 @@ public class TransactionControllerUnitTests {
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
-    Map<String, String> accountParams = aggregateGetQueryParams.getTransactionQueryParams();
-    assert accountParams.containsKey(SOURCE_ACCOUNT_ID)
-        && !accountParams.containsKey(TARGET_ACCOUNT_ID);
-    Long sourceAccountId = Long.valueOf(accountParams.get(SOURCE_ACCOUNT_ID));
+    Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+    assert transactionParams.containsKey(SOURCE_ACCOUNT_ID)
+        && !transactionParams.containsKey(TARGET_ACCOUNT_ID);
+    Long sourceAccountId = Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID));
     List<TransactionDto> subListOfPage =
         TEST_VALID_TRANSACTION_DTOS.stream()
             .filter(transactionDto -> transactionDto.getSourceAccountId().equals(sourceAccountId))
@@ -211,8 +211,8 @@ public class TransactionControllerUnitTests {
     when(transactionService.getAllTransactionsFrom(
             sourceAccountId, page, pageSize, sortByField, sortOrder))
         .thenReturn(new PageImpl<>(subListOfPage));
-    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), accountParams))
-        .thenReturn(transactionDtosToCollectionModel(subListOfPage, accountParams));
+    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), transactionParams))
+        .thenReturn(transactionDtosToCollectionModel(subListOfPage, transactionParams));
   }
 
   private void mocksForGetAllTransactionToAccount(AggregateGetQueryParams aggregateGetQueryParams) {
@@ -220,10 +220,10 @@ public class TransactionControllerUnitTests {
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
-    Map<String, String> accountParams = aggregateGetQueryParams.getTransactionQueryParams();
-    assert accountParams.containsKey(TARGET_ACCOUNT_ID)
-        && !accountParams.containsKey(SOURCE_ACCOUNT_ID);
-    Long targetAccountId = Long.valueOf(accountParams.get(TARGET_ACCOUNT_ID));
+    Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+    assert transactionParams.containsKey(TARGET_ACCOUNT_ID)
+        && !transactionParams.containsKey(SOURCE_ACCOUNT_ID);
+    Long targetAccountId = Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID));
     List<TransactionDto> subListOfPage =
         TEST_VALID_TRANSACTION_DTOS.stream()
             .filter(transactionDto -> transactionDto.getTargetAccountId().equals(targetAccountId))
@@ -235,8 +235,8 @@ public class TransactionControllerUnitTests {
     when(transactionService.getAllTransactionsTo(
             targetAccountId, page, pageSize, sortByField, sortOrder))
         .thenReturn(new PageImpl<>(subListOfPage));
-    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), accountParams))
-        .thenReturn(transactionDtosToCollectionModel(subListOfPage, accountParams));
+    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), transactionParams))
+        .thenReturn(transactionDtosToCollectionModel(subListOfPage, transactionParams));
   }
 
   private void mocksForGetAllTransactions(AggregateGetQueryParams aggregateGetQueryParams) {
@@ -244,9 +244,9 @@ public class TransactionControllerUnitTests {
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
-    Map<String, String> accountParams = aggregateGetQueryParams.getTransactionQueryParams();
-    assert !(accountParams.containsKey(SOURCE_ACCOUNT_ID)
-        || accountParams.containsKey(TARGET_ACCOUNT_ID));
+    Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+    assert !(transactionParams.containsKey(SOURCE_ACCOUNT_ID)
+        || transactionParams.containsKey(TARGET_ACCOUNT_ID));
     List<TransactionDto> subListOfPage =
         TEST_VALID_TRANSACTION_DTOS.stream()
             .sorted(
@@ -256,8 +256,8 @@ public class TransactionControllerUnitTests {
             .subList(page * pageSize, pageSize * (page + 1));
     when(transactionService.getAllTransactions(page, pageSize, sortByField, sortOrder))
         .thenReturn(new PageImpl<>(subListOfPage));
-    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), accountParams))
-        .thenReturn(transactionDtosToCollectionModel(subListOfPage, accountParams));
+    when(transactionModelAssembler.toCollectionModel(new PageImpl<>(subListOfPage), transactionParams))
+        .thenReturn(transactionDtosToCollectionModel(subListOfPage, transactionParams));
   }
 
   @Test

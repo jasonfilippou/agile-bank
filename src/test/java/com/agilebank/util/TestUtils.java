@@ -43,10 +43,10 @@ public final class TestUtils {
 
   // We will give an ID to the AccountDto instances we create because it will make our tests
   // for sorting by ID cleaner to write.
-  private static Long currentTransactionId = 1L;
+  private static Long currentAccountId = 1L;
   
   private static AccountDto accountDtoOfGivenParams(Currency currency, BigDecimal balance) {
-    return AccountDto.builder().id(currentTransactionId++).balance(balance).currency(currency).build();
+    return AccountDto.builder().id(currentAccountId++).balance(balance).currency(currency).build();
   }
 
   public static final List<AccountDto> TEST_ACCOUNT_DTOS =
@@ -81,12 +81,10 @@ public final class TestUtils {
           accountDtoOfGivenParams(Currency.INR, STANDARD_ACCOUNT_BALANCE));
 
   /* Accounts */
-
-  private static Long currentAccountId = 1L;
-
+  
   private static Account accountFromAccountDto(AccountDto accountDto) {
     return Account.builder()
-        .id(currentAccountId++)
+        .id(accountDto.getId())
         .currency(accountDto.getCurrency())
         .balance(accountDto.getBalance())
         .createdAt(new Date())
@@ -138,9 +136,11 @@ public final class TestUtils {
 
   /* Valid Transaction DTOs */
 
+  private static final Long currentTransactionId = 1L;
   private static TransactionDto transactionDtoOfGivenParams(
       Long sourceAccountId, Long targetAccountId, Currency currency, BigDecimal amount) {
     return TransactionDto.builder()
+        .id(currentAccountId++)
         .sourceAccountId(sourceAccountId)
         .targetAccountId(targetAccountId)
         .amount(amount)
@@ -152,8 +152,10 @@ public final class TestUtils {
       STANDARD_ACCOUNT_BALANCE.divide(new BigDecimal("10"), RoundingMode.HALF_EVEN);
 
   // We will make the following transactions valid by mocking the currency exchange between the
-  // affected
-  // currencies to be 1. They also satisfy the other constraints of transactions by construction.
+  // affected currencies to be 1. They also satisfy the other constraints of transactions by construction.
+  // We will also give an ID to the AccountDto instances we create because it will make our tests
+  // for sorting by ID cleaner to write.
+  
   public static final List<TransactionDto> TEST_VALID_TRANSACTION_DTOS =
       List.of(
 
@@ -276,12 +278,6 @@ public final class TestUtils {
           transactionDtoOfGivenParams(6L, 1L, Currency.AFA, STANDARD_TRANSACTION_AMOUNT),
           transactionDtoOfGivenParams(11L, 16L, Currency.AFA, STANDARD_TRANSACTION_AMOUNT),
           transactionDtoOfGivenParams(16L, 11L, Currency.AFA, STANDARD_TRANSACTION_AMOUNT));
-
-  public static final List<TransactionDto> TEST_TRANSACTIONS_WITH_NON_POSITIVE_AMOUNTS =
-      List.of(
-          transactionDtoOfGivenParams(1L, 2L, Currency.USD, BigDecimal.ZERO),
-          transactionDtoOfGivenParams(1L, 2L, Currency.USD, new BigDecimal("-1.00")));
-
   public static final List<TransactionDto> TEST_TRANSACTIONS_INVOLVING_NON_EXISTENT_ACCOUNTS =
       List.of(
           transactionDtoOfGivenParams(0L, 1L, Currency.USD, STANDARD_TRANSACTION_AMOUNT),
