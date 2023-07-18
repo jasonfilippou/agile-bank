@@ -6,6 +6,7 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.SortOrder;
+import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -18,6 +19,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -26,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * {@link RestController} responsible for exposing endpoints related to transactions.
@@ -175,6 +180,11 @@ public class TransactionController {
           @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1) Integer size,
           @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
           @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
+    List<String> transactionFieldNames = Arrays.stream(TransactionDto.class.getDeclaredFields()).
+            map(Field::getName).toList();
+    if(!transactionFieldNames.contains(sortByField)){
+      throw new InvalidSortByFieldSpecifiedException(sortByField, transactionFieldNames);
+    }
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
       return ResponseEntity.ok(
           transactionModelAssembler.toCollectionModel(
@@ -199,6 +209,16 @@ public class TransactionController {
     return ResponseEntity.ok(
         transactionModelAssembler.toCollectionModel(
             transactionService.getAllTransactions(page, size, sortByField, sortOrder)));
+  }
+
+  // Exception handler for handling the case of a bad sort order string provided by the user.
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  private ResponseEntity<String> badSortOrderProvided() {
+    return new ResponseEntity<>(
+            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + ".",
+            HttpStatus.BAD_REQUEST);
   }
 
   /**

@@ -6,6 +6,7 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.SortOrder;
+import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
@@ -102,6 +105,11 @@ public class AccountController {
           @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) Integer size,
           @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
           @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
+    List<String> accountFieldNames = Arrays.stream(AccountDto.class.getDeclaredFields()).
+            map(Field::getName).toList();
+    if(!accountFieldNames.contains(sortByField)){
+      throw new InvalidSortByFieldSpecifiedException(sortByField, accountFieldNames);
+    }
     return ResponseEntity.ok(
         accountModelAssembler.toCollectionModel(accountService.getAllAccounts(page, size, sortByField, sortOrder)));
   }

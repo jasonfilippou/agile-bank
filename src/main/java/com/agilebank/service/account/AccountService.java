@@ -6,11 +6,8 @@ import com.agilebank.persistence.AccountRepository;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
-
 import com.agilebank.util.exceptions.InvalidPaginationParametersSpecifiedException;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -70,11 +67,6 @@ public class AccountService {
   throws InvalidSortByFieldSpecifiedException, InvalidPaginationParametersSpecifiedException{
     if(page < 0 || pageSize < 1){
       throw new InvalidPaginationParametersSpecifiedException(page, pageSize);
-    }
-    List<String> accountFieldNames = Arrays.stream(AccountDto.class.getDeclaredFields()).
-            map(Field::getName).toList();
-    if(!accountFieldNames.contains(sortByField)){
-      throw new InvalidSortByFieldSpecifiedException(sortByField, accountFieldNames);
     }
     Sort sorter = (sortOrder == SortOrder.ASC ) ? Sort.by(sortByField).ascending() : Sort.by(sortByField).descending();
     List<AccountDto> accounts = accountRepository.findAll(PageRequest.of(page, pageSize, sorter)).stream()
