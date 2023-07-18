@@ -12,6 +12,7 @@ import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,9 +22,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JwtUserDetailsServiceTests {
+public class JwtUserDetailsServiceUnitTests {
 
-  private static final User TEST_USER_DAO = new User("username", "password");
+  private static final User TEST_USER_ENTITY = new User("username", "password");
   private static final UserDto TEST_USER_DTO = new UserDto("username", "password");
   @InjectMocks private JwtUserDetailsService jwtUserDetailsService;
   @Mock private UserRepository userRepository;
@@ -31,7 +32,7 @@ public class JwtUserDetailsServiceTests {
 
   @Test
   public void whenUserIsInDB_thenAppropriateUserDetailsReturned() {
-    when(userRepository.findByUsername("username")).thenReturn(Optional.of(TEST_USER_DAO));
+    when(userRepository.findByUsername("username")).thenReturn(Optional.of(TEST_USER_ENTITY));
     UserDetails userDetails = jwtUserDetailsService.loadUserByUsername("username");
     assertEquals(userDetails.getUsername(), "username");
     assertEquals(userDetails.getPassword(), "password");
@@ -45,9 +46,17 @@ public class JwtUserDetailsServiceTests {
 
   @Test
   public void whenSavingNewUser_thenTheirInformationIsReturned() {
-    when(passwordEncoder.encode(TEST_USER_DTO.getPassword()))
-        .thenReturn(TEST_USER_DTO.getPassword()); // Encoder basically does nothing.
-    when(userRepository.save(any())).thenReturn(TEST_USER_DAO);
+    when(passwordEncoder.encode(any(CharSequence.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0)); // Encoder basically does nothing.
+    when(userRepository.save(any())).thenReturn(TEST_USER_ENTITY);
     assertEquals(TEST_USER_DTO, jwtUserDetailsService.save(TEST_USER_DTO));
+  }
+  
+  @Test
+  public void whenSavingNewUserWithTrailingAndLeadingWhitespaceInUsername_thenThatUsernameIsTrimmed(){
+    UserDto userDto = new UserDto(" max    ", "maxpassword");
+    UserDto expectedUserDto = new UserDto("max" , "maxpassword");
+    when(passwordEncoder.encode(any(CharSequence.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+    when(userRepository.save(any(User.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+    Assertions.assertEquals(expectedUserDto, jwtUserDetailsService.save(userDto));
   }
 }

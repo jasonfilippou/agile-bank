@@ -58,10 +58,10 @@ public class JwtUserDetailsService implements UserDetailsService {
     String newUserPassword = newUser.getPassword();
     try {
     User savedUser =
-        userRepository.save(new User(newUser.getUsername(), encoder.encode(newUserPassword)));
+        userRepository.save(new User(newUser.getUsername().trim(), encoder.encode(newUserPassword)));
     return new UserDto(savedUser.getUsername(), savedUser.getPassword());
     } catch(DataIntegrityViolationException integrityViolationException){
-      throw new UsernameAlreadyInDatabaseException(newUser.getUsername());
+      throw new UsernameAlreadyInDatabaseException(newUser.getUsername().trim());
     }
   }
 }
