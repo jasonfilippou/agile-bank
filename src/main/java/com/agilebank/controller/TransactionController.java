@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -168,8 +169,8 @@ public class TransactionController {
                   style = ParameterStyle.FORM,
                   explode = Explode.TRUE)
           @RequestParam Map<String, String> params,
-          @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) Integer page,
-          @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) Integer size,
+          @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) @Min(0) Integer page,
+          @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1) Integer size,
           @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) String sortByField,
           @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) SortOrder sortOrder) {
     if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {

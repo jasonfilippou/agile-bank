@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,11 +22,15 @@ public class CurrencyLedger {
   private Map<CurrencyPair, BigDecimal> currencyExchangeRates;
   private final Random random = new Random(47);
 
-  
+
+  /**
+   * Standard getter for the {@link Random} instance used by {@literal this}.
+   * @return A {@link Random} instance.
+   */
   public Random getRandom(){
     return random;
   }
-  
+
   /**
    * Constructs the full list of exchange rates between all pairs of {@link Currency} instances. The exchange rates are 
    * pseudo-random {@link BigDecimal} instances in the interval (0, 100], except for pairs of a {@link Currency} with itself,
@@ -38,6 +43,18 @@ public class CurrencyLedger {
       currencyExchangeRates = createCurrencyExchangeRates();
     }
     return currencyExchangeRates;
+  }
+  
+  /**
+   * Paginated version of {@link #getCurrencyExchangeRates()}.
+   * @param slice The slice of the map to return.
+   * @param sliceSize The size of the slice.
+   * @return A {@link Map} with {@link CurrencyPair}s as keys and pseudo-random {@link BigDecimal}s as values.
+   * @see CurrencyPair
+   */
+  public Map<CurrencyPair, BigDecimal> getCurrencyExchangeRates(Integer slice, Integer sliceSize) {
+    return getCurrencyExchangeRates().entrySet().stream().skip((long) slice * sliceSize).limit(sliceSize).collect(Collectors.toMap(
+            Map.Entry::getKey, Map.Entry::getValue));
   }
 
   private Map<CurrencyPair, BigDecimal> createCurrencyExchangeRates() {
