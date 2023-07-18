@@ -52,11 +52,12 @@ public class AgileBankIntegrationTests {
   @Autowired private CurrencyLedgerController currencyLedgerController;
 
   @MockBean
-  private CurrencyLedger currencyLedger; // In transaction GET ALL tests, we will need to mock this dependency.
+  private CurrencyLedger
+      currencyLedger; // In transaction GET ALL tests, we will need to mock this dependency.
 
   private static final AccountDto TEST_ACCOUNT_DTO_ONE = TEST_ACCOUNT_DTOS.get(0);
   private static final AccountDto TEST_ACCOUNT_DTO_TWO = TEST_ACCOUNT_DTOS.get(1);
-  
+
   private static final Random RANDOM = new Random(47);
 
   /* Tests exclusively for accounts first. */
@@ -84,7 +85,7 @@ public class AgileBankIntegrationTests {
     assertEquals(
         ResponseEntity.ok(
             CollectionModel.of(
-                    Stream.of(
+                Stream.of(
                         AccountDto.builder()
                             .id(accountDtoOne.getId())
                             .balance(TEST_ACCOUNT_DTO_ONE.getBalance())
@@ -340,8 +341,9 @@ public class AgileBankIntegrationTests {
   public void whenUpdatingAnAccountWithANewCurrency_thenUpdatedAccountIsReturned() {
     when(currencyLedger.getRandom()).thenReturn(RANDOM);
     when(currencyLedger.getCurrencyExchangeRates()).thenCallRealMethod();
-    when(currencyLedger.convertAmountToTargetCurrency(any(Currency.class), any(Currency.class), any(BigDecimal.class)))
-            .thenCallRealMethod();
+    when(currencyLedger.convertAmountToTargetCurrency(
+            any(Currency.class), any(Currency.class), any(BigDecimal.class)))
+        .thenCallRealMethod();
     // POST the first test account
     ResponseEntity<EntityModel<AccountDto>> responseEntityForPost =
         accountController.postAccount(TEST_ACCOUNT_DTO_ONE);
@@ -366,7 +368,7 @@ public class AgileBankIntegrationTests {
     // since we are updating the currency in this test.
     ResponseEntity<Map<CurrencyPair, BigDecimal>> currencyResponseEntity =
         currencyLedgerController.getCurrencyExchangeRate(
-            TEST_ACCOUNT_DTO_ONE.getCurrency(), patch.getCurrency());
+            TEST_ACCOUNT_DTO_ONE.getCurrency(), patch.getCurrency(), null, null);
     BigDecimal exchangeRate =
         Objects.requireNonNull(currencyResponseEntity.getBody())
             .get(CurrencyPair.of(TEST_ACCOUNT_DTO_ONE.getCurrency(), patch.getCurrency()));
@@ -426,7 +428,7 @@ public class AgileBankIntegrationTests {
     // Get the exchange rate between the source and target account currencies:
     ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForExchangeRate =
         currencyLedgerController.getCurrencyExchangeRate(
-            accountDtoOne.getCurrency(), accountDtoTwo.getCurrency());
+            accountDtoOne.getCurrency(), accountDtoTwo.getCurrency(), null, null);
     BigDecimal exchangeRate =
         Objects.requireNonNull(responseEntityForExchangeRate.getBody())
             .get(new CurrencyPair(accountDtoOne.getCurrency(), accountDtoTwo.getCurrency()));
@@ -517,7 +519,7 @@ public class AgileBankIntegrationTests {
   }
 
   @Test
-  public void testPaginationAndSorting_ForGetAllTransactions(){
+  public void testPaginationAndSorting_ForGetAllTransactions() {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
     TEST_ACCOUNT_DTOS.forEach(accountController::postAccount);
     TEST_VALID_TRANSACTION_DTOS.forEach(transactionController::postTransaction);
@@ -527,86 +529,125 @@ public class AgileBankIntegrationTests {
     // First, test that we return all of the records if we want to, for all sorting fields and for
     // both directions.
     PaginationTester.builder()
-            .totalPages(1)
-            .pageSize(64)
-            .pojoType(TransactionDto.class)
-            .accountParams(Collections.emptyMap())
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(1)
+        .pageSize(64)
+        .pojoType(TransactionDto.class)
+        .accountParams(Collections.emptyMap())
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Now do the same, but for 4 pages of 16 records each.
     PaginationTester.builder()
-            .totalPages(4)
-            .pageSize(16)
-            .pojoType(TransactionDto.class)
-            .accountParams(Collections.emptyMap())
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(4)
+        .pageSize(16)
+        .pojoType(TransactionDto.class)
+        .accountParams(Collections.emptyMap())
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Now, do this for 6 pages of 12 records each (except for the last one, which should have 4
     // since 64 = 5 * 12 + 4).
     PaginationTester.builder()
-            .totalPages(6)
-            .pageSize(12)
-            .pojoType(TransactionDto.class)
-            .accountParams(Collections.emptyMap())
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(6)
+        .pageSize(12)
+        .pojoType(TransactionDto.class)
+        .accountParams(Collections.emptyMap())
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Now 16 pages of 4 records each
     PaginationTester.builder()
-            .totalPages(16)
-            .pageSize(4)
-            .pojoType(TransactionDto.class)
-            .accountParams(Collections.emptyMap())
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(16)
+        .pageSize(4)
+        .pojoType(TransactionDto.class)
+        .accountParams(Collections.emptyMap())
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Finally, 64 pages of 1 record each
     PaginationTester.builder()
-            .totalPages(64)
-            .pageSize(1)
-            .pojoType(TransactionDto.class)
-            .accountParams(Collections.emptyMap())
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(64)
+        .pageSize(1)
+        .pojoType(TransactionDto.class)
+        .accountParams(Collections.emptyMap())
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
   }
 
-  private void testSortedAndPaginatedAggregateGetOfTransactions(AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords){
+  private void testSortedAndPaginatedAggregateGetOfTransactions(
+      AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords) {
     Integer page = aggregateGetQueryParams.getPage();
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
     SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
     Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
     List<TransactionDto> expectedTransactionDtos;
-    if(transactionParams.containsKey(SOURCE_ACCOUNT_ID) && transactionParams.containsKey(TARGET_ACCOUNT_ID)){
-      expectedTransactionDtos = TEST_VALID_TRANSACTION_DTOS.stream().filter(
-              transactionDto -> transactionDto.getSourceAccountId().equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID))) &&
-                      transactionDto.getTargetAccountId().equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
-              .sorted((t1, t2) -> compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList()).subList(page * pageSize, pageSize * (page + 1));
-    } else if(transactionParams.containsKey(SOURCE_ACCOUNT_ID)){
-      expectedTransactionDtos = TEST_VALID_TRANSACTION_DTOS.stream().filter(
-                      transactionDto -> transactionDto.getSourceAccountId().equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID))))
-              .sorted((t1, t2) -> compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList()).subList(page * pageSize, pageSize * (page + 1));
-    } else if(transactionParams.containsKey(TARGET_ACCOUNT_ID)){
-      expectedTransactionDtos = TEST_VALID_TRANSACTION_DTOS.stream().filter(
-                      transactionDto -> transactionDto.getTargetAccountId().equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
-              .sorted((t1, t2) -> compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList()).subList(page * pageSize, pageSize * (page + 1));
+    if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)
+        && transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
+      expectedTransactionDtos =
+          TEST_VALID_TRANSACTION_DTOS.stream()
+              .filter(
+                  transactionDto ->
+                      transactionDto
+                              .getSourceAccountId()
+                              .equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID)))
+                          && transactionDto
+                              .getTargetAccountId()
+                              .equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
+              .sorted(
+                  (t1, t2) ->
+                      compareFieldsInGivenOrder(
+                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
+              .collect(Collectors.toList())
+              .subList(page * pageSize, pageSize * (page + 1));
+    } else if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)) {
+      expectedTransactionDtos =
+          TEST_VALID_TRANSACTION_DTOS.stream()
+              .filter(
+                  transactionDto ->
+                      transactionDto
+                          .getSourceAccountId()
+                          .equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID))))
+              .sorted(
+                  (t1, t2) ->
+                      compareFieldsInGivenOrder(
+                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
+              .collect(Collectors.toList())
+              .subList(page * pageSize, pageSize * (page + 1));
+    } else if (transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
+      expectedTransactionDtos =
+          TEST_VALID_TRANSACTION_DTOS.stream()
+              .filter(
+                  transactionDto ->
+                      transactionDto
+                          .getTargetAccountId()
+                          .equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
+              .sorted(
+                  (t1, t2) ->
+                      compareFieldsInGivenOrder(
+                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
+              .collect(Collectors.toList())
+              .subList(page * pageSize, pageSize * (page + 1));
     } else {
-      expectedTransactionDtos = TEST_VALID_TRANSACTION_DTOS.stream()
-              .sorted((t1, t2) -> compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList()).subList(page * pageSize, pageSize * (page + 1));}
-    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity = transactionController.getAllTransactions(
+      expectedTransactionDtos =
+          TEST_VALID_TRANSACTION_DTOS.stream()
+              .sorted(
+                  (t1, t2) ->
+                      compareFieldsInGivenOrder(
+                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
+              .collect(Collectors.toList())
+              .subList(page * pageSize, pageSize * (page + 1));
+    }
+    ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
+        transactionController.getAllTransactions(
             transactionParams, page, pageSize, sortByField, sortOrder);
-    assertEquals(ResponseEntity.ok(transactionModelAssembler.toCollectionModel(expectedTransactionDtos)),
-            responseEntity);
+    assertEquals(
+        ResponseEntity.ok(transactionModelAssembler.toCollectionModel(expectedTransactionDtos)),
+        responseEntity);
   }
 
   @Test
-  public void testPaginationAndSorting_ForGetAllTransactionsFromASourceAccount(){
+  public void testPaginationAndSorting_ForGetAllTransactionsFromASourceAccount() {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
     TEST_ACCOUNT_DTOS.forEach(accountController::postAccount);
     TEST_VALID_TRANSACTION_DTOS.forEach(transactionController::postTransaction);
@@ -615,34 +656,34 @@ public class AgileBankIntegrationTests {
 
     // Test a page with all 4
     PaginationTester.builder()
-            .totalPages(1)
-            .pageSize(4)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(1)
+        .pageSize(4)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Test 2 with 2 each
     PaginationTester.builder()
-            .totalPages(2)
-            .pageSize(2)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(2)
+        .pageSize(2)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Test 4 with 1 each
     PaginationTester.builder()
-            .totalPages(4)
-            .pageSize(1)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(4)
+        .pageSize(1)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
   }
 
   @Test
-  public void testPaginationAndSorting_ForGetAllTransactionsToADestinationAccount(){
+  public void testPaginationAndSorting_ForGetAllTransactionsToADestinationAccount() {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
     TEST_ACCOUNT_DTOS.forEach(accountController::postAccount);
     TEST_VALID_TRANSACTION_DTOS.forEach(transactionController::postTransaction);
@@ -651,58 +692,58 @@ public class AgileBankIntegrationTests {
 
     // First, test a page with all 15.
     PaginationTester.builder()
-            .totalPages(1)
-            .pageSize(15)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(1)
+        .pageSize(15)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Now, 5 pages with 3 each.
     PaginationTester.builder()
-            .totalPages(5)
-            .pageSize(3)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(5)
+        .pageSize(3)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Now, 3 pages with 5 each.
 
     PaginationTester.builder()
-            .totalPages(3)
-            .pageSize(5)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(3)
+        .pageSize(5)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
 
     // Finally, 15 pages with 1 each.
 
     PaginationTester.builder()
-            .totalPages(15)
-            .pageSize(1)
-            .pojoType(TransactionDto.class)
-            .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(15)
+        .pageSize(1)
+        .pojoType(TransactionDto.class)
+        .accountParams(Map.of(TARGET_ACCOUNT_ID, Long.toString(1L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
   }
 
   @Test
-  public void testPaginationAndSorting_ForGetAllTransactionsFromASourceAndToADestinationAccount(){
+  public void testPaginationAndSorting_ForGetAllTransactionsFromASourceAndToADestinationAccount() {
     when(currencyLedger.getCurrencyExchangeRates()).thenReturn(TEST_EXCHANGE_RATES);
     TEST_ACCOUNT_DTOS.forEach(accountController::postAccount);
     TEST_VALID_TRANSACTION_DTOS.forEach(transactionController::postTransaction);
 
     // There is only 1 transaction from account 1 to account 2.
     PaginationTester.builder()
-            .totalPages(1)
-            .pageSize(1)
-            .pojoType(TransactionDto.class)
-            .accountParams(
-                    Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L), TARGET_ACCOUNT_ID, Long.toString(2L)))
-            .build()
-            .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
+        .totalPages(1)
+        .pageSize(1)
+        .pojoType(TransactionDto.class)
+        .accountParams(
+            Map.of(SOURCE_ACCOUNT_ID, Long.toString(1L), TARGET_ACCOUNT_ID, Long.toString(2L)))
+        .build()
+        .runTest(this::testSortedAndPaginatedAggregateGetOfTransactions);
   }
 
   @Test(expected = AccountNotFoundException.class)
@@ -1029,23 +1070,44 @@ public class AgileBankIntegrationTests {
     when(currencyLedger.getCurrencyExchangeRates()).thenCallRealMethod();
     int numberOfCurrencies = Currency.values().length;
     ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity =
-        currencyLedgerController.getCurrencyExchangeRate(null, null);
+        currencyLedgerController.getCurrencyExchangeRate(null, null, null, null);
     assertEquals(
         numberOfCurrencies * numberOfCurrencies,
         Objects.requireNonNull(responseEntity.getBody())
             .size()); // n^2 ordered pairs for a set of size n
   }
 
+  @Test
+  public void whenRequestingAPageOfTheExchangeRates_thenExactlyThatPageIsReturned() {
+    when(currencyLedger.getRandom()).thenReturn(RANDOM);
+    when(currencyLedger.getCurrencyExchangeRates(any(Integer.class), any(Integer.class)))
+        .thenCallRealMethod();
+    // Request pages of size 20.
+    final int pageSize = 20;
+    List<Integer> pages =
+        Stream.iterate(0, n -> n + pageSize).limit(Currency.values().length).toList();
+    assertTrue(
+        pages.stream()
+            .allMatch(
+                page ->
+                    Objects.requireNonNull(
+                                currencyLedgerController
+                                    .getCurrencyExchangeRate(null, null, page, pageSize)
+                                    .getBody())
+                            .size()
+                        <= pageSize));
+  }
+
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
   public void
       whenProvidingTheFirstCurrencyButNeglectingTheSecondOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
-    currencyLedgerController.getCurrencyExchangeRate(Currency.AED, null);
+    currencyLedgerController.getCurrencyExchangeRate(Currency.AED, null, null, null);
   }
 
   @Test(expected = OneOfTwoCurrenciesMissingException.class)
   public void
       whenProvidingTheSecondCurrencyButNeglectingTheFirstOne_thenOneOfTwoCurrenciesMissingExceptionIsThrown() {
-    currencyLedgerController.getCurrencyExchangeRate(null, Currency.AOK);
+    currencyLedgerController.getCurrencyExchangeRate(null, Currency.AOK, null, null);
   }
 
   @Test
@@ -1054,7 +1116,7 @@ public class AgileBankIntegrationTests {
     when(currencyLedger.getCurrencyExchangeRates()).thenCallRealMethod();
     // This is a bit of an expensive test, but important for data integrity.
     ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntity =
-        currencyLedgerController.getCurrencyExchangeRate(null, null);
+        currencyLedgerController.getCurrencyExchangeRate(null, null, null, null);
     Map<CurrencyPair, BigDecimal> exchangeRates = responseEntity.getBody();
     assert exchangeRates != null;
     for (Currency currencyOne : Currency.values()) {
@@ -1062,7 +1124,7 @@ public class AgileBankIntegrationTests {
         CurrencyPair currencyPair = new CurrencyPair(currencyOne, currencyTwo);
         BigDecimal exchangeRateFromFullLedger = exchangeRates.get(currencyPair);
         ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForSpecificCurrencyPair =
-            currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo);
+            currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo, null, null);
         Map<CurrencyPair, BigDecimal> mapForSpecificCurrencyPair =
             responseEntityForSpecificCurrencyPair.getBody();
         assert mapForSpecificCurrencyPair != null && mapForSpecificCurrencyPair.size() == 1;
