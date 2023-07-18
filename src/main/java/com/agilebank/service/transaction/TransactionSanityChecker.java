@@ -56,7 +56,7 @@ public class TransactionSanityChecker {
     // If you try to send an amount of currency that you can't sustain, throw an exception.
     BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
-            new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
+            CurrencyPair.of(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
     if (transactionDto
             .getAmount().multiply(sourceToTransactionCurrencyExchangeRate)
             .compareTo(

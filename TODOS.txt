@@ -1,7 +1,5 @@
 - Make entities extend Auditable interface to automatically add audit fields.
 
-- Make CurrencyPair constructor private and only exposes instances through of().
-
 - Make ExceptionalResponseMessage container object to avoid OpenAPI messages about inability to parse JSON. Do this in all response handlers,
   including the ones specific to the TransactionController and AccountController classes.
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -90,12 +89,16 @@ public class CurrencyLedger {
    * Simple POJO for defining ordered pairs of {@link Currency} instances.
    * @see java.util.Currency
    */
-  @AllArgsConstructor
   @EqualsAndHashCode
   @Getter
   public static class CurrencyPair {
-    private Currency currencyOne;
-    private Currency currencyTwo;
+    private final Currency currencyOne;
+    private final Currency currencyTwo;
+    
+    private CurrencyPair(Currency currencyOne, Currency currencyTwo){
+      this.currencyOne = currencyOne;
+      this.currencyTwo = currencyTwo;
+    }
 
     @Override
     public String toString() {

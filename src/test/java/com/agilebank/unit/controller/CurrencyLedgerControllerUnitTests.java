@@ -66,7 +66,7 @@ public class CurrencyLedgerControllerUnitTests {
   public void whenRequestingASpecificExchangeRate_thenWeGetTheCorrectExchangeRate() {
     assertEquals(
         ResponseEntity.ok(
-            Map.of(new CurrencyPair(Currency.USD, Currency.INR), BigDecimal.ONE)),
+            Map.of(CurrencyPair.of(Currency.USD, Currency.INR), BigDecimal.ONE)),
         currencyLedgerController.getCurrencyExchangeRate(Currency.USD, Currency.INR, null, null));
   }
 

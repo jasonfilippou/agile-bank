@@ -432,7 +432,7 @@ public class AgileBankIntegrationTests {
             accountDtoOne.getCurrency(), accountDtoTwo.getCurrency(), null, null);
     BigDecimal exchangeRate =
         Objects.requireNonNull(responseEntityForExchangeRate.getBody())
-            .get(new CurrencyPair(accountDtoOne.getCurrency(), accountDtoTwo.getCurrency()));
+            .get(CurrencyPair.of(accountDtoOne.getCurrency(), accountDtoTwo.getCurrency()));
 
     // Get the accounts:
     responseEntityAccountOne = accountController.getAccount(accountDtoOne.getId());
@@ -1122,7 +1122,7 @@ public class AgileBankIntegrationTests {
     assert exchangeRates != null;
     for (Currency currencyOne : Currency.values()) {
       for (Currency currencyTwo : Currency.values()) {
-        CurrencyPair currencyPair = new CurrencyPair(currencyOne, currencyTwo);
+        CurrencyPair currencyPair = CurrencyPair.of(currencyOne, currencyTwo);
         BigDecimal exchangeRateFromFullLedger = exchangeRates.get(currencyPair);
         ResponseEntity<Map<CurrencyPair, BigDecimal>> responseEntityForSpecificCurrencyPair =
             currencyLedgerController.getCurrencyExchangeRate(currencyOne, currencyTwo, null, null);

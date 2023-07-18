@@ -58,7 +58,7 @@ public class TransactionService {
         transactionDto, sourceAccount, targetAccount, currencyExchangeRates);
     BigDecimal sourceToTransactionCurrencyExchangeRate =
         currencyExchangeRates.get(
-            new CurrencyPair(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
+            CurrencyPair.of(sourceAccount.get().getCurrency(), transactionDto.getCurrency()));
     // Debit the source account in its own currency.
     accountRepository.updateBalance(sourceAccount.get().getId(), sourceAccount
             .get()
