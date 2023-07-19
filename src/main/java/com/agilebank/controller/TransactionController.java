@@ -204,16 +204,17 @@ public class TransactionController {
       throw new InvalidSortByFieldSpecifiedException(sortByField, transactionFieldNames);
     }
     return new ParameterLogicFactory(transactionService, transactionModelAssembler)
-        .getResponse(
+        .getResponseEntitySupplier(
             params.containsKey(SOURCE_ACCOUNT_ID),
-            params.containsKey(TARGET_ACCOUNT_ID),
-            AggregateGetQueryParams.builder()
-                .page(page)
-                .pageSize(pageSize)
-                .sortByField(sortByField)
-                .sortOrder(sortOrder)
-                .transactionQueryParams(params)
-                .build());
+            params.containsKey(TARGET_ACCOUNT_ID))
+            .getResponseEntity(
+                    AggregateGetQueryParams.builder()
+                    .page(page)
+                    .pageSize(pageSize)
+                    .sortByField(sortByField)
+                    .sortOrder(sortOrder)
+                    .transactionQueryParams(params)
+                    .build());
   }
 
   // Exception handler for handling the case of a bad sort order string provided by the user.

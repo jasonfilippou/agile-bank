@@ -7,9 +7,10 @@ import com.agilebank.util.AggregateGetQueryParams;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
-@Component
+/**
+ *
+ */
 public abstract class BaseResponse {
     
     protected TransactionService transactionService;

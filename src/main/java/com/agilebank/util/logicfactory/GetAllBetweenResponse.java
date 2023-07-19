@@ -7,17 +7,12 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.AggregateGetQueryParams;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-@Component
 
 public class GetAllBetweenResponse extends BaseResponse{
 
-    @Autowired
     public GetAllBetweenResponse(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler) {
         super(transactionService, transactionModelAssembler);
     }
