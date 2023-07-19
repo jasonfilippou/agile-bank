@@ -1,8 +1,5 @@
 - Make entities extend Auditable interface to automatically add audit fields.
 
-- Make ExceptionalResponseMessage container object to avoid OpenAPI messages about inability to parse JSON. Do this in all response handlers,
-  including the ones specific to the TransactionController and AccountController classes.
-
 - Apply factory pattern to all if-else chains that have to do with the parameter map source and target account ID key-value pairs.
 
 - Consider adding links to next or previous page in the assemblers.
