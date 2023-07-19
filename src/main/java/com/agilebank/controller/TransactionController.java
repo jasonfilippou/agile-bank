@@ -6,6 +6,7 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.SortOrder;
+import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.lang.reflect.Field;
@@ -85,7 +87,7 @@ public class TransactionController {
       })
   @PostMapping("/transaction")
   public ResponseEntity<EntityModel<TransactionDto>> postTransaction(
-      @RequestBody TransactionDto transactionDto) {
+      @RequestBody @Valid TransactionDto transactionDto) {
     return new ResponseEntity<>(
         transactionModelAssembler.toModel(transactionService.storeTransaction(transactionDto)),
         HttpStatus.CREATED);
@@ -218,9 +220,9 @@ public class TransactionController {
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  private ResponseEntity<String> badSortOrderProvided() {
-    return new ResponseEntity<>(
-            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + ".",
+  private ResponseEntity<ExceptionMessageContainer> badSortOrderProvided() {
+    return new ResponseEntity<>(new ExceptionMessageContainer(
+            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + "."),
             HttpStatus.BAD_REQUEST);
   }
 

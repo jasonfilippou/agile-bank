@@ -7,13 +7,13 @@ import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
-import com.agilebank.util.exceptions.UsernameAlreadyInDatabaseException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +71,7 @@ public class JwtAuthenticationController {
           })
   @PostMapping(value = "/authenticate")
   public ResponseEntity<JwtResponse> createAuthenticationToken(
-      @RequestBody JwtRequest authenticationRequest) throws Exception {
+      @RequestBody @Valid JwtRequest authenticationRequest) throws Exception {
 
     jwtAuthenticationService.authenticate(
         authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -91,8 +91,16 @@ public class JwtAuthenticationController {
   @ApiResponses(
           value = {
                   @ApiResponse(
-                          responseCode = "200",
+                          responseCode = "201",
                           description = "Registration successful.",
+                          content = {
+                                  @Content(
+                                          mediaType = "application/json",
+                                          schema = @Schema(implementation = UserDto.class))
+                          }),
+                  @ApiResponse(
+                          responseCode = "400",
+                          description = "Invalid password length provided; passwords should be from 8 to 30 characters.",
                           content = {
                                   @Content(
                                           mediaType = "application/json",
@@ -104,15 +112,7 @@ public class JwtAuthenticationController {
                           content = @Content)
           })
   @PostMapping(value = "/register")
-  public ResponseEntity<UserDto> registerUser(@RequestBody UserDto user) {
+  public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserDto user) {
     return new ResponseEntity<>(userDetailsService.save(user), HttpStatus.CREATED);
   }
-
-  @ResponseBody
-  @ExceptionHandler({UsernameAlreadyInDatabaseException.class})
-  @ResponseStatus(HttpStatus.CONFLICT)
-  private ResponseEntity<String> conflictMessage(RuntimeException exc){
-    return new ResponseEntity<>(exc.getMessage(), HttpStatus.CONFLICT);
-  }
-
 }

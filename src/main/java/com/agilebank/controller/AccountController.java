@@ -6,6 +6,7 @@ import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
 import com.agilebank.util.SortOrder;
+import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.lang.reflect.Field;
@@ -73,7 +75,7 @@ public class AccountController {
         @ApiResponse(responseCode = "401", description = "Unauthenticated user", content = @Content)
       })
   @PostMapping("/account")
-  public ResponseEntity<EntityModel<AccountDto>> postAccount(@RequestBody AccountDto accountDto) {
+  public ResponseEntity<EntityModel<AccountDto>> postAccount(@RequestBody @Valid AccountDto accountDto) {
     return new ResponseEntity<>(
         accountModelAssembler.toModel(accountService.storeAccount(accountDto)), HttpStatus.CREATED);
   }
@@ -122,9 +124,9 @@ public class AccountController {
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  private ResponseEntity<String> badSortOrderProvided() {
-    return new ResponseEntity<>(
-            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + ".",
+  private ResponseEntity<ExceptionMessageContainer> badSortOrderProvided() {
+    return new ResponseEntity<>(new ExceptionMessageContainer(
+            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + "."),
             HttpStatus.BAD_REQUEST);
   }
 
@@ -227,7 +229,7 @@ public class AccountController {
       })
   @PutMapping("/account/{id}")
   public ResponseEntity<EntityModel<AccountDto>> replaceAccount(
-      @PathVariable Long id, @RequestBody AccountDto accountDto) {
+      @PathVariable Long id, @RequestBody @Valid AccountDto accountDto) {
     return ResponseEntity.ok(
         accountModelAssembler.toModel(accountService.replaceAccount(id, accountDto)));
   }
@@ -257,7 +259,7 @@ public class AccountController {
                   @ApiResponse(responseCode = "404", description = "Account not found", content = @Content)
           })
   @PatchMapping("/account/{id}")
-  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id, @RequestBody AccountDto accountDto){
+  public ResponseEntity<EntityModel<AccountDto>> updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDto accountDto){
     return ResponseEntity.ok(
             accountModelAssembler.toModel(accountService.updateAccount(id, accountDto)));
   }
