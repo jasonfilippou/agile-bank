@@ -576,7 +576,7 @@ public class AgileBankIntegrationTests {
   }
 
   private void testSortedAndPaginatedAggregateGetOfTransactions(
-      AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords) {
+          AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords) {
     Integer page = aggregateGetQueryParams.getPage();
     Integer pageSize = aggregateGetQueryParams.getPageSize();
     String sortByField = aggregateGetQueryParams.getSortByField();
