@@ -21,8 +21,12 @@ import org.springframework.stereotype.Component;
 @Component
 public abstract class UpdateMapper {
 
-    @Autowired
     protected CurrencyLedger currencyLedger;
+
+    @Autowired
+    public void setCurrencyLedger(CurrencyLedger currencyLedger){
+       this.currencyLedger = currencyLedger;
+   }
 
     @Mapping(target = "balance", expression = "java(updateBalanceIfNecessary(entity.getCurrency(), dto.getCurrency(), " +
             "entity.getBalance(), dto.getBalance()))")
