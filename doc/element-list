@@ -17,3 +17,4 @@ com.agilebank.util.logger.controller
 com.agilebank.util.logger.persistence
 com.agilebank.util.logger.service
 com.agilebank.util.logger.util
+com.agilebank.util.logicfactory

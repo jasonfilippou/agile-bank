@@ -5,9 +5,11 @@ import static com.agilebank.util.Constants.*;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
+import com.agilebank.util.AggregateGetQueryParams;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
+import com.agilebank.util.logicfactory.TransactionParameterLogicFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -160,8 +162,11 @@ public class TransactionController {
                   mediaType = "application/json",
                   array = @ArraySchema(schema = @Schema(implementation = TransactionDto.class)))
             }),
-              @ApiResponse(responseCode = "400", description = "Bad sorting / pagination parameters specified", content = @Content),
-              @ApiResponse(
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad sorting / pagination parameters specified",
+            content = @Content),
+        @ApiResponse(
             responseCode = "401",
             description = "Unauthenticated user",
             content = @Content),
@@ -172,48 +177,44 @@ public class TransactionController {
       })
   @GetMapping("/transactions")
   public ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getAllTransactions(
-          @Parameter(name = "params",
-                  in = ParameterIn.QUERY,
-                  required = true,
-                  schema = @Schema(type = "object", additionalProperties = Schema.AdditionalPropertiesValue.TRUE, 
-                  ref = "#/components/schemas/ParameterMap"),
-                  style = ParameterStyle.FORM,
-                  explode = Explode.TRUE)
-          @RequestParam Map<String, String> params,
-          @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) @Min(0) Integer page,
-          @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1) Integer size,
-          @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) @NonNull @NotBlank String sortByField,
-          @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) @NonNull SortOrder sortOrder)
-          throws InvalidSortByFieldSpecifiedException{
-    List<String> transactionFieldNames = Arrays.stream(TransactionDto.class.getDeclaredFields()).
-            map(Field::getName).toList();
-    if(!transactionFieldNames.contains(sortByField)){
+      @Parameter(
+              name = "params",
+              in = ParameterIn.QUERY,
+              required = true,
+              schema =
+                  @Schema(
+                      type = "object",
+                      additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                      ref = "#/components/schemas/ParameterMap"),
+              style = ParameterStyle.FORM,
+              explode = Explode.TRUE)
+          @RequestParam
+          Map<String, String> params,
+      @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) @Min(0) Integer page,
+      @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1)
+          Integer pageSize,
+      @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) @NonNull @NotBlank
+          String sortByField,
+      @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) @NonNull
+          SortOrder sortOrder)
+      throws InvalidSortByFieldSpecifiedException {
+    List<String> transactionFieldNames =
+        Arrays.stream(TransactionDto.class.getDeclaredFields()).map(Field::getName).toList();
+    if (!transactionFieldNames.contains(sortByField)) {
       throw new InvalidSortByFieldSpecifiedException(sortByField, transactionFieldNames);
     }
-    if (params.containsKey(SOURCE_ACCOUNT_ID) && params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsBetween(
-                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID)),
-                  Long.valueOf(params.get(TARGET_ACCOUNT_ID)),
-                      page, size, sortByField, sortOrder),
-              params));
-    } else if (params.containsKey(SOURCE_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsFrom(
-                  Long.valueOf(params.get(SOURCE_ACCOUNT_ID)), page, size, sortByField, sortOrder),
-              params));
-    } else if (params.containsKey(TARGET_ACCOUNT_ID)) {
-      return ResponseEntity.ok(
-          transactionModelAssembler.toCollectionModel(
-              transactionService.getAllTransactionsTo(Long.valueOf(params.get(TARGET_ACCOUNT_ID)), page, size, sortByField, sortOrder),
-              params));
-    }
-    // params is null, empty, or contains irrelevant keys; just return all transactions in page
-    return ResponseEntity.ok(
-        transactionModelAssembler.toCollectionModel(
-            transactionService.getAllTransactions(page, size, sortByField, sortOrder)));
+    return new TransactionParameterLogicFactory(transactionService, transactionModelAssembler)
+        .getResponseEntitySupplier(
+            params.containsKey(SOURCE_ACCOUNT_ID),
+            params.containsKey(TARGET_ACCOUNT_ID))
+            .getResponseEntity(
+                    AggregateGetQueryParams.builder()
+                    .page(page)
+                    .pageSize(pageSize)
+                    .sortByField(sortByField)
+                    .sortOrder(sortOrder)
+                    .transactionQueryParams(params)
+                    .build());
   }
 
   // Exception handler for handling the case of a bad sort order string provided by the user.
@@ -221,9 +222,12 @@ public class TransactionController {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
   private ResponseEntity<ExceptionMessageContainer> badSortOrderProvided() {
-    return new ResponseEntity<>(new ExceptionMessageContainer(
-            "Provided an invalid sort order parameter: acceptable values are: " + Arrays.toString(SortOrder.values()) + "."),
-            HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(
+        new ExceptionMessageContainer(
+            "Provided an invalid sort order parameter: acceptable values are: "
+                + Arrays.toString(SortOrder.values())
+                + "."),
+        HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -235,20 +239,20 @@ public class TransactionController {
    */
   @Operation(summary = "Delete a transaction")
   @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          responseCode = "204",
-                          description = "Transaction successfully deleted",
-                          content = @Content),
-                  @ApiResponse(
-                          responseCode = "401",
-                          description = "Unauthenticated user",
-                          content = @Content),
-                  @ApiResponse(
-                          responseCode = "404",
-                          description = "Transaction not found",
-                          content = @Content)
-          })
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "Transaction successfully deleted",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthenticated user",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Transaction not found",
+            content = @Content)
+      })
   @DeleteMapping("/transaction/{id}")
   public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
     transactionService.deleteTransaction(id);
@@ -263,16 +267,16 @@ public class TransactionController {
    */
   @Operation(summary = "Delete all transactions")
   @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          responseCode = "204",
-                          description = "Transactions successfully deleted",
-                          content = @Content),
-                  @ApiResponse(
-                          responseCode = "401",
-                          description = "Unauthenticated user",
-                          content = @Content),
-          })
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "Transactions successfully deleted",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthenticated user",
+            content = @Content),
+      })
   @DeleteMapping("/transaction")
   public ResponseEntity<?> deleteAllTransactions() {
     transactionService.deleteAllTransactions();
