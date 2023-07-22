@@ -9,7 +9,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
 /**
+ * An abstract class used by {@link TransactionParameterLogicFactory}.
  *
+ * @author jason
  */
 public abstract class BaseResponse {
     
@@ -21,5 +23,12 @@ public abstract class BaseResponse {
         this.transactionService = transactionService;
         this.transactionModelAssembler = transactionModelAssembler;
     }
+
+    /**
+     * Use the provided params to call the {@link TransactionService} and {@link TransactionModelAssembler} beans
+     * and construct a {@link ResponseEntity} that describes the result of these calls.
+     * @param aggregateGetQueryParams An instance encapsulating the parameters of the transaction.
+     * @return A {@link ResponseEntity} describing the result of the GET ALL operation.
+     */
     public abstract ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> getResponseEntity(AggregateGetQueryParams aggregateGetQueryParams);
 }

@@ -10,6 +10,11 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Specification of {@link BaseResponse} that corresponds to the GET ALL TRANSACTIONS FROM SOURCE_ACCOUNT logic flow.
+ * 
+ * @author jason 
+ */
 public class GetAllFromResponse extends BaseResponse{
 
     public GetAllFromResponse(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler) {

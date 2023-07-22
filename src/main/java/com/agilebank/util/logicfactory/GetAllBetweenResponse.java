@@ -11,6 +11,12 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Specification of {@link BaseResponse} that corresponds to the GET ALL TRANSACTIONS FROM SOURCE_ACCOUNT TO TARGET_ACCOUNT
+ * logic flow.
+ *
+ * @author jason
+ */
 public class GetAllBetweenResponse extends BaseResponse{
 
     public GetAllBetweenResponse(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler) {

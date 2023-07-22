@@ -9,7 +9,7 @@ import com.agilebank.util.AggregateGetQueryParams;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
-import com.agilebank.util.logicfactory.ParameterLogicFactory;
+import com.agilebank.util.logicfactory.TransactionParameterLogicFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -203,7 +203,7 @@ public class TransactionController {
     if (!transactionFieldNames.contains(sortByField)) {
       throw new InvalidSortByFieldSpecifiedException(sortByField, transactionFieldNames);
     }
-    return new ParameterLogicFactory(transactionService, transactionModelAssembler)
+    return new TransactionParameterLogicFactory(transactionService, transactionModelAssembler)
         .getResponseEntitySupplier(
             params.containsKey(SOURCE_ACCOUNT_ID),
             params.containsKey(TARGET_ACCOUNT_ID))

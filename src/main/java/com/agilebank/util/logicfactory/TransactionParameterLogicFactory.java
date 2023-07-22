@@ -17,11 +17,11 @@ import org.apache.commons.lang3.tuple.Pair;
  * @see com.agilebank.controller.TransactionController
  * @see BaseResponse
  */
-public class ParameterLogicFactory {
+public class TransactionParameterLogicFactory {
 
   private final Map<Pair<Boolean, Boolean>, Supplier<BaseResponse>> creators;
 
-  public ParameterLogicFactory(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler){
+  public TransactionParameterLogicFactory(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler){
       this.creators =
       Map.of(
               Pair.of(false, false),
