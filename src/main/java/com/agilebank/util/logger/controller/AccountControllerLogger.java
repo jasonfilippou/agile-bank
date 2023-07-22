@@ -136,4 +136,24 @@ public class AccountControllerLogger {
   public void afterReplacingAccountThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }
+  
+  /* Update Account */
+
+  @Before("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
+  public void beforeUpdatingAccount(JoinPoint jp) {
+    log.info(msg(Loc.BEGIN, jp));
+  }
+
+  @AfterReturning("execution(* com.agilebank.controller.AccountController.updateAccount(..))")
+  public void afterUpdatingccount(JoinPoint jp) {
+    log.info(msg(Loc.END, jp));
+  }
+
+  @AfterThrowing(
+          value = "execution(* com.agilebank.controller.AccountController.updateAccount(..))",
+          throwing = "ex")
+  public void afterUpdatingAccountThrows(JoinPoint jp, Throwable ex) {
+    log.warn(msg(jp, ex.getClass()));
+  }
+  
 }
