@@ -3,5 +3,3 @@
 - Consider adding links to next or previous page in the assemblers.
 
 - Add _links to openapi example responses.
-
-- Add logging for PATCH flow.
