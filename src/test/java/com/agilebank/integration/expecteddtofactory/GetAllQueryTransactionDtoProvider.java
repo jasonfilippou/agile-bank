@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 
 import static com.agilebank.util.TestUtils.compareFieldsInGivenOrder;
 
+/**
+ *  A subclass of {@link BaseTransactionDtoProvider} that provides a list of transaction DTOs.
+ *
+ *  @author jason
+ */
 public class GetAllQueryTransactionDtoProvider extends BaseTransactionDtoProvider {
     public GetAllQueryTransactionDtoProvider(List<TransactionDto> fullList) {
         super(fullList);

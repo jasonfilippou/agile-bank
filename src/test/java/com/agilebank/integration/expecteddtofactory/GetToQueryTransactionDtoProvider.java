@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestUtils.compareFieldsInGivenOrder;
 
+/**
+ * A subclass of {@link BaseTransactionDtoProvider} that provides a list of transaction DTOs to a target account.
+ *
+ * @author jason
+ */
 public class GetToQueryTransactionDtoProvider extends BaseTransactionDtoProvider {
     public GetToQueryTransactionDtoProvider(List<TransactionDto> fullList) {
         super(fullList);

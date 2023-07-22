@@ -12,6 +12,11 @@ import static com.agilebank.util.Constants.SOURCE_ACCOUNT_ID;
 import static com.agilebank.util.Constants.TARGET_ACCOUNT_ID;
 import static com.agilebank.util.TestUtils.compareFieldsInGivenOrder;
 
+/**
+ * A subclass of {@link BaseTransactionDtoProvider} that provides a list of transaction DTOs from a source account to a target account.
+ *
+ * @author jason
+ */
 public class GetBetweenQueryTransactionDtoProvider extends BaseTransactionDtoProvider {
     public GetBetweenQueryTransactionDtoProvider(List<TransactionDto> fullList) {
         super(fullList);
@@ -24,6 +29,7 @@ public class GetBetweenQueryTransactionDtoProvider extends BaseTransactionDtoPro
         String sortByField = aggregateGetQueryParams.getSortByField();
         SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
         Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
+        assert transactionParams.containsKey(SOURCE_ACCOUNT_ID) && transactionParams.containsKey(TARGET_ACCOUNT_ID);
         return fullList.stream()
                 .filter(
                         transactionDto ->

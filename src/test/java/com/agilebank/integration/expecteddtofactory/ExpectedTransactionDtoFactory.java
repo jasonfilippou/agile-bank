@@ -7,6 +7,14 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * A factory class that simplifies some of the branching logic of {@link com.agilebank.integration.AgileBankIntegrationTests}.
+ * 
+ * @author jason 
+ * 
+ * @see com.agilebank.integration.AgileBankIntegrationTests
+ * @see BaseTransactionDtoProvider
+ */
 public class ExpectedTransactionDtoFactory {
 
   private final Map<Pair<Boolean, Boolean>, Supplier<BaseTransactionDtoProvider>> dtoResolver;

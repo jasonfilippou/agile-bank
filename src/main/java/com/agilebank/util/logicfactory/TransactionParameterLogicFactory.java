@@ -36,9 +36,9 @@ public class TransactionParameterLogicFactory {
 
   /** Returns an appropriate instance of {@link BaseResponse} depending on the provided parameters.
    *
-   * @param paramsContainSourceAccountId {@literal true} if the transaction query parameters included &quot; sourceAccountId &quot,
+   * @param paramsContainSourceAccountId {@literal true} if the transaction query parameters included &quot; sourceAccountId &quot;,
    *                                                    {@literal false} otherwise.
-   * @param paramsContainTargetAccountId {@literal true} if the transaction query parameters included &quot; targetAccountId &quot,
+   * @param paramsContainTargetAccountId {@literal true} if the transaction query parameters included &quot; targetAccountId &quot;,
    *      *                                                    {@literal false} otherwise.
    * @return An appropriate subclass of {@link BaseResponse}.
    */
