@@ -4,4 +4,4 @@
 
 - Add _links to openapi example responses.
 
-- Make UpdateMapper wire up its dependencies through constructor or setter.
+- Add logging for PATCH flow.
