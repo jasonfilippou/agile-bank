@@ -13,6 +13,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 import com.agilebank.controller.AccountController;
 import com.agilebank.controller.CurrencyLedgerController;
 import com.agilebank.controller.TransactionController;
+import com.agilebank.integration.expecteddtofactory.ExpectedTransactionDtoFactory;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.model.currency.Currency;
@@ -59,6 +60,8 @@ public class AgileBankIntegrationTests {
   private static final AccountDto TEST_ACCOUNT_DTO_TWO = TEST_ACCOUNT_DTOS.get(1);
 
   private static final Random RANDOM = new Random(47);
+  
+  private final ExpectedTransactionDtoFactory factory = new ExpectedTransactionDtoFactory(TEST_VALID_TRANSACTION_DTOS);
 
   /* Tests exclusively for accounts first. */
 
@@ -577,71 +580,18 @@ public class AgileBankIntegrationTests {
 
   private void testSortedAndPaginatedAggregateGetOfTransactions(
           AggregateGetQueryParams aggregateGetQueryParams, Integer expectedNumberOfRecords) {
-    Integer page = aggregateGetQueryParams.getPage();
-    Integer pageSize = aggregateGetQueryParams.getPageSize();
-    String sortByField = aggregateGetQueryParams.getSortByField();
-    SortOrder sortOrder = aggregateGetQueryParams.getSortOrder();
     Map<String, String> transactionParams = aggregateGetQueryParams.getTransactionQueryParams();
-    List<TransactionDto> expectedTransactionDtos;
-    if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)
-        && transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
-      expectedTransactionDtos =
-          TEST_VALID_TRANSACTION_DTOS.stream()
-              .filter(
-                  transactionDto ->
-                      transactionDto
-                              .getSourceAccountId()
-                              .equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID)))
-                          && transactionDto
-                              .getTargetAccountId()
-                              .equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
-              .sorted(
-                  (t1, t2) ->
-                      compareFieldsInGivenOrder(
-                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList())
-              .subList(page * pageSize, pageSize * (page + 1));
-    } else if (transactionParams.containsKey(SOURCE_ACCOUNT_ID)) {
-      expectedTransactionDtos =
-          TEST_VALID_TRANSACTION_DTOS.stream()
-              .filter(
-                  transactionDto ->
-                      transactionDto
-                          .getSourceAccountId()
-                          .equals(Long.valueOf(transactionParams.get(SOURCE_ACCOUNT_ID))))
-              .sorted(
-                  (t1, t2) ->
-                      compareFieldsInGivenOrder(
-                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList())
-              .subList(page * pageSize, pageSize * (page + 1));
-    } else if (transactionParams.containsKey(TARGET_ACCOUNT_ID)) {
-      expectedTransactionDtos =
-          TEST_VALID_TRANSACTION_DTOS.stream()
-              .filter(
-                  transactionDto ->
-                      transactionDto
-                          .getTargetAccountId()
-                          .equals(Long.valueOf(transactionParams.get(TARGET_ACCOUNT_ID))))
-              .sorted(
-                  (t1, t2) ->
-                      compareFieldsInGivenOrder(
-                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList())
-              .subList(page * pageSize, pageSize * (page + 1));
-    } else {
-      expectedTransactionDtos =
-          TEST_VALID_TRANSACTION_DTOS.stream()
-              .sorted(
-                  (t1, t2) ->
-                      compareFieldsInGivenOrder(
-                          t1.getClass(), t2.getClass(), sortByField, sortOrder))
-              .collect(Collectors.toList())
-              .subList(page * pageSize, pageSize * (page + 1));
-    }
+    List<TransactionDto> expectedTransactionDtos = factory
+            .getDtoProvider(transactionParams.containsKey(SOURCE_ACCOUNT_ID),
+            transactionParams.containsKey(TARGET_ACCOUNT_ID))
+            .getExpectedDtos(aggregateGetQueryParams);
     ResponseEntity<CollectionModel<EntityModel<TransactionDto>>> responseEntity =
         transactionController.getAllTransactions(
-            transactionParams, page, pageSize, sortByField, sortOrder);
+            transactionParams,
+            aggregateGetQueryParams.getPage(),
+            aggregateGetQueryParams.getPageSize(),
+            aggregateGetQueryParams.getSortByField(),
+            aggregateGetQueryParams.getSortOrder());
     assertEquals(
         ResponseEntity.ok(transactionModelAssembler.toCollectionModel(expectedTransactionDtos)),
         responseEntity);
