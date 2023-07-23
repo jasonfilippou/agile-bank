@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NoArgsConstructor;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -55,13 +59,21 @@ public class AgileBankIntegrationTests {
   @MockBean
   private CurrencyLedger
       currencyLedger; // In transaction GET ALL tests, we will need to mock this dependency.
-
   private static final AccountDto TEST_ACCOUNT_DTO_ONE = TEST_ACCOUNT_DTOS.get(0);
   private static final AccountDto TEST_ACCOUNT_DTO_TWO = TEST_ACCOUNT_DTOS.get(1);
 
   private static final Random RANDOM = new Random(47);
   
   private final ExpectedTransactionDtoFactory factory = new ExpectedTransactionDtoFactory(TEST_VALID_TRANSACTION_DTOS);
+  
+  @Before
+  public void setUp(){
+    User userDetails = new User("username", "password", Collections.emptyList());
+    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+            new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+  }
 
   /* Tests exclusively for accounts first. */
 
