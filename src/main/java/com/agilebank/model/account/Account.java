@@ -1,15 +1,15 @@
 package com.agilebank.model.account;
 
+import com.agilebank.model.Auditable;
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.transaction.Transaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Objects;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Account database object.
@@ -27,7 +27,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 @Table(name = "ACCOUNT")
-public class Account {
+@EntityListeners(AuditingEntityListener.class)
+public class Account extends Auditable<String>{
 
   @Id
   @Column(name = "id")
@@ -41,11 +42,6 @@ public class Account {
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)
   private Currency currency;
-
-  @Column(name = "created_at")
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  @Builder.Default
-  private Date createdAt = new Date();
   
   public Account(BigDecimal balance, Currency currency) {
     this.balance = balance;

@@ -87,7 +87,6 @@ public final class TestUtils {
         .id(accountDto.getId())
         .currency(accountDto.getCurrency())
         .balance(accountDto.getBalance())
-        .createdAt(new Date())
         .build();
   }
 
@@ -308,7 +307,6 @@ public final class TestUtils {
         .targetAccountId(transactionDto.getTargetAccountId())
         .amount(transactionDto.getAmount())
         .currency(transactionDto.getCurrency())
-        .submittedAt(new Date())
         .build();
   }
 

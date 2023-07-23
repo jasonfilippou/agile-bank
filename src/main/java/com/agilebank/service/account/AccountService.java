@@ -134,7 +134,6 @@ public class AccountService {
               // Update the fields appropriately
               Account.builder()
                   .id(id)
-                  .createdAt(account.get().getCreatedAt())
                   .currency(accountDto.getCurrency())
                   .balance(accountDto.getBalance())
                   .build());

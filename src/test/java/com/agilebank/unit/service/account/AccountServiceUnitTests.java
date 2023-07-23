@@ -174,7 +174,6 @@ public class AccountServiceUnitTests {
             Account.builder()
                 .id(id)
                 .balance(TEST_ACCOUNT_ENTITIES.get(1).getBalance())
-                .createdAt(TEST_ACCOUNT_ENTITIES.get(1).getCreatedAt())
                 .currency(TEST_ACCOUNT_ENTITIES.get(1).getCurrency())
                 .build());
     AccountDto updatedAccountDto =
@@ -221,7 +220,6 @@ public class AccountServiceUnitTests {
             .id(newAccountInfo.getId())
             .balance(newAccountInfo.getBalance())
             .currency(TEST_ACCOUNT_ENTITIES.get(0).getCurrency())
-            .createdAt(TEST_ACCOUNT_ENTITIES.get(0).getCreatedAt())
             .build();
     when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITIES.get(0)))
         .thenReturn(patchedAccount);
@@ -252,7 +250,6 @@ public class AccountServiceUnitTests {
                 currencyLedger.convertAmountToTargetCurrency(
                     TEST_ACCOUNT_ENTITIES.get(0).getCurrency(), Currency.AMD, TEST_ACCOUNT_ENTITIES.get(0).getBalance()))
             .currency(newAccountInfo.getCurrency())
-            .createdAt(TEST_ACCOUNT_ENTITIES.get(0).getCreatedAt())
             .build();
     when(updateMapper.updateEntityFromDto(newAccountInfo, TEST_ACCOUNT_ENTITIES.get(0)))
         .thenReturn(patchedAccount);

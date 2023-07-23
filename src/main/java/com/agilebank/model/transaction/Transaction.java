@@ -1,14 +1,14 @@
 package com.agilebank.model.transaction;
 
+import com.agilebank.model.Auditable;
 import com.agilebank.model.currency.Currency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Objects;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Transaction database object.
@@ -27,7 +27,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 @Table(name = "TRANSACTION")
-public class Transaction {
+@EntityListeners(AuditingEntityListener.class)
+public class Transaction extends Auditable<String>{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,11 +48,6 @@ public class Transaction {
   @Column(name = "currency")
   @Enumerated(EnumType.STRING)
   private Currency currency;
-
-  @Column(name = "submitted_at")
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  @Builder.Default
-  private Date submittedAt = new Date();
 
   @Override
   public final boolean equals(Object o) {
