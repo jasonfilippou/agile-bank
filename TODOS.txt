@@ -1,3 +1,5 @@
 - Consider adding links to next or previous page in the assemblers.
 
+- See if you can target services and controllers with custom annotations so that you can reduce the code in the AOP loggers.
+
 - Add _links to openapi example responses.
