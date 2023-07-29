@@ -4,6 +4,7 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.currency.CurrencyLedger;
+import com.agilebank.util.logger.Logged;
 import com.agilebank.util.exceptions.OneOfTwoCurrenciesMissingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,6 +33,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequestMapping("/bankapi")
 @RequiredArgsConstructor
 @Tag(name = "4. Currency Ledger API")
+@Logged
 public class CurrencyLedgerController {
 
   private final CurrencyLedger currencyLedger;

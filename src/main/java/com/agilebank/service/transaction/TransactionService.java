@@ -8,6 +8,7 @@ import com.agilebank.model.transaction.Transaction;
 import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.persistence.AccountRepository;
 import com.agilebank.persistence.TransactionRepository;
+import com.agilebank.util.logger.Logged;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.*;
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class TransactionService {
 
   private final AccountRepository accountRepository;

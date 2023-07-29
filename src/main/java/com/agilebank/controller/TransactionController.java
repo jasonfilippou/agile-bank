@@ -6,6 +6,7 @@ import com.agilebank.model.transaction.TransactionDto;
 import com.agilebank.model.transaction.TransactionModelAssembler;
 import com.agilebank.service.transaction.TransactionService;
 import com.agilebank.util.AggregateGetQueryParams;
+import com.agilebank.util.logger.Logged;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
@@ -49,6 +50,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @Tag(name = "3. Transactions API")
 @Validated
+@Logged
 public class TransactionController {
 
   private final TransactionService transactionService;

@@ -2,6 +2,8 @@ package com.agilebank.persistence;
 
 import com.agilebank.model.user.User;
 import java.util.Optional;
+
+import com.agilebank.util.logger.Logged;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -10,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see AccountRepository
  * @see TransactionRepository
  */
-@CustomRepositoryAnnotation
+@Logged
 public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findByUsername(String username);
 }
