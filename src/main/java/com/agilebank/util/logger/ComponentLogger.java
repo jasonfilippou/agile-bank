@@ -2,6 +2,7 @@ package com.agilebank.util.logger;
 
 import static com.agilebank.util.logger.MethodLoggingMessages.msg;
 
+import com.agilebank.util.Logged;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -29,8 +30,7 @@ public class ComponentLogger {
   }
 
   @AfterThrowing(
-      value = ("execution(* (@com.agilebank.util.logger.Logged *..*).*(..))"),
-      throwing = "ex")
+      value = ("execution(* (@com.agilebank.util.logger.Logged *..*).*(..))"), throwing = "ex")
   public void afterCallingAMethodThrows(JoinPoint jp, Throwable ex) {
     log.warn(msg(jp, ex.getClass()));
   }

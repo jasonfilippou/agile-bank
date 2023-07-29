@@ -1,9 +1,8 @@
 package com.agilebank.persistence;
 
 import com.agilebank.model.user.User;
-import java.util.Optional;
-
 import com.agilebank.util.logger.Logged;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

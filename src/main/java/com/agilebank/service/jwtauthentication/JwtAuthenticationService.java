@@ -1,5 +1,4 @@
 package com.agilebank.service.jwtauthentication;
-
 import com.agilebank.util.logger.Logged;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

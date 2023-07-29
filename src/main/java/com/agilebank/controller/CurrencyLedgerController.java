@@ -4,8 +4,8 @@ import static com.agilebank.model.currency.CurrencyLedger.CurrencyPair;
 
 import com.agilebank.model.currency.Currency;
 import com.agilebank.model.currency.CurrencyLedger;
-import com.agilebank.util.logger.Logged;
 import com.agilebank.util.exceptions.OneOfTwoCurrenciesMissingException;
+import com.agilebank.util.logger.Logged;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
