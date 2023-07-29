@@ -1,5 +1,6 @@
 package com.agilebank.service.jwtauthentication;
 
+import com.agilebank.util.Logged;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class JwtAuthenticationService {
 
   private final AuthenticationManager authenticationManager;

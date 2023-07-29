@@ -1,6 +1,7 @@
 package com.agilebank.persistence;
 
 import com.agilebank.model.account.Account;
+import com.agilebank.util.Logged;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
  * @see TransactionRepository
  * @see UserRepository
  */
-@CustomRepositoryAnnotation
+@Logged
 public interface AccountRepository extends JpaRepository<Account, Long>{
 
     @Modifying

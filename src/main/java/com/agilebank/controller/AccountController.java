@@ -5,6 +5,7 @@ import static com.agilebank.util.Constants.*;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.model.account.AccountModelAssembler;
 import com.agilebank.service.account.AccountService;
+import com.agilebank.util.Logged;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.exceptions.ExceptionMessageContainer;
 import com.agilebank.util.exceptions.InvalidSortByFieldSpecifiedException;
@@ -46,6 +47,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @Tag(name = "2. Accounts API")
 @Validated
+@Logged
 public class AccountController {
 
   private final AccountService accountService;

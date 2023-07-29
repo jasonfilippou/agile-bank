@@ -7,6 +7,7 @@ import com.agilebank.model.user.UserDto;
 import com.agilebank.service.jwtauthentication.JwtAuthenticationService;
 import com.agilebank.service.jwtauthentication.JwtUserDetailsService;
 import com.agilebank.util.JwtTokenUtil;
+import com.agilebank.util.Logged;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "1. Authentication API")
 @Validated
+@Logged
 public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;

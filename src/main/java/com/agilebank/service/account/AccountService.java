@@ -3,6 +3,7 @@ package com.agilebank.service.account;
 import com.agilebank.model.account.Account;
 import com.agilebank.model.account.AccountDto;
 import com.agilebank.persistence.AccountRepository;
+import com.agilebank.util.Logged;
 import com.agilebank.util.SortOrder;
 import com.agilebank.util.UpdateMapper;
 import com.agilebank.util.exceptions.AccountNotFoundException;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class AccountService {
 
   private final AccountRepository accountRepository;

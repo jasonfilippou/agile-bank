@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
  * @see com.agilebank.service.jwtauthentication.JwtAuthenticationService
  */
 @Component
+@Logged
 public class JwtTokenUtil implements Serializable {
   @Serial private static final long serialVersionUID = -2550185165626007488L;
 

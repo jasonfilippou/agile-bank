@@ -3,6 +3,7 @@ package com.agilebank.service.jwtauthentication;
 import com.agilebank.model.user.User;
 import com.agilebank.model.user.UserDto;
 import com.agilebank.persistence.UserRepository;
+import com.agilebank.util.Logged;
 import com.agilebank.util.exceptions.UsernameAlreadyInDatabaseException;
 import java.util.Collections;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class JwtUserDetailsService implements UserDetailsService {
 
   private final UserRepository userRepository;
