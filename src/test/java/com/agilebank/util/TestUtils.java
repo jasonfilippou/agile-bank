@@ -443,7 +443,8 @@ public final class TestUtils {
   public static <T extends Comparable<T>> int compareFieldsInGivenOrder(Class<?> pojoOne, Class<?> pojoTwo,
                                                                   String sortByField, SortOrder sortOrder){
     try {
-      PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, TransactionDto.class);
+      assert pojoOne.equals(pojoTwo);
+      PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, pojoOne);
       Method appropriateGetter = propertyDescriptor.getReadMethod();
       @SuppressWarnings("unchecked")
       T pojoOneFieldValue = (T) appropriateGetter.invoke(pojoOne);
